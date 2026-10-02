@@ -1,0 +1,21 @@
+name: 故障报告
+description: 提交已去除敏感信息的复现资料
+body:
+  - type: textarea
+    id: hardware
+    attributes:
+      label: 硬件与版本
+      description: ESP32 型号、屏幕标签／驱动环境、固件版本
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤与预期结果
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 去敏后的错误或照片
+      description: 不要上传密码、Token、私人服务地址、NVS 或完整 Flash 备份

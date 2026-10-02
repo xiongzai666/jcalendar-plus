@@ -1,0 +1,3 @@
+Host policy tests run through python tools/verify.py; they are not PlatformIO on-device tests.
+C++ uses g++ or J_CALENDAR_CXX (Zig), Python uses unittest, and remote/test uses Node.js.
+Fixtures are synthetic regression inputs, independent from public product defaults.

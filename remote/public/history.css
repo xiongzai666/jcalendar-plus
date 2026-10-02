@@ -1,0 +1,13 @@
+.history-list{border-top:1px solid #d5d0c7}
+.history-row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:17px 4px;border-bottom:1px solid #d5d0c7}
+.history-main{display:flex;flex-direction:column;gap:5px;min-width:0}
+.history-main strong{font-size:17px}
+.history-meta{font-size:13px;color:#645f57;font-variant-numeric:tabular-nums}
+.history-row .secondary-button{flex:none}
+@media(max-width:760px){
+  .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible;gap:0}
+  .tabs .tab{flex:auto;min-width:0}
+  .history-row{align-items:flex-start}
+  .history-row .secondary-button{padding:0 10px;font-size:13px}
+  .history-main strong{font-size:15px}
+}

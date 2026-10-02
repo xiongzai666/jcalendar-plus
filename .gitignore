@@ -1,0 +1,17 @@
+.pio
+.vscode
+.DS_Store
+remote/node_modules/
+remote/.edgeone/
+remote/.playwright-cli/
+remote/.env*
+remote/*-search*.json
+remote/*-docs.json
+remote/*-doc.json
+remote/public/release.json
+.releases/
+
+!remote/.env.example
+__pycache__/
+work/
+.superpowers/

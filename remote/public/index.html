@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f2f3f1">
+  <title>J-Calendar · 远程配置</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/app.css">
+  <link rel="stylesheet" href="/history.css">
+  <link rel="stylesheet" href="/sync-status.css">
+  <script src="/app.js" type="module"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="brand-mark" aria-hidden="true"><span>J</span><i></i></div>
+      <div class="brand-copy">
+        <strong>J-Calendar</strong>
+        <span>墨水屏远程配置</span>
+      </div>
+      <button id="sign-out" class="text-button" type="button" hidden>退出</button>
+    </header>
+
+    <section id="login-view" class="login-view" aria-labelledby="login-title">
+      <div class="login-illustration" aria-hidden="true">
+        <div class="mini-screen"><b>09<span>月</span>26<span>日</span></b><span>下一项 · 午休 12:40</span></div>
+      </div>
+      <h1 id="login-title">管理你的墨水屏</h1>
+      <p>登录后编辑课程、作息与待办。设备在下次联网时同步。</p>
+      <form id="login-form" class="login-form">
+        <input type="text" name="username" value="admin" autocomplete="username" hidden>
+        <label for="password">管理密码</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <button class="primary-button" type="submit">登录</button>
+      </form>
+      <p id="login-error" class="form-message" role="alert" hidden></p>
+    </section>
+
+    <div id="workspace" hidden>
+      <section class="status-panel" aria-live="polite">
+        <div>
+          <span class="eyebrow">设备连接</span>
+          <strong id="sync-headline">读取中…</strong>
+          <p id="sync-detail">正在检查云端版本</p>
+          <p id="sync-network"></p>
+          <p id="sync-diagnostic" class="sync-diagnostic" hidden></p>
+        </div>
+        <button id="reload" class="secondary-button" type="button">重新检查</button>
+      </section>
+      <details class="sync-log">
+        <summary>最近同步记录</summary>
+        <ol id="sync-log-list"></ol>
+        <p>设备离线时无法实时上报失败原因；恢复联网后会补报最近一次故障和连续失败次数。</p>
+      </details>
+      <p id="draft-notice" class="sync-diagnostic" role="status" hidden></p>
+      <details class="sync-log"><summary>设备运行摘要</summary><div id="runtime-summary"></div><p>以下为设备上次联网时的报告；读取时间是获取天气的时间，预计联网时间可能随手动唤醒或后续刷新调整。</p></details>
+      <button id="rebase-draft" class="secondary-button" type="button" hidden>核对云端新版本</button>
+
+      <div class="page-heading">
+        <div><span class="eyebrow">控制台</span><h1 id="page-title">待办事项</h1></div>
+        <span id="draft-status" class="draft-status" hidden>有未保存的修改</span>
+      </div>
+
+      <p id="template-notice" class="sync-diagnostic" hidden>首次配置：课程、城市和目标日期是示例模板，请按实际情况修改并核对后保存。</p>
+      <nav class="tabs" aria-label="配置分类">
+        <button class="tab active" data-tab="todos" type="button" aria-current="page">待办</button>
+        <button class="tab" data-tab="schedule" type="button">课程</button>
+        <button class="tab" data-tab="overrides" type="button">临时安排</button>
+        <button class="tab" data-tab="routine" type="button">作息</button>
+        <button class="tab" data-tab="settings" type="button">设置</button>
+        <button class="tab" data-tab="history" type="button">历史</button>
+      </nav>
+
+      <section id="todos-panel" class="panel" aria-labelledby="todos-heading">
+        <div class="section-heading"><div><h2 id="todos-heading">要做的事</h2><p>屏幕显示前 6 条未完成事项，每条最多 16 字；勾选完成只在这里操作。</p></div><span id="todo-count" class="count"></span></div>
+        <form id="add-todo" class="todo-form">
+          <label class="field grow"><span>新增待办</span><input id="todo-title" type="text" maxlength="16" placeholder="例如：完成数学试卷" required></label>
+          <label class="field"><span>截止日期</span><input id="todo-due" type="date"></label>
+          <label class="field"><span>优先级</span><select id="todo-priority"><option value="normal">普通</option><option value="high">重要</option></select></label>
+          <button class="secondary-button add-button" type="submit">添加待办</button>
+        </form>
+        <div id="todo-list" class="todo-list"></div>
+      </section>
+
+      <section id="schedule-panel" class="panel" aria-labelledby="schedule-heading" hidden>
+        <div class="section-heading"><div><h2 id="schedule-heading">每周课程</h2><p>周一至周六，每天上午、下午、晚上各 4 节。</p></div></div>
+        <div id="day-tabs" class="day-tabs" aria-label="选择星期"></div>
+        <div id="schedule-editor" class="schedule-editor"></div>
+      </section>
+
+      <section id="overrides-panel" class="panel" aria-labelledby="overrides-heading" hidden>
+        <div class="section-heading"><div><h2 id="overrides-heading">临时调课与放假</h2><p>只影响指定日期。可沿用常规时间调课，也可启用独立作息；当天的课程和“下一项”随之调整。</p></div></div>
+        <form id="add-override" class="override-add">
+          <label class="field"><span>选择日期</span><input id="override-date" type="date" required></label>
+          <button class="secondary-button" type="submit">添加日期</button>
+        </form>
+        <form id="apply-weekday" class="override-add">
+          <label class="field"><span>套用日期</span><input id="apply-date" type="date" required></label>
+          <label class="field"><span>使用哪天的课表</span><select id="apply-day"><option value="1">周一</option><option value="2">周二</option><option value="3">周三</option><option value="4">周四</option><option value="5">周五</option><option value="6">周六</option></select></label>
+          <button class="secondary-button" type="submit">套用到指定日期</button>
+        </form>
+        <p class="override-intro">套用会复制全部 12 节（包括无课），保存前可逐节核对；以后修改常规课表不会改变这次复制。</p>
+        <form id="add-holiday-range" class="override-add holiday-range">
+          <label class="field"><span>连续放假：开始</span><input id="holiday-start" type="date" required></label>
+          <label class="field"><span>结束</span><input id="holiday-end" type="date" required></label>
+          <button class="secondary-button" type="submit">批量添加放假日</button>
+        </form>
+        <p class="override-intro">批量添加不会覆盖已有调课；日期已满时，可先清理过期安排。</p>
+        <button id="remove-expired-overrides" class="text-button override-cleanup" type="button">清理已过期日期</button>
+        <p class="override-intro">每个日期下方会列出保存后实际生效的课程变动。核对无误后，再使用页面底部的保存按钮。</p>
+        <div id="override-list" class="override-list"></div>
+      </section>
+
+      <section id="routine-panel" class="panel" aria-labelledby="routine-heading" hidden>
+        <div class="section-heading"><div><h2 id="routine-heading">每日作息</h2><p>课程的上、下课时间以这里为准，屏幕时间和自动切课同步更新。12 节课程名称固定；所有活动须按顺序且不能重叠。</p></div></div>
+        <div id="routine-editor" class="routine-editor"></div>
+        <button id="add-routine" class="secondary-button" type="button">添加作息</button>
+      </section>
+
+      <section id="settings-panel" class="panel" aria-labelledby="settings-heading" hidden>
+        <div class="section-heading"><div><h2 id="settings-heading">显示设置</h2><p>修改后在设备下一次联网时应用。</p></div></div>
+        <div class="settings-grid">
+          <label class="field"><span>倒计时名称</span><input id="countdown-label" type="text" maxlength="8"></label>
+          <label class="field"><span>目标日期</span><input id="countdown-date" type="date"></label>
+          <label class="field"><span>天气 Location ID</span><input id="weather-location" type="text" inputmode="numeric" pattern="[0-9]{9}" maxlength="9"></label>
+          <label class="field"><span>开机默认页面</span><select id="default-page"><option value="2">课程与倒计时</option><option value="1">日间周课表</option><option value="0">月历</option><option value="3">待办事项</option></select></label>
+        </div>
+        <div class="subsection-heading"><h3>早读科目</h3><p>早读期间显示当天科目，课间显示下一节。晨会/跑操：周一晨会，其余上课日跑操。</p></div>
+        <div id="early-reading-editor" class="early-reading-editor"></div>
+        <aside class="sync-note"><strong>同步方式</strong><p>每两小时联网，并在实际放学前约 10 分钟更新天气；相近刷新会合并。短按上键也会同步。手机保存无法立即唤醒休眠中的设备。</p></aside>
+        <div class="subsection-heading"><h3>配置备份</h3><p>下载当前云端的课程、作息、临时安排和待办；文件不含 Wi‑Fi 密码或设备令牌。导入后先核对，再手动保存到云端。</p></div>
+        <div class="config-transfer-actions">
+          <button id="export-config" class="secondary-button" type="button">下载配置备份</button>
+          <button id="select-import" class="secondary-button" type="button">导入备份文件</button>
+          <input id="import-file" type="file" accept=".json,application/json" aria-label="选择 J-Calendar 配置备份" hidden>
+        </div>
+        <p id="import-status" class="import-status" role="status" hidden></p>
+      </section>
+
+      <section id="history-panel" class="panel" aria-labelledby="history-heading" hidden>
+        <div class="section-heading"><div><h2 id="history-heading">配置历史</h2><p>保留最近 10 个云端版本。恢复会创建一个新版本，设备下次联网时应用。</p></div></div>
+        <div id="history-list" class="history-list" aria-live="polite"></div>
+      </section>
+    </div>
+  </main>
+
+  <div id="save-bar" class="save-bar" hidden><div><strong>修改尚未保存</strong><span>保存到云端后，设备将在下次联网时应用</span></div><button id="save" class="primary-button" type="button">保存到云端</button></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

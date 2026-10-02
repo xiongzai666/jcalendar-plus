@@ -1,0 +1,14 @@
+{
+  "name": "j-calendar-remote",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node tools/check-build.mjs",
+    "dev": "node dev-server.js",
+    "test": "node --test",
+    "prepare:secrets": "node tools/prepare-secrets.mjs"
+  },
+  "dependencies": {
+    "@edgeone/pages-blob": "0.0.18"
+  }
+}

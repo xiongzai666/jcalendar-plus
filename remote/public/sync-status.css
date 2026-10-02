@@ -1,0 +1,10 @@
+.sync-diagnostic{margin-top:9px!important;color:#8c2531!important;line-height:1.5}
+.status-panel .secondary-button{flex:none;white-space:nowrap;min-width:82px}
+.sync-log{border-bottom:1px solid #d7d3ca;padding:0 4px;color:#46413b}
+.sync-log summary{cursor:pointer;padding:12px 0;font-size:13px;font-weight:700;list-style-position:inside}
+.sync-log summary:focus-visible{outline:3px solid #a82d39;outline-offset:2px}
+.sync-log ol{list-style:none;margin:0;padding:0 0 4px}
+.sync-log li{display:flex;gap:14px;justify-content:space-between;border-top:1px solid #ddd9d1;padding:10px 0;font-size:13px;line-height:1.5}
+.sync-log time{color:#625b53;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sync-log p{margin:4px 0 12px;color:#645f57;font-size:12px;line-height:1.6}
+@media(max-width:560px){.sync-log li{display:block}.sync-log time{display:block;margin-bottom:2px}}
