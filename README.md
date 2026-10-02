@@ -2,7 +2,7 @@
 
 基于 [JADE-Jerry/jcalendar](https://github.com/JADE-Jerry/jcalendar) 的 4.2 寸黑白红墨水屏日历扩展版：课程、月历、倒计时、天气和待办，配套可自行部署的手机配置网页。
 
-**当前公开整理版：2.3.0。** 面向经典 ESP32、4 MB Flash、400 × 300 三色屏。原项目基础功能、驱动及作者信息保留于 [NOTICE](NOTICE.md)；许可证原文见 [LICENSE](LICENSE)。
+**当前公开预发布版：2.3.0。** 面向经典 ESP32、4 MB Flash、400 × 300 三色屏。原项目基础功能、驱动及作者信息保留于 [NOTICE](NOTICE.md)；许可证原文见 [LICENSE](LICENSE)。
 
 ## 能做什么
 
@@ -12,6 +12,10 @@
 - 和风天气实时／三日缓存；有实际课程的放学前额外获取天气，提示带伞；提示只在放学前窗口出现。
 - 手机网页编辑、草稿恢复、配置导入／导出、最近 10 个版本恢复、同步状态和有限日志。
 - 主／备用 Wi-Fi、联网校时、证书校验、设备专用 Token、离线缓存及受限重试。
+
+## 下载
+
+[GitHub 预发布 v2.3.0](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.0) 提供源码包、四种驱动固件包和 SHA256 校验。仅 Z15 有历史实机使用记录，公开版首启／OTA 验收尚待完成。
 
 ## 快速开始
 
