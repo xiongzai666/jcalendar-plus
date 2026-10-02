@@ -63,3 +63,18 @@ python tools/generate_subject_font.py --font /path/to/NotoSansSC-VF.ttf
 ## 服务限制
 
 单设备 Blob 状态为当前架构。保留已有版本冲突检查，未实现分布式事务或并发保存保证；不要宣传为多人协同服务。日志不存 SSID／密码／Token；上报窗口有限，离线期间的详情需等待恢复联网。
+
+## 交互演示
+
+公开演示运行于 https://xiongzai666.github.io/jcalendar-plus/ ，使用 GitHub Pages 和 `.github/workflows/demo-pages.yml` 自动发布。
+
+```sh
+cd remote
+npm run build:demo
+```
+
+输出在忽略的 `.demo-dist`，只有静态资源；不会复制云函数、凭据、设备配置。构建复用现有前端，替换演示请求与文案，并将资源路径调整为相对路径。校验器从云端同一份代码生成可在浏览器执行的版本，测试核对两端规则一致。
+
+示例和历史在 `jcalendar.demo.state.v1`，草稿在 `jcalendar.demo.draft.v1`；不会清空其他浏览器数据。没有可用存储时在内存中工作，刷新会重置并明确提示。页面 CSP 禁止网络连接，设备信息是模拟状态，生产 `remote/public` 与实际 API 行为不变。
+
+修改演示逻辑运行 `cd remote && node --test` 和 `npm run build:demo`，再在桌面／手机尺寸测试保存、刷新保留和恢复示例。发布在 main push 或手动 dispatch 时执行；新固件 Release 包不随网页演示变更自动重发。
