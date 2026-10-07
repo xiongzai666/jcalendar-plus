@@ -38,3 +38,11 @@ test('diagnostic whitelist rejects secrets, arbitrary labels, ids and configurat
   assert.doesNotMatch(JSON.stringify(result),/secret|unique|example|姓名/);
   assert.equal(flow.safeDiagnostic({device:{runtime:{firmware:'token secret'}}}).firmware,'未知');
 });
+test('diagnostic firmware whitelist preserves known releases and rejects unbounded or personal suffixes',()=>{
+  for (const firmware of ['2.5.6','2.5.6-radar','2.5.6-radar-validation','2.5.6-radar-minutely-validation','2.3.1-rc.1']) {
+    assert.equal(flow.safeDiagnostic({device:{runtime:{firmware}}}).firmware,firmware);
+  }
+  for (const firmware of ['2.5.6-person-123','2.5.6-radar-personal-id','2.5.6-rc.1234','1234.5.6','2.1234.6','2.5.1234','2.5.6+123','2.5.6-radar\n']) {
+    assert.equal(flow.safeDiagnostic({device:{runtime:{firmware}}}).firmware,'未知');
+  }
+});

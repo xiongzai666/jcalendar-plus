@@ -33,7 +33,7 @@ export function safeDiagnostic({revision,dirty=false,device}={}) {
   const time=value=>Number.isFinite(Date.parse(value))?new Date(value).toISOString():'未知';
   const runtime=device?.runtime;
   return {format:1,cloudRevision:integer(revision),deviceRevision:integer(device?.reportedRevision ?? device?.appliedRevision),
-    reportTime:time(device?.seenAt),firmware:/^\d+\.\d+\.\d+(?:[-+]\d+)?$/.test(runtime?.firmware)?runtime.firmware:'未知',driver:'未知',
+    reportTime:time(device?.seenAt),firmware:/^\d{1,3}\.\d{1,3}\.\d{1,3}(?:-(?:radar(?:-(?:minutely-)?validation)?|rc\.\d{1,3}))?(?![\s\S])/.test(runtime?.firmware)?runtime.firmware:'未知',driver:'未知',
     lastPage:[0,1,2,3].includes(runtime?.activePage)?runtime.activePage:'未知',runtimeReportTime:time(runtime?.reportedAt),
     lastError:['wifi','connect','auth','service','data','storage','config','time','ack'].includes(device?.lastFailure?.code)?device.lastFailure.code:'未知',
     hasLocalDraft:!!dirty,physicalDisplay:'未确认'};
