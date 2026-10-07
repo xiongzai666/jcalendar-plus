@@ -4,6 +4,8 @@
 
 **当前公开预发布版：2.3.0。** 面向经典 ESP32、4 MB Flash、400 × 300 三色屏。原项目基础功能、驱动及作者信息保留于 [NOTICE](NOTICE.md)；许可证原文见 [LICENSE](LICENSE)。
 
+本地源码为 **2.3.1-rc.1 候选**，未公开发布、未部署、未刷机；当前下载仍为 v2.3.0。候选编译与实机待验边界见 [验收记录](docs/RELEASE_ACCEPTANCE.md)。
+
 ## 能做什么
 
 - 四页显示：课程＋倒计时、日间周课表、月历、待办；支持实体按键切页与深睡眠唤醒。
@@ -70,6 +72,7 @@ npm run dev
 - [使用与刷新逻辑](docs/USAGE.md)
 - [硬件／接线](docs/HARDWARE.md) · [刷机](docs/FLASHING.md)
 - [手机网页与云端部署](docs/DEPLOYMENT.md)
+- [公开候选构建与实机验收](docs/RELEASE_ACCEPTANCE.md)
 - [配置格式和模板](examples/README.md)
 - [故障排查](docs/TROUBLESHOOTING.md)
 - [维护](MAINTENANCE.md) · [版本变化](CHANGELOG.md)

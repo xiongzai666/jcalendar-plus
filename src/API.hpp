@@ -6,7 +6,7 @@
 #include <ArduinoJson.h>
 #include <esp_http_client.h>
 
-#include <ArduinoUZlib.h> // 解压gzip
+#include "bounded_gzip.h"
 #include <_preference.h>
 #include <qweather_v1.h>
 #include "network_budget.h"
@@ -83,6 +83,8 @@ private:
     String coordinates;
     String coordinateSource;
     bool locationAttempted = false;
+    const std::atomic<bool>* cancellation = nullptr;
+    bool cancelled() const { return cancellation && cancellation->load(); }
 
     bool getQWeather(const char* host, const char* key, const String& path, callback cb) {
         return getRestfulAPI("https://" + String(host) + path, cb, [this, key]() {
@@ -149,6 +151,7 @@ private:
         JsonDocument doc;
 
         for (uint8_t i = 0; i < MAX_RETRY; i++) {
+            if (cancelled()) return false;
             if (!configureNetworkTimeouts(http, wifiClient)) return false;
             bool shouldRetry = false;
             responseDate = "";
@@ -157,6 +160,7 @@ private:
                 if (pre) pre();
                 // Serial.printf("Before GET\n");
                 int httpCode = http.GET();
+                if (cancelled()) { http.end(); return false; }
                 // Serial.printf("GET %d\n", httpCode);
                 if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_NOT_MODIFIED) {
                     bool isGzip = false;
@@ -172,15 +176,14 @@ private:
                     }
                     String s;
                     if (!readBoundedBody(http, s, 32768)) { http.end(); return false; }
+                    if (cancelled()) { http.end(); return false; }
                     DeserializationError error;
                     if (isGzip) {
-                        // gzip解压缩
-                        uint8_t* outBuf = NULL;
-                        uint32_t outLen = 0;
-                        ArduinoUZlib::decompress((uint8_t*)s.c_str(), (uint32_t)s.length(), outBuf, outLen);
-                        if (!outBuf || outLen > 65536) { free(outBuf); http.end(); return false; }
-                        error = deserializeJson(doc, (char*)outBuf, outLen);
-                        free(outBuf);
+                        GzipBuffer decoded;
+                        if (!decodeGzipBounded(reinterpret_cast<const uint8_t*>(s.c_str()),s.length(),65536,decoded) || cancelled()) {
+                            http.end(); return false;
+                        }
+                        error = deserializeJson(doc, decoded.data, decoded.size);
                     } else {
                         error = deserializeJson(doc, s);
                     }
@@ -191,7 +194,7 @@ private:
                             responseDate = timestamp;
                         wifiClient.flush();
                         http.end();
-                        return cb(doc);
+                        return !cancelled() && cb(doc);
                     } else {
                         Serial.print(F("Parse JSON failed, error: "));
                         Serial.println(error.c_str());
@@ -214,13 +217,18 @@ private:
             if (!shouldRetry) break;
             if (!wakeNetworkBudget().canRequest(millis() + 5000)) break;
             Serial.println(F("Retry after 5 seconds"));
-            delay(5000);
+            const uint32_t retryStarted = millis();
+            while (millis() - retryStarted < 5000) {
+                if (cancelled() || !wakeNetworkBudget().remaining(millis())) return false;
+                delay(50);
+            }
         }
         return false;
     }
 
 public:
-    API() {
+    explicit API(const std::atomic<bool>* flag = nullptr) : cancellation(flag) {
+        wifiClient.setCancellation(flag);
         // http.setTimeout(10000);
         http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
         const char* headerKeys[] = {"Content-Encoding", "Date"};

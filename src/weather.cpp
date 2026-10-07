@@ -2,6 +2,7 @@
 
 #include <_preference.h>
 #include "weather_cache_core.h"
+#include "task_start_core.h"
 
 TaskHandle_t WEATHER_HANDLER;
 
@@ -9,7 +10,8 @@ String _qweather_host;
 String _qweather_key;
 String _qweather_loc;
 
-int8_t _weather_status = -1;
+std::atomic<int8_t> _weather_status(-1);
+std::atomic<bool> _weather_cancel(false);
 int8_t _weather_type = -1;
 bool _weather_fallback = false;
 Weather _weather_now = {};
@@ -147,13 +149,13 @@ void task_weather(void* param) {
     Serial.println("[Task] get weather begin...");
     runOwnedTask([]() -> int {
     loadCache();
-    API<1> api;
+    API<1> api(&_weather_cancel);
     DailyWeather fetchedDays[3] = {};
     DailyForecast fetchedDaily = {.weather = fetchedDays, .length = 3};
     Weather fetchedNow = {};
     const bool dailySuccess = api.getForecastDaily(fetchedDaily, _qweather_host.c_str(),
         _qweather_key.c_str(), _qweather_loc.c_str());
-    const bool nowSuccess = _weather_type == 1 && api.getWeatherNow(fetchedNow,
+    const bool nowSuccess = !_weather_cancel.load() && _weather_type == 1 && api.getWeatherNow(fetchedNow,
         _qweather_host.c_str(), _qweather_key.c_str(), _qweather_loc.c_str());
     cached.dailyFailed = !dailySuccess;
     cached.nowFailed = _weather_type == 1 && !nowSuccess;
@@ -183,12 +185,16 @@ void task_weather(void* param) {
     saveWeatherCache();
     return any ? 1 : 2;
     }, [](int status) {
+        WEATHER_HANDLER = NULL;
         _weather_status = status;
         Serial.println("[Task] get weather end...");
-        WEATHER_HANDLER = NULL;
     }, []() { vTaskDelete(NULL); });
 }
 void weather_exec(int status) {
+    if (WEATHER_HANDLER) {
+        if (status > 0) _weather_cancel.store(true);
+        return;
+    }
     if (status > 0 || !WiFi.isConnected()) {
         weather_restore_cached();
         cached.nowFailed = cached.dailyFailed = true;
@@ -202,12 +208,13 @@ void weather_exec(int status) {
     _qweather_key = pref.getString(PREF_QWEATHER_KEY, "");
     _qweather_loc = pref.getString(PREF_QWEATHER_LOC, ""); pref.end();
     if (_qweather_key.isEmpty() || _qweather_loc.isEmpty()) { _weather_status = 3; return; }
-    if (WEATHER_HANDLER) { vTaskDelete(WEATHER_HANDLER); WEATHER_HANDLER = NULL; }
-    _weather_status = 0;
-    if (xTaskCreate(task_weather, "WeatherData", 1024 * 8, NULL, 2, &WEATHER_HANDLER) != pdPASS)
+    _weather_cancel.store(false);
+    if (!startTaskIfIdle([](TaskHandle_t* handle) {
+        return xTaskCreate(task_weather, "WeatherData", 1024 * 8, NULL, 2, handle) == pdPASS;
+    }, WEATHER_HANDLER, _weather_status))
         weather_exec(2);
 }
 void weather_stop() {
-    if (WEATHER_HANDLER) { vTaskDelete(WEATHER_HANDLER); WEATHER_HANDLER = NULL; }
-    weather_exec(2);
+    if (WEATHER_HANDLER) _weather_cancel.store(true);
+    else weather_exec(2);
 }

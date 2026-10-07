@@ -1,0 +1,7 @@
+{
+  "name": "BoundedUZlib",
+  "version": "1.0.0",
+  "description": "Project prefixed uzlib decoder with explicit symbol error bounds",
+  "frameworks": "arduino",
+  "platforms": "espressif32"
+}

@@ -8,6 +8,8 @@
 
 `lib/GxEPD2` 为随上游工程保存的驱动代码，保留目录内原有许可证／作者信息。PlatformIO 拉取的 U8g2、ArduinoJson、WiFiManager、OneButton、nongli、ArduinoUZlib、RX8010SJ，以及 npm 依赖，分别保留各自授权；项目 LICENSE 不替代其授权。
 
+`lib/BoundedUZlib` 为 ArduinoUZlib 固定提交 `20aff95cd80c141f80bdbf66895409a0046d2c2f` 中 tinf/uzlib 解码器的受限改版，源文件保留 Joergen Ibsen 与 Paul Sokolovsky 的版权和许可证。新增错误边界和符号前缀、改版来源及用途见 [库说明](lib/BoundedUZlib/README.md)；不能将其表述为原创解码器或已完成全部第三方授权核查。
+
 `assets/img` 中的三张硬件／刷机参考图沿用原项目，按来源注明；不包含维护者私人设备照片、赞助码或联系方式。附带的字形数据和可选字体生成脚本仍需按所用字体的授权处理。
 
 ## 许可证和未完成的核查

@@ -8,6 +8,9 @@ struct Clock { static uint32_t stamp; static uint32_t now() { return stamp; } };
 uint32_t Clock::stamp = 0;
 struct Transport {
     bool open = true; uint32_t timeout = 5000; uint32_t nextByte = 4000;
+    int connections = 0;
+    virtual int connect(const char*, uint16_t) { ++connections; return 1; }
+    virtual int connect(const char*, uint16_t, int32_t) { ++connections; return 1; }
     virtual int available() { return open && Clock::stamp >= nextByte; }
     virtual uint8_t connected() { return open; }
     virtual int read() { if (!available()) return -1; nextByte += 4000; return 'a'; }
@@ -35,5 +38,15 @@ int main() {
     }
     assert(Clock::stamp <= 75001 && header.size() == 18);
     assert(!client.connected() && client.timeout == 0 && client.write(uint8_t('x')) == 0);
+    assert(client.connect("fixture.example",443,5000) == 0 && client.connections == 0);
+    assert(client.connect("fixture.example",443) == 0 && client.connections == 0);
+    budget.begin(0,75000); Clock::stamp=1;
+    DeadlineClient<Transport,Clock> cancellable(budget);
+    std::atomic<bool> cancellation(false);
+    cancellable.setCancellation(&cancellation);
+    assert(cancellable.connect("fixture.example",443,1000) == 1);
+    cancellation.store(true);
+    assert(!cancellable.connected() && cancellable.read() == -1);
+    assert(cancellable.connect("fixture.example",443,1000) == 0 && cancellable.connections == 1);
     puts("HTTP headers: slow trickle stops at shared deadline and Stream wait is disabled");
 }

@@ -34,7 +34,17 @@ struct NetworkClock { static uint32_t now() { return millis(); } };
 class SecureTransport : public WiFiClientSecure {
     bool dnsCandidates = false;
 protected:
-    virtual bool resolvePrimaryAddress(const char* host,IPAddress& address) { return WiFi.hostByName(host,address); }
+    bool prepareConnection(int32_t requested) {
+        const auto limits=blockingTransportLimits(wakeNetworkBudget(),millis(),requested);
+        if(!limits.allowed)return false;
+        _timeout=limits.connectMs;setHandshakeTimeout(limits.handshakeSeconds);return true;
+    }
+    virtual bool resolvePrimaryAddress(const char* host,IPAddress& address) {
+        if(address.fromString(host))return true;
+        DnsCandidates candidates;
+        if(!resolveDnsCandidates(host,candidates)||!candidates.count)return false;
+        address=IPAddress(candidates.address[0]);return true;
+    }
 public:
     void enableDnsCandidates() { dnsCandidates=true; }
     void disableReadWait() { Stream::setTimeout(0); }
@@ -44,20 +54,21 @@ public:
         if(!dnsCandidates)return WiFiClientSecure::connect(host,port,timeout);
         auto& preferred=preferredRemoteAddress();
         if(preferred.matches(host,port,millis())&&budget.canRequest(millis())) {
-            _timeout=timeout;
+            if(!prepareConnection(timeout))return 0;
             const IPAddress ip(preferred.address);
             if(WiFiClientSecure::connect(ip,port,host,_CA_cert,_cert,_private_key))return 1;
             preferred.lifetime=0;
         }
         if(!budget.canRequest(millis()))return 0;
-        IPAddress primary;_timeout=timeout;
-        if(resolvePrimaryAddress(host,primary)&&WiFiClientSecure::connect(primary,port,host,_CA_cert,_cert,_private_key))return 1;
+        IPAddress primary;
+        if(resolvePrimaryAddress(host,primary)&&prepareConnection(timeout)&&
+            WiFiClientSecure::connect(primary,port,host,_CA_cert,_cert,_private_key))return 1;
         DnsCandidates candidates;
         if(!resolveDnsCandidates(host,candidates))return 0;
         unsigned tried=0;
         for(unsigned i=0;i<candidates.count&&tried<2&&budget.canRequest(millis());++i) {
             const IPAddress ip(candidates.address[i]);if(ip==primary)continue;
-            ++tried;_timeout=budget.phaseTimeout(millis());setHandshakeTimeout(_timeout/1000);
+            ++tried;if(!prepareConnection(timeout))break;
             Serial.printf("Remote same-host DNS fallback: %s\n",ip.toString().c_str());
             if(WiFiClientSecure::connect(ip,port,host,_CA_cert,_cert,_private_key)) {
                 preferred.remember(host,port,candidates.address[i],millis(),candidates.ttl);return 1;
@@ -68,7 +79,7 @@ public:
 };
 class BudgetSecureClient : public DeadlineClient<SecureTransport,NetworkClock> {
 public:
-    BudgetSecureClient() : DeadlineClient(wakeNetworkBudget()) {}
+    BudgetSecureClient() : DeadlineClient(wakeNetworkBudget()) { enableDnsCandidates(); }
 };
 inline bool configureNetworkTimeouts(HTTPClient& http, WiFiClientSecure& client) {
     const auto& budget = wakeNetworkBudget();

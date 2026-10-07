@@ -29,6 +29,15 @@ export async function buildDemo(output=join(remote,'.demo-dist')){
   app=app.replaceAll('saved = result.state; cloudRevision = saved.revision; stateEpoch++;', 'saved = result.state; device = result.device ?? device; cloudRevision = saved.revision; stateEpoch++;');
   app=app.replace("if (editsPending()) { event.preventDefault(); event.returnValue = ''; }", "if (!document.documentElement.dataset.demoReset && editsPending()) { event.preventDefault(); event.returnValue = ''; }");
   await writeFile(join(output,'app.js'),app);
+  const productPath=join(output,'product-flow.js');
+  let product=await readFile(productPath,'utf8');
+  product=product.replaceAll('保存到云端','保存到当前浏览器').replaceAll('云端','当前浏览器')
+    .replaceAll('短按设备上键同步配置，再重新检查。','演示修改仅在当前浏览器生效。')
+    .replaceAll('短按设备上键检查；离线原因尚未知。','演示不会检查真实设备；当前显示为模拟状态。')
+    .replaceAll('请核对实物屏幕；版本回报不能证明物理显示。','这是模拟回报，演示不会连接实物屏幕。')
+    .replaceAll('替换模板并保存本人配置，再核对设备。','修改示例并保存到当前浏览器。')
+    .replaceAll('设备','模拟设备');
+  await writeFile(productPath,product);
   await writeFile(join(output,'.nojekyll'),'');
   await writeFile(join(output,'package.json'),'{"type":"module"}\n');
   // Validate every generated module and local import before upload.

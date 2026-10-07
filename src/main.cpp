@@ -26,6 +26,7 @@
 #include "remote_retry.h"
 #include "date_overrides.h"
 #include "page_navigation_core.h"
+#include "task_start_core.h"
 
 #include "version.h"
 
@@ -447,7 +448,7 @@ void loop() {
     // 获取Weather信息
     // Today's cache needs a valid date. A hard reset can leave the clock at
     // 1970 until SNTP finishes, so do not reject a good cache too early.
-    if (weather_status() == -1 && _sntp_status() > 0 &&
+    if (weatherStartAllowed(weather_status(),_sntp_status(),wm.getConfigPortalActive(),_portal_screen_visible) &&
         (!_retry_wake_this_boot || remoteChecked)) {
         weather_exec();
     }
@@ -611,6 +612,12 @@ void buttonDoubleClick(void* oneButton) {
 
     if (weather_status() == 0) {
         weather_stop();
+        const uint32_t cancelledAt = millis();
+        while (weather_status() == 0 && millis() - cancelledAt < 10000) delay(50);
+        if (weather_status() == 0) {
+            Serial.println("Weather cleanup pending; config portal opening deferred.");
+            return;
+        }
     }
     const unsigned long waitStarted = millis();
     while (si_screen_status() == 0 && millis() - waitStarted < 30000) delay(50);

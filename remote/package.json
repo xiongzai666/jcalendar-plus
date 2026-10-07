@@ -7,7 +7,8 @@
     "dev": "node dev-server.js",
     "test": "node --test",
     "prepare:secrets": "node tools/prepare-secrets.mjs",
-    "build:demo": "node tools/build-demo.mjs"
+    "build:demo": "node tools/build-demo.mjs",
+    "build:candidate": "node tools/build-candidate.mjs"
   },
   "dependencies": {
     "@edgeone/pages-blob": "0.0.18"

@@ -34,11 +34,24 @@ if not cpp:
 compiler = [cpp, 'c++'] if Path(cpp).stem == 'zig' else [cpp]
 with tempfile.TemporaryDirectory(prefix='jcalendar-verify-') as directory:
     tests = ['lesson_clock', 'schedule_optimization', 'effective_schedule', 'weather_cache',
-             'calendar_override', 'display_policy', 'custom_date', 'bounded_string', 'remote_contract', 'network_budget', 'http_body', 'deadline_client', 'dns_candidates', 'owned_task', 'qweather_v1', 'public_defaults']
+             'calendar_override', 'display_policy', 'custom_date', 'bounded_string', 'remote_contract', 'network_budget', 'http_body', 'deadline_client', 'dns_candidates', 'owned_task', 'task_start', 'bounded_gzip', 'qweather_v1', 'public_defaults']
     for name in tests:
         binary = Path(directory) / (name + ('.exe' if os.name == 'nt' else ''))
+        extra = []
+        if name == 'bounded_gzip':
+            uzlib = ROOT / 'lib/BoundedUZlib/src'
+            extra.append('-I' + str(uzlib))
+            ccompiler = [cpp, 'cc'] if Path(cpp).stem == 'zig' else [cpp, '-x', 'c']
+            for source in ['tinflate', 'tinfgzip', 'crc32', 'adler32']:
+                obj = Path(directory) / (source + '.o')
+                run(ccompiler + ['-std=c99', '-I' + str(uzlib), '-c', uzlib / ('bounded_' + source + '.c'), '-o', obj])
+                extra.append(obj)
+            symbols = Path(directory) / ('gzip_symbols.exe' if os.name == 'nt' else 'gzip_symbols')
+            run(ccompiler + ['-std=c99', '-I' + str(uzlib), 'test/gzip_symbols_host.c',
+                '-x', 'none', Path(directory) / 'crc32.o', Path(directory) / 'adler32.o', '-o', symbols])
+            run([symbols])
         run(compiler + ['-std=c++11', '-Iinclude', f'-I.pio/libdeps/{args.environment}/ArduinoJson/src',
-                        f'test/{name}_host.cpp', '-o', binary])
+                        f'test/{name}_host.cpp'] + extra + ['-o', binary])
         run([binary] + (['test/fixtures/remote-config.json'] if name == 'remote_contract' else []))
 
 firmware = ROOT / f'.pio/build/{args.environment}/firmware.bin'

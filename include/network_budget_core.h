@@ -17,3 +17,17 @@ struct NetworkBudget {
         return remaining(now) && existing <= limit && addition <= limit - existing;
     }
 };
+struct BlockingTransportLimits {
+    bool allowed = false;
+    uint32_t connectMs = 0, handshakeSeconds = 0;
+};
+inline BlockingTransportLimits blockingTransportLimits(const NetworkBudget& budget, uint32_t now, int32_t requested) {
+    BlockingTransportLimits out;
+    if (!budget.canRequest(now)) return out;
+    const uint32_t slice = budget.phaseTimeout(now);
+    out.connectMs = requested > 0 && uint32_t(requested) < slice ? uint32_t(requested) : slice;
+    out.handshakeSeconds = out.connectMs / 1000;
+    if (!out.handshakeSeconds) out.handshakeSeconds = 1;
+    out.allowed = out.connectMs + out.handshakeSeconds * 1000 <= budget.remaining(now);
+    return out;
+}
