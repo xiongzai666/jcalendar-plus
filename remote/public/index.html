@@ -22,6 +22,16 @@
       <button id="sign-out" class="text-button" type="button" hidden>退出</button>
     </header>
 
+    <details class="first-use-guide">
+      <summary>第一次使用：选择配置路径</summary>
+      <h2>仅在设备本机使用</h2>
+      <ol><li>按屏幕型号与丝印选择驱动；查看发布记录的实机验证范围。</li><li>先短按黑色上键唤醒；等待刷新完成，长按约 5 秒松开进入热点，使用屏幕显示的随机 12 位密码。</li><li>连接热点后打开 http://192.168.4.1，填写自己的网络与天气参数并保存，核对四页实物。</li></ol>
+      <p>无需部署远程服务即可继续使用。墨水屏刷新期间请等待。</p>
+      <h2>启用手机远程配置</h2>
+      <ol><li>部署自己的 HTTPS 服务，校验环境变量、实际产物及 Blob 持久化。健康接口只证明服务存活。</li><li>用管理密码登录本站。设备原文 Token 填设备，服务端存其哈希；公开根证书用于 HTTPS 校验。</li><li>替换模板，保存一次本人配置；短按设备上键同步。</li><li>核对云端与设备回报版本，再核对实物。备份入口在“设置”。</li></ol>
+      <p>管理密码、设备 Token、热点密码各有用途，请勿放进截图或诊断摘要。</p>
+    </details>
+
     <section id="login-view" class="login-view" aria-labelledby="login-title">
       <div class="login-illustration" aria-hidden="true">
         <div class="mini-screen"><b>09<span>月</span>26<span>日</span></b><span>下一项 · 午休 12:40</span></div>
@@ -40,7 +50,7 @@
     <div id="workspace" hidden>
       <section class="status-panel" aria-live="polite">
         <div>
-          <span class="eyebrow">设备连接</span>
+
           <strong id="sync-headline">读取中…</strong>
           <p id="sync-detail">正在检查云端版本</p>
           <p id="sync-network"></p>
@@ -53,12 +63,18 @@
         <ol id="sync-log-list"></ol>
         <p>设备离线时无法实时上报失败原因；恢复联网后会补报最近一次故障和连续失败次数。</p>
       </details>
+      <details id="diagnostic-details" class="sync-log">
+        <summary>脱敏诊断摘要</summary>
+        <p>只含现有版本、报告时间、错误类别和草稿状态。驱动未上报时为未知；不含配置内容或凭据。</p>
+        <button id="copy-diagnostic" class="secondary-button" type="button">复制脱敏摘要</button>
+        <pre id="diagnostic-output" tabindex="0"></pre>
+      </details>
       <p id="draft-notice" class="sync-diagnostic" role="status" hidden></p>
       <details class="sync-log"><summary>设备运行摘要</summary><div id="runtime-summary"></div><p>以下为设备上次联网时的报告；读取时间是获取天气的时间，预计联网时间可能随手动唤醒或后续刷新调整。</p></details>
       <button id="rebase-draft" class="secondary-button" type="button" hidden>核对云端新版本</button>
 
       <div class="page-heading">
-        <div><span class="eyebrow">控制台</span><h1 id="page-title">待办事项</h1></div>
+        <div><h1 id="page-title">待办事项</h1></div>
         <span id="draft-status" class="draft-status" hidden>有未保存的修改</span>
       </div>
 
@@ -80,6 +96,7 @@
           <label class="field"><span>优先级</span><select id="todo-priority"><option value="normal">普通</option><option value="high">重要</option></select></label>
           <button class="secondary-button add-button" type="submit">添加待办</button>
         </form>
+        <p id="todo-capacity" class="override-intro"></p>
         <div id="todo-list" class="todo-list"></div>
       </section>
 

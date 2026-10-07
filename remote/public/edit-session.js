@@ -15,25 +15,40 @@ const draftShape = value => object(value) && value.schema === 1 && Number.isInte
   Array.isArray(value.todos) && value.todos.length <= 30 && value.todos.every(todo => object(todo) &&
     typeof todo.id === 'string' && typeof todo.title === 'string' && typeof todo.due === 'string' &&
     typeof todo.done === 'boolean' && ['normal','high'].includes(todo.priority));
+const cleanTodoEdit = value => object(value) && typeof value.id === 'string' &&
+  typeof value.title === 'string' && typeof value.due === 'string' && ['normal','high'].includes(value.priority) ?
+  {id:value.id,title:value.title,due:value.due,priority:value.priority} : null;
 export class DraftJournal {
-  constructor(storage) { this.storage = storage; this.key = 'jcalendar.draft.v1'; }
-  save(base, draft) {
+  constructor(storage) {
+    this.storage = storage; this.key = 'jcalendar.draft.v1';
+    this.memory = null; this.loaded = false; this.persistent = false;
+  }
+  save(base, draft, todoEdit = null) {
+    this.loaded = true;
+    this.memory = !todoEdit && equal(base.settings, draft.settings) && equal(base.todos, draft.todos) ? null :
+      { version: 1, savedAt: Date.now(), base: cleanState(base), draft: cleanState(draft), todoEdit: cleanTodoEdit(todoEdit) };
     try {
-      if (equal(base.settings, draft.settings) && equal(base.todos, draft.todos)) {
-        this.storage.removeItem(this.key); return true;
-      }
-      this.storage.setItem(this.key, JSON.stringify({ version: 1, savedAt: Date.now(),
-        base: cleanState(base), draft: cleanState(draft) })); return true;
-    } catch { return false; }
+      if (this.memory) this.storage.setItem(this.key, JSON.stringify(this.memory));
+      else this.storage.removeItem(this.key);
+      this.persistent = true; return true;
+    } catch { this.persistent = false; return false; }
   }
   read() {
+    if (this.loaded) return copy(this.memory);
+    this.loaded = true;
     try {
       const record = JSON.parse(this.storage.getItem(this.key));
       if (record?.version !== 1 || ![record.base, record.draft].every(draftShape)) return null;
-      return record;
+      this.memory = { version: 1, savedAt: record.savedAt,
+        base: cleanState(record.base), draft: cleanState(record.draft), todoEdit: cleanTodoEdit(record.todoEdit) };
+      this.persistent = true; return copy(this.memory);
     } catch { return null; }
   }
-  clear() { try { this.storage.removeItem(this.key); } catch { /* Editing remains usable. */ } }
+  clear() {
+    this.memory = null; this.loaded = true;
+    try { this.storage.removeItem(this.key); this.persistent = true; }
+    catch { this.persistent = false; }
+  }
 }
 // Conflicts are deliberately returned to the UI for explicit approval. Local
 // edits win only after that approval; polling never calls this function.

@@ -1,8 +1,9 @@
+import { TodoEditSession, orderedTodos, syncResult, safeDiagnostic } from './product-flow.js';
 import { getOverrideReview } from './override-review.js';
 import { planHolidayRange } from './holiday-range.js';
 import { exportConfig, importConfig } from './config-transfer.js';
 import { applyWeekday, effectiveSubjects } from './effective-day.js';
-import { DraftJournal, mergeDraft, acceptSave, deviceStatus, requestJSON, StatusChecker } from './edit-session.js';
+import { DraftJournal, mergeDraft, acceptSave, requestJSON, StatusChecker } from './edit-session.js';
 
 const $ = selector => document.querySelector(selector);
 const DAYS = ['一', '二', '三', '四', '五', '六'];
@@ -23,6 +24,7 @@ let dayIndex = 0;
 let activeTab = 'todos';
 let toastTimer;
 let historyVersions = [];
+const todoEditor = new TodoEditSession();
 
 let draftStorage;
 try { draftStorage = localStorage; } catch { /* Private browsing can disable storage. */ }
@@ -34,10 +36,11 @@ async function api(path, options = {}) {
   try { return await requestJSON(path, options); }
   catch (cause) {
     if (cause.status === 401 && path.startsWith('/api/admin/')) {
-      if (saved && draft) journal.save(saved, draft);
+      const pending = editsPending();
+      const persisted = saved && draft ? journal.save(saved, draft, todoEditor.value) : journal.persistent;
       $('#workspace').hidden = true;
       $('#login-view').hidden = false;
-      $('#login-error').textContent = '登录已过期，请重新登录；未保存修改已保留。';
+      $('#login-error').textContent = '登录已过期，请重新登录。' + (pending ? persisted ? '未保存修改已保留在这台手机。' : '修改暂存于当前页面；请勿刷新或关闭，重新登录后可以继续编辑。' : '');
       $('#login-error').hidden = false;
       $('#save-bar').hidden = true;
     }
@@ -57,7 +60,7 @@ function updateDraftNotice(message = '') {
   $('#rebase-draft').hidden = !conflict;
 }
 function editsPending() {
-  return saved && draft && JSON.stringify({ settings: saved.settings, todos: saved.todos }) !==
+  return !!todoEditor.value || saved && draft && JSON.stringify({ settings: saved.settings, todos: saved.todos }) !==
     JSON.stringify({ settings: draft.settings, todos: draft.todos });
 }
 
@@ -123,42 +126,28 @@ function todoDueLabel(todo) {
 
 function markDirty() {
   const dirty = editsPending();
-  if (saved && draft && !journal.save(saved, draft) && !draftStorageWarned) {
-    draftStorageWarned = true; toast('浏览器无法保存本机草稿，请在离开页面前保存到云端');
+  if (saved && draft && !journal.save(saved, draft, todoEditor.value) && !draftStorageWarned) {
+    draftStorageWarned = true; toast('浏览器无法持久保存草稿；修改暂存于当前页面，请勿刷新或关闭，离开前请保存到云端');
   }
   const overrideChanged = saved && JSON.stringify(draft.settings.dateOverrides || []) !==
     JSON.stringify(saved.settings.dateOverrides || []);
   $('#save-bar').hidden = !dirty;
   $('#draft-status').hidden = !dirty;
-  $('#save-bar strong').textContent = overrideChanged ? '临时安排尚未保存' : '修改尚未保存';
+  $('#save-bar strong').textContent = todoEditor.value ? '待办编辑尚未应用' : overrideChanged ? '临时安排尚未保存' : '修改尚未保存';
   $('#save').textContent = overrideChanged && activeTab !== 'overrides' ? '核对临时安排' : '保存到云端';
+  renderStatus();
 }
 
 function renderStatus() {
-  const applied = device?.reportedRevision ?? device?.appliedRevision ?? 0;
-  const revision = cloudRevision;
-  const seenAt = device?.seenAt ? Date.parse(device.seenAt) : NaN;
-  const stale = Number.isFinite(seenAt) && Date.now() - seenAt > 4 * 60 * 60 * 1000;
-  const recentlyChecked = Number.isFinite(seenAt) && saved?.updatedAt &&
-    seenAt >= Date.parse(saved.updatedAt);
-  $('#sync-headline').textContent = !device ? '设备尚未报告同步' :
-    stale ? '设备超过 4 小时未连接' :
-    deviceStatus(device, revision) === 'current' ? '设备已同步最新配置' :
-    recentlyChecked ? '设备已连接，配置尚未确认' : '已保存，等待设备联网';
-  const seen = device?.seenAt ? new Date(device.seenAt).toLocaleString('zh-CN', { hour12: false }) : '暂无';
-  const network = device?.lastNetwork === 'backup' ? '备用 Wi‑Fi' :
-    device?.lastNetwork === 'primary' ? '主 Wi‑Fi' : '未知网络';
-  $('#sync-detail').textContent = `云端版本 ${revision} · 设备版本 ${applied}`;
-  $('#sync-network').textContent = `最近连接 ${seen} · ${network}`;
-  const note = $('#sync-diagnostic');
-  const lastFailure = device?.lastFailure;
-  const recentRecovery = lastFailure?.recoveredAt &&
-    Date.now() - Date.parse(lastFailure.recoveredAt) < 24 * 60 * 60 * 1000;
-  note.textContent = stale ? '设备离线期间无法回报原因；可短按上键手动检查。' :
-    recentlyChecked && applied < revision ? '设备已联网但未确认新配置，查看下方同步记录。' :
-    recentRecovery ? `上次故障已恢复：连续 ${lastFailure.count} 次失败，最后原因是${FAILURE_LABELS[lastFailure.code] || '未知原因'}。` : '';
-  note.hidden = !note.textContent;
+  const result = syncResult({saved,revision:cloudRevision,device,dirty:editsPending()});
+  $('#sync-headline').textContent = result.headline;
+  $('#sync-detail').textContent = result.detail;
+  $('#sync-network').textContent = result.evidence;
+  $('#sync-diagnostic').textContent = result.action;
+  $('#sync-diagnostic').hidden = false;
   renderSyncLog(); renderRuntimeSummary();
+  const diagnostic = $('#diagnostic-output');
+  if (diagnostic && !$('#diagnostic-details').hidden) diagnostic.textContent = JSON.stringify(safeDiagnostic({revision:cloudRevision,dirty:editsPending(),device}),null,2);
 }
 
 function renderRuntimeSummary() {
@@ -170,7 +159,7 @@ function renderRuntimeSummary() {
     ['固件版本', runtime.firmware],
     ['实况读取', `${stamp(runtime.nowReadAt)}${runtime.nowFailed ? ' · 最近获取失败' : ''}`],
     ['日预报读取', `${stamp(runtime.dailyReadAt)}${runtime.dailyFailed ? ' · 最近获取失败' : ''}`],
-    ['预计联网', stamp(runtime.nextNetworkAt)],
+    ['上次报告的预计联网', `${stamp(runtime.nextNetworkAt)}${runtime.nextNetworkAt && runtime.nextNetworkAt * 1000 <= Date.now() ? ' · 时间已过，待新报告确认' : ''}`],
     ['上次所在页面', ['月历','日间周课表','课程与倒计时','待办事项'][runtime.activePage]],
     ['摘要上报', new Date(runtime.reportedAt).toLocaleString('zh-CN',{hour12:false})],
   ];
@@ -189,7 +178,7 @@ function renderSyncLog() {
     const row = element('li');
     const at = element('time', '', new Date(event.at).toLocaleString('zh-CN', { hour12: false }));
     const failure = event.recovered;
-    const eventText = event.kind === 'applied' ? `已应用配置 v${event.revision}` :
+    const eventText = event.kind === 'applied' ? `设备已确认配置 v${event.revision}（不代表物理显示）` :
       event.kind === 'fetched' ? `已读取云端配置 v${event.revision}，等待设备确认` :
         `配置检查完成 · v${event.revision}`;
     const message = failure
@@ -210,42 +199,83 @@ function element(tag, className, text) {
 }
 
 function renderTodos() {
+  const focused=document.activeElement;
+  const focusId=focused?.id?.startsWith('todo-edit-') ? focused.id : null;
+  const selection=focusId ? [focused.selectionStart,focused.selectionEnd] : null;
   const list = $('#todo-list');
   list.replaceChildren();
-  $('#todo-count').textContent = `${pendingTodos()} 项待办`;
+  $('#todo-count').textContent = `${pendingTodos()} 未完成 · ${draft.todos.length}/30`;
+  $('#todo-capacity').textContent = `最多 30 条，含 ${draft.todos.filter(item=>item.done).length} 条已完成事项。${draft.todos.length >= 27 ? '接近或达到上限，可逐项删除已完成事项后继续添加。' : '未完成事项按截止日、重要程度排序；设备显示前 6 条。'}`;
   if (!draft.todos.length) {
     const empty = element('div', 'empty-state');
     empty.append(element('strong', '', '清单已清空'), element('span', '', '在上方添加一件需要记住的事。'));
     list.append(empty);
     return;
   }
-  const ordered = [...draft.todos].sort((a, b) => Number(a.done) - Number(b.done) ||
-    (a.due || '9999').localeCompare(b.due || '9999') ||
-    Number(b.priority === 'high') - Number(a.priority === 'high'));
+  const ordered = orderedTodos(draft.todos);
+  const visible = ordered.filter(todo=>!todo.done).slice(0,6).map(todo=>todo.id);
   for (const todo of ordered) {
     const row = element('div', `todo-row${todo.done ? ' done' : ''}`);
+    row.dataset.todoId = todo.id;
+    if (todoEditor.value?.id === todo.id) { renderTodoEditor(row, todo); list.append(row); continue; }
     const checkbox = element('input', 'todo-check');
     checkbox.type = 'checkbox';
     checkbox.checked = todo.done;
     checkbox.setAttribute('aria-label', `完成 ${todo.title}`);
-    checkbox.addEventListener('change', () => { todo.done = checkbox.checked; renderTodos(); markDirty(); });
+    checkbox.addEventListener('change', () => { if (!requireAppliedTodo()) { checkbox.checked=todo.done; return; } todo.done = checkbox.checked; renderTodos(); markDirty(); });
     const content = element('div', 'todo-main');
     content.append(element('div', 'todo-title', todo.title));
     const meta = element('div', 'todo-meta');
     const due = todoDueLabel(todo);
+    if (!todo.done) meta.append(element('span', 'todo-projection', visible.includes(todo.id) ? '设备前 6 条 · ' : '未进入设备前 6 条 · '));
     meta.append(element('span', `todo-due${due.urgent ? ' urgent' : ''}`, due.text));
     if (todo.priority === 'high') meta.append(element('span', 'priority', '重要'));
     content.append(meta);
+    const edit = element('button', 'remove-button', '编辑');
+    edit.type = 'button'; edit.dataset.editTodo = todo.id;
+    edit.setAttribute('aria-label', `编辑 ${todo.title}`);
+    edit.addEventListener('click', () => { if (!requireAppliedTodo()) return; todoEditor.begin(todo); renderTodos(); markDirty(); focusTodoEditor(); });
     const remove = element('button', 'remove-button', '删除');
     remove.type = 'button';
     remove.setAttribute('aria-label', `删除 ${todo.title}`);
     remove.addEventListener('click', () => {
+      if (!requireAppliedTodo()) return;
       draft.todos = draft.todos.filter(item => item.id !== todo.id);
       renderTodos(); markDirty();
     });
-    row.append(checkbox, content, remove);
+    const actions=element('div','todo-actions');actions.append(edit,remove);
+    row.append(checkbox, content, actions);
     list.append(row);
   }
+  if (focusId && todoEditor.value) {const input=$(`#${focusId}`);input?.focus();if(input && selection?.[0] !== null && input.type==='text')input.setSelectionRange(...selection);}
+}
+
+function focusTodoEditor() { $('#todo-edit-title')?.focus(); }
+function requireAppliedTodo() {
+  if (!todoEditor.value) return true;
+  toast('请先将这项编辑应用到草稿，或取消编辑。'); focusTodoEditor(); return false;
+}
+function renderTodoEditor(row, todo) {
+  row.classList.add('editing');
+  const form=element('form','todo-edit-form');
+  const fields=[['title','标题','text'],['due','截止日期','date'],['priority','重要程度','select']];
+  for (const [key,label,type] of fields) {
+    const field=element('label','field');field.append(element('span','',label));
+    const input=element(type==='select'?'select':'input');
+    input.id=`todo-edit-${key}`;
+    if (type==='select') { for (const [value,text] of [['normal','普通'],['high','重要']]) {const option=element('option','',text);option.value=value;input.append(option);} }
+    else input.type=type;
+    if (key==='title') {input.maxLength=16;input.required=true;}
+    input.value=todoEditor.value[key];
+    input.addEventListener('input',()=>{todoEditor.update(key,input.value);markDirty();});field.append(input);form.append(field);
+  }
+  const actions=element('div','todo-edit-actions');
+  const apply=element('button','secondary-button','应用到草稿');apply.type='submit';
+  const cancel=element('button','remove-button','取消');cancel.type='button';
+  const focusRow=id=>{ const button=[...document.querySelectorAll('[data-edit-todo]')].find(node=>node.dataset.editTodo===id);button?.focus();button?.scrollIntoView({block:'nearest'}); };
+  cancel.addEventListener('click',()=>{todoEditor.cancel();renderTodos();markDirty();focusRow(todo.id);});
+  form.addEventListener('submit',event=>{event.preventDefault();try {const id=todoEditor.apply(draft);renderTodos();markDirty();focusRow(id);const rank=orderedTodos(draft.todos).filter(item=>!item.done).findIndex(item=>item.id===id);toast(`已应用到草稿；${rank<0?'该项已完成，不投影到设备':rank<6?'该项进入设备前 6 条':'该项未进入设备前 6 条'}。请保存到云端。`);}catch(cause){toast(cause.message);focusTodoEditor();}});
+  actions.append(apply,cancel);form.append(actions,element('p','todo-edit-note','应用后仍需保存到云端；取消不会改变草稿。'));row.append(form);
 }
 
 function renderSchedule() {
@@ -560,6 +590,7 @@ async function restoreVersion(version, button) {
 }
 
 function switchTab(tab) {
+  if (tab !== activeTab && !requireAppliedTodo()) return;
   activeTab = tab;
   $('#page-title').textContent = TITLES[tab];
   document.querySelectorAll('.tab').forEach(button => {
@@ -576,18 +607,20 @@ function switchTab(tab) {
 
 async function load({ discard = false } = {}) {
   const payload = await api('/api/admin/state');
+  const samePage = !discard && editsPending();
+  const record = discard ? null : samePage ?
+    { base: structuredClone(saved), draft: structuredClone(draft), todoEdit: todoEditor.value } : journal.read();
   saved = payload.state;
   stateEpoch++;
   saved.settings.dateOverrides ||= [];
   $('#template-notice').hidden = saved.revision !== 0;
   cloudRevision = saved.revision;
   draft = structuredClone(saved);
-  const record = discard ? null : journal.read();
   let restored = false;
-  if (record && confirm('发现这台手机未保存的修改，是否恢复继续编辑？')) {
-    saved = record.base; draft = record.draft;
+  if (record && (samePage || confirm('发现这台手机未保存的修改，是否恢复继续编辑？'))) {
+    saved = record.base; draft = record.draft; todoEditor.value = record.todoEdit || null;
     draft.settings.dateOverrides ||= []; restored = true;
-  } else journal.clear();
+  } else { journal.clear(); todoEditor.cancel(); }
   $('#import-status').hidden = true;
   device = payload.device;
   render(); updateDraftNotice(restored && cloudRevision === saved.revision ? '已恢复本机草稿，尚未写入云端。' : '');
@@ -613,8 +646,10 @@ $('#login-form').addEventListener('submit', async event => {
 });
 
 $('#sign-out').addEventListener('click', async () => {
-  if (editsPending() && !confirm('未保存修改会保留在这台手机，确定退出吗？')) return;
-  if (saved && draft) journal.save(saved, draft);
+  if (!requireAppliedTodo()) return;
+  const persisted = saved && draft ? journal.save(saved, draft, todoEditor.value) : journal.persistent;
+  if (editsPending() && !confirm(persisted ? '未保存修改会保留在这台手机，确定退出吗？' :
+    '未保存修改仅保留在当前页面，刷新或关闭后会丢失，确定退出吗？')) return;
   await api('/api/session', { method: 'DELETE' });
   saved = draft = device = null;
   stateEpoch++;
@@ -630,6 +665,7 @@ $('#reload').addEventListener('click', async () => {
   catch (cause) { toast(cause.message); }
 });
 $('#rebase-draft').addEventListener('click', async () => {
+  if (!requireAppliedTodo()) return;
   try {
     const payload = await api('/api/admin/state');
     const merged = mergeDraft(saved, draft, payload.state);
@@ -650,7 +686,8 @@ document.querySelectorAll('.tab').forEach(button => button.addEventListener('cli
 
 $('#add-todo').addEventListener('submit', event => {
   event.preventDefault();
-  if (draft.todos.length >= 30) { toast('待办最多 30 条，请先清理已完成的事项'); return; }
+  if (!requireAppliedTodo()) return;
+  if (draft.todos.length >= 30) { toast('待办最多 30 条（含已完成事项），请逐项删除已完成事项'); return; }
   const title = $('#todo-title').value.trim();
   if (!title) return;
   draft.todos.push({
@@ -743,7 +780,7 @@ $('#export-config').addEventListener('click', () => {
   toast('已下载当前云端配置备份');
 });
 
-$('#select-import').addEventListener('click', () => $('#import-file').click());
+$('#select-import').addEventListener('click', () => { if (requireAppliedTodo()) $('#import-file').click(); });
 $('#import-file').addEventListener('change', async event => {
   const file = event.target.files?.[0];
   event.target.value = '';
@@ -770,6 +807,7 @@ $('#import-file').addEventListener('change', async event => {
 });
 
 $('#save').addEventListener('click', async () => {
+  if (!requireAppliedTodo()) return;
   if (activeTab !== 'overrides' && JSON.stringify(draft.settings.dateOverrides || []) !==
       JSON.stringify(saved.settings.dateOverrides || [])) {
     switchTab('overrides');
@@ -804,14 +842,14 @@ window.addEventListener('beforeunload', event => {
 
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && draft && !$('#workspace').hidden) {
-    renderTodos(); checkStatus().catch(cause => toast(cause.message));
+    if (!todoEditor.value) renderTodos(); checkStatus().catch(cause => toast(cause.message));
   }
 });
 function refreshTodosAtMidnight() {
   const now = new Date();
   const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
   setTimeout(() => {
-    if (draft) renderTodos();
+    if (draft && !todoEditor.value) renderTodos();
     refreshTodosAtMidnight();
   }, Math.max(1000, next.getTime() - now.getTime() + 1000));
 }
@@ -825,3 +863,10 @@ setInterval(() => {
   if (!document.hidden && draft && !$('#workspace').hidden)
     checkStatus().catch(() => { /* Keep the last report; a manual check shows errors. */ });
 }, 30000);
+
+$('#copy-diagnostic').addEventListener('click', async () => {
+  const text=JSON.stringify(safeDiagnostic({revision:cloudRevision,dirty:editsPending(),device}),null,2);
+  $('#diagnostic-output').textContent=text;
+  try { await navigator.clipboard.writeText(text); toast('已复制脱敏诊断摘要'); }
+  catch { toast('无法自动复制，请选中下方诊断摘要复制。'); }
+});
