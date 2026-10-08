@@ -19,14 +19,16 @@ def run(command, cwd=ROOT):
 node = os.environ.get('J_CALENDAR_NODE') or shutil.which('node')
 if not node:
     raise SystemExit('Node.js is required for verification')
-run([__import__('sys').executable, '-m', 'unittest', 'discover', '-s', 'test', '-p', 'test_*.py'])
-run([node, '--test'], ROOT / 'remote')
-run([node, 'tools/check-build.mjs'], ROOT / 'remote')
+# Drawing regression uses the same selected-driver font/dependency sources as firmware.
 if not args.skip_build:
     if shutil.which('uvx'):
         run(['uvx', '--from', 'platformio==6.2.0', 'platformio', 'run', '-e', args.environment])
     else:
         run([__import__('sys').executable, '-m', 'platformio', 'run', '-e', args.environment])
+os.environ['J_CALENDAR_ENVIRONMENT'] = args.environment
+run([__import__('sys').executable, '-m', 'unittest', 'discover', '-s', 'test', '-p', 'test_*.py'])
+run([node, '--test'], ROOT / 'remote')
+run([node, 'tools/check-build.mjs'], ROOT / 'remote')
 
 cpp = os.environ.get('J_CALENDAR_CXX') or shutil.which('g++')
 if not cpp:

@@ -41,6 +41,10 @@ const String nl_mon_str[] = { "", "正", "二", "三", "四", "五", "六", "七
 
 int _screen_status = -1;
 int _calendar_status = -1;
+static bool _initial_wifi_setup = false;
+void si_set_initial_wifi_setup(bool required) {
+    _initial_wifi_setup = required;
+}
 String _cd_day_label;
 String _cd_day_date;
 String _tag_days_str;
@@ -1099,7 +1103,21 @@ void task_screen(void* param) {
     display.firstPage();
     display.fillScreen(GxEPD_WHITE);
     do {
-        if (remote_config_unavailable()) {
+        if (_initial_wifi_setup) {
+            u8g2Fonts.setFontMode(1);
+            u8g2Fonts.setFontDirection(0);
+            u8g2Fonts.setBackgroundColor(GxEPD_WHITE);
+            u8g2Fonts.setForegroundColor(GxEPD_RED);
+            u8g2Fonts.setFont(FONT_TEXT);
+            u8g2Fonts.drawUTF8(16, 32, "设备待配置");
+            display.drawFastHLine(14, 44, 372, GxEPD_RED);
+            u8g2Fonts.setForegroundColor(GxEPD_BLACK);
+            u8g2Fonts.drawUTF8(38, 100, "长按上键 5 秒后松开");
+            u8g2Fonts.drawUTF8(38, 142, "连接 J-Calendar 热点");
+            u8g2Fonts.drawUTF8(38, 184, "打开 192.168.4.1");
+            u8g2Fonts.setFont(FONT_SUB);
+            u8g2Fonts.drawUTF8(38, 230, "密码见设备配置页面");
+        } else if (remote_config_unavailable()) {
             u8g2Fonts.setFontMode(1);
             u8g2Fonts.setFontDirection(0);
             u8g2Fonts.setBackgroundColor(GxEPD_WHITE);

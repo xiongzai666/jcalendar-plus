@@ -214,6 +214,19 @@ bool connectPreferredWiFi() {
     return connected;
 }
 
+// Inspect stored networks only after the existing connection path initialized STA.
+// Any failed read remains unknown; a temporary outage must not look like first use.
+void refreshInitialWifiSetupState(bool connected) {
+    wifi_config_t primary = {};
+    const bool primaryKnown = esp_wifi_get_config(WIFI_IF_STA, &primary) == ESP_OK;
+    Preferences pref;
+    const bool backupKnown = pref.begin(PREF_NAMESPACE, true);
+    const bool hasBackup = backupKnown && !pref.getString(PREF_BACKUP_SSID, "").isEmpty();
+    if (backupKnown) pref.end();
+    si_set_initial_wifi_setup(!connected && primaryKnown && backupKnown &&
+                              primary.sta.ssid[0] == 0 && !hasBackup);
+}
+
 // A manual wake keeps the MCU awake for page selection. If an activity changes
 // during that window, sleeping afterwards would skip its scheduled wake.
 bool timetableBoundaryPassed(time_t renderedAt, time_t current) {
@@ -359,6 +372,7 @@ void setup() {
     wm.setEnableConfigPortal(false);
     wm.setConnectTimeout(10);
     bool connected = connectPreferredWiFi();
+    refreshInitialWifiSetupState(connected);
     if (connected) {
         Serial.println("Connect OK.");
         led_on();

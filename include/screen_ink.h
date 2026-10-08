@@ -12,6 +12,7 @@ void si_weather();
 
 int si_screen_status();
 void si_screen();
+void si_set_initial_wifi_setup(bool required);
 time_t si_screen_snapshot_time();
 
 void print_status();
