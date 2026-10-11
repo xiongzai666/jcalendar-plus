@@ -334,7 +334,7 @@
     },
     {
       "file": "src/screen_ink.cpp",
-      "sha256": "b76adff2402b5a81e6c594e81fac0b891f88917d28dcd1d9c66b874e123458fd"
+      "sha256": "b623d92a6504ad312fd84bcc43095dbed90e1ad0a11f310ac78d8f1c54a95720"
     },
     {
       "file": "src/u8g2_font_qweather_icon_16.c",
@@ -351,18 +351,6 @@
     {
       "file": "remote/package-lock.json",
       "sha256": "e67557251ae73aaab4f471728d6adeac19de2332aecbeea12ddea63ade4ba435"
-    },
-    {
-      "file": "assets/img/LOLIN32_Lite.png",
-      "sha256": "9dec3ccccb0774f13c517fa596cc613a30cd6816bffc8439589d073ff3f6f65a"
-    },
-    {
-      "file": "assets/img/battery_adc.png",
-      "sha256": "346fdea28717d1f8c2d6f039c9723d1a31ce08b04444083b95fbe64cd29c06df"
-    },
-    {
-      "file": "assets/img/flash_download_tool_guide.png",
-      "sha256": "b14a80be8e153916e581d01aef33587c89f95a06ec5d459481088017168a9381"
     }
   ],
   "wenquanyiOriginalArchive": {
@@ -398,5 +386,32 @@
     "generationScriptSHA256": "0af7eaae8bf9c6609c9264aec587d3923b0afe2f85a6b0a4a78e6d14a1c32632",
     "subjectHeaderReproducesExactlyIgnoringCRLF": true,
     "historicInputIdentified": false
+  },
+  "removedReferenceImages": [
+    {
+      "file": "assets/img/LOLIN32_Lite.png",
+      "sha256": "9dec3ccccb0774f13c517fa596cc613a30cd6816bffc8439589d073ff3f6f65a",
+      "removedFromCurrentSource": true,
+      "reason": "unconfirmed image rights; hardware instructions retained as text"
+    },
+    {
+      "file": "assets/img/battery_adc.png",
+      "sha256": "346fdea28717d1f8c2d6f039c9723d1a31ce08b04444083b95fbe64cd29c06df",
+      "removedFromCurrentSource": true,
+      "reason": "unconfirmed image rights; hardware instructions retained as text"
+    },
+    {
+      "file": "assets/img/flash_download_tool_guide.png",
+      "sha256": "b14a80be8e153916e581d01aef33587c89f95a06ec5d459481088017168a9381",
+      "removedFromCurrentSource": true,
+      "reason": "unconfirmed image rights; hardware instructions retained as text"
+    }
+  ],
+  "sijiRemoval": {
+    "scope": "current project source and linked firmware; historical license evidence retained",
+    "replacement": "original battery drawing using GFX primitives with unchanged voltage thresholds",
+    "sourceReferenceRemoved": true,
+    "linkedSymbolAbsentVerified": true,
+    "verificationEnvironment": "z15"
   }
 }

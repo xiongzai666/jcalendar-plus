@@ -498,21 +498,6 @@ void draw_cal_days(bool partial) {
             display.drawPixel(tagX + 3, tagY + 7, GxEPD_RED);
         }
 
-        // 画Calendar提示点
-        /*
-        Calendar* cal = weather_cal();
-        for(int calIndex = 0; calIndex < cal->length; calIndex ++) {
-            CalEvent event = cal->events[calIndex];
-            if(event.dt_begin.substring(0, 4).toInt() == (tmInfo.tm_year + 1900)
-            && event.dt_begin.substring(4, 6).toInt() == (tmInfo.tm_mon + 1)
-            && event.dt_begin.substring(6, 8).toInt() == (iDay + 1)) {
-                u8g2Fonts.setBackgroundColor(GxEPD_WHITE);
-                u8g2Fonts.setForegroundColor(GxEPD_RED);
-                u8g2Fonts.setFont(u8g2_font_siji_t_6x10);
-                u8g2Fonts.drawUTF8(x + 42, y + 12, "\ue015");
-            }
-        }
-        */
     }
 }
 
@@ -862,22 +847,14 @@ void draw_status(bool partial) {
     u8g2Fonts.setFontDirection(0);
     u8g2Fonts.setBackgroundColor(GxEPD_WHITE);
     u8g2Fonts.setForegroundColor(GxEPD_BLACK);
-    u8g2Fonts.setFont(u8g2_font_siji_t_6x10);
-
-    // 电池icon
-    String iconStr = "";
-    if(voltage >= 4100) { // 满电
-        iconStr = "\ue24b";
-    } else if (voltage >= 3900) { // 多电
-        iconStr = "\ue249";
-    } else if (voltage >= 3700) { // 中电量
-        iconStr = "\ue247";
-    } else if (voltage >= 3500) { // 低电量
-        iconStr = "\ue245";
-    } else { // 空
-        iconStr = "\ue242";
-    }
-    u8g2Fonts.drawUTF8(400 - 12 - 4, 10, iconStr.c_str());
+    // Draw the battery directly; no external icon font is linked.
+    const int bars = voltage >= 4100 ? 4 : voltage >= 3900 ? 3 :
+                     voltage >= 3700 ? 2 : voltage >= 3500 ? 1 : 0;
+    const int batteryX = display.width() - 16;
+    display.drawRect(batteryX, 2, 12, 8, GxEPD_BLACK);
+    display.fillRect(batteryX + 12, 4, 2, 4, GxEPD_BLACK);
+    for (int bar = 0; bar < bars; ++bar)
+        display.fillRect(batteryX + 2 + bar * 2, 4, 1, 4, GxEPD_BLACK);
     if (lowBattery) {
         u8g2Fonts.setFont(FONT_SUB);
         u8g2Fonts.setForegroundColor(GxEPD_RED);
