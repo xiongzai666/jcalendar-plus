@@ -36,10 +36,12 @@ if not cpp:
 compiler = [cpp, 'c++'] if Path(cpp).stem == 'zig' else [cpp]
 with tempfile.TemporaryDirectory(prefix='jcalendar-verify-') as directory:
     tests = ['lesson_clock', 'schedule_optimization', 'effective_schedule', 'weather_cache',
-             'calendar_override', 'display_policy', 'custom_date', 'bounded_string', 'remote_contract', 'network_budget', 'http_body', 'deadline_client', 'dns_candidates', 'owned_task', 'task_start', 'bounded_gzip', 'qweather_v1', 'public_defaults']
+             'calendar_override', 'display_policy', 'custom_date', 'bounded_string', 'remote_contract', 'network_budget', 'http_body', 'deadline_client', 'dns_candidates', 'owned_task', 'task_start', 'bounded_gzip', 'qweather_v1', 'public_defaults', 'ota_image', 'ota_upload']
     for name in tests:
         binary = Path(directory) / (name + ('.exe' if os.name == 'nt' else ''))
         extra = []
+        if name == 'ota_upload':
+            extra += ['-DSI_DRIVER=15', '-Itest/ota_upload_stub', 'src/local_ota.cpp']
         if name == 'bounded_gzip':
             uzlib = ROOT / 'lib/BoundedUZlib/src'
             extra.append('-I' + str(uzlib))

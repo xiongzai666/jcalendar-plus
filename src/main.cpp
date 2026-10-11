@@ -29,6 +29,7 @@
 #include "task_start_core.h"
 
 #include "version.h"
+#include "local_ota.h"
 
 #include "OneButton.h"
 OneButton button(KEY_M, true);
@@ -675,6 +676,7 @@ void buttonDoubleClick(void* oneButton) {
     para_backup_pass.setValue("", 65);
 
     wm.setTitle("J-Calendar");
+    wm.setWebServerCallback([]() { installLocalOta(*wm.server); });
     wm.addParameter(&para_si_week_1st);
     wm.addParameter(&para_qweather_host);
     wm.addParameter(&para_qweather_key);
