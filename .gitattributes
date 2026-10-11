@@ -1,0 +1,4 @@
+# Keep upstream license evidence byte-for-byte, including its original newlines.
+licenses/** -text
+licenses/** whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab
+src/webserver_parsing.cpp whitespace=-space-before-tab

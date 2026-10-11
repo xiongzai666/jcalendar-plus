@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -57,6 +58,8 @@ with tempfile.TemporaryDirectory(prefix='jcalendar-verify-') as directory:
         run(compiler + ['-std=c++11', '-Iinclude', f'-I.pio/libdeps/{args.environment}/ArduinoJson/src',
                         f'test/{name}_host.cpp'] + extra + ['-o', binary])
         run([binary] + (['test/fixtures/remote-config.json'] if name == 'remote_contract' else []))
+
+run([sys.executable, 'tools/test_ota_multipart.py'])
 
 firmware = ROOT / f'.pio/build/{args.environment}/firmware.bin'
 capacity = 0x1e0000  # min_spiffs.csv app0 and app1

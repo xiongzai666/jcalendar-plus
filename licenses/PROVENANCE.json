@@ -1,0 +1,402 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-10-11",
+  "sourceBaselineCommit": "df9a9a186660600c56594402c4ba9fb755b5d0d2",
+  "scope": "License attachments and provenance; no release authorization",
+  "attachments": [
+    {
+      "file": "licenses/Adafruit-BusIO-LICENSE.txt",
+      "source": "https://github.com/adafruit/Adafruit_BusIO/blob/3b8364267c3ee6e16bad91bc2101aefbd5b5915f/LICENSE",
+      "sourceCommit": "3b8364267c3ee6e16bad91bc2101aefbd5b5915f",
+      "transformation": "verbatim",
+      "sha256": "86e9fafdb50d2a85d8fef369b4635b5a1b89160603e5b1f95484df0804b49508",
+      "upstreamSourceSha256": "86e9fafdb50d2a85d8fef369b4635b5a1b89160603e5b1f95484df0804b49508",
+      "installedTextMatchesUpstreamIgnoringCRLF": true
+    },
+    {
+      "file": "licenses/Adafruit-GFX-LICENSE.txt",
+      "source": "https://github.com/adafruit/Adafruit-GFX-Library/blob/ac6d7c3869a693d406f77b9bfcd486b0673169f0/license.txt",
+      "sourceCommit": "ac6d7c3869a693d406f77b9bfcd486b0673169f0",
+      "transformation": "verbatim",
+      "sha256": "3e7bede50526352926c2283e640f2823d9f9f2165d1852044c4fb1bbac283106",
+      "upstreamSourceSha256": "3e7bede50526352926c2283e640f2823d9f9f2165d1852044c4fb1bbac283106",
+      "installedTextMatchesUpstreamIgnoringCRLF": true
+    },
+    {
+      "file": "licenses/Adafruit-GFX-README.txt",
+      "source": "https://github.com/adafruit/Adafruit-GFX-Library/blob/ac6d7c3869a693d406f77b9bfcd486b0673169f0/README.md",
+      "sourceCommit": "ac6d7c3869a693d406f77b9bfcd486b0673169f0",
+      "transformation": "verbatim",
+      "sha256": "6890f42a55c06828629738cb9b015f813a108a85d30013a3b1a77c4a7d0140a1",
+      "upstreamSourceSha256": "6890f42a55c06828629738cb9b015f813a108a85d30013a3b1a77c4a7d0140a1",
+      "installedTextMatchesUpstreamIgnoringCRLF": true
+    },
+    {
+      "file": "licenses/ArduinoJson-LICENSE.txt",
+      "source": "https://github.com/bblanchon/ArduinoJson/blob/77771d3c07668e01d8f52acb03910c1110bb373f/LICENSE.txt",
+      "sourceCommit": "77771d3c07668e01d8f52acb03910c1110bb373f",
+      "transformation": "verbatim",
+      "sha256": "4a7ee9c96b28cbf30c5bf7c2d211a0ef57179f0328e68ad7b7fa7d754b7da1a2",
+      "upstreamSourceSha256": "4a7ee9c96b28cbf30c5bf7c2d211a0ef57179f0328e68ad7b7fa7d754b7da1a2",
+      "installedTextMatchesUpstreamIgnoringCRLF": true
+    },
+    {
+      "file": "licenses/ArduinoUZlib-defl-static-notice.txt",
+      "source": "repository:.pio/libdeps/z21/ArduinoUZlib/src/defl_static.c",
+      "sourceCommit": "df9a9a186660600c56594402c4ba9fb755b5d0d2",
+      "transformation": "Leading source copyright/license comments",
+      "sha256": "9dbc3a3b658858f8841dc55a9acb7f86b881d03fe070a1de0efaa8d4a71a5949",
+      "sourceFileSha256": "7a9331def4082975a140fbc59a3e38cb9b11523785c24653d998f4c7216fadd7"
+    },
+    {
+      "file": "licenses/BoundedUZlib-adler32-notices.txt",
+      "source": "repository:lib/BoundedUZlib/src/bounded_adler32.c",
+      "sourceCommit": "df9a9a186660600c56594402c4ba9fb755b5d0d2",
+      "transformation": "Source prefix before first include, including all license comments",
+      "sha256": "db16c06a84eb540ce984a1fa465c9aeae74fac5603300905dffae41856de0329",
+      "sourceFileSha256": "4d490c64aedb6b3a8e57e0b06abdc004f96495ac3e28b5ed82848fcfc12e2e5b"
+    },
+    {
+      "file": "licenses/BoundedUZlib-crc32-notices.txt",
+      "source": "repository:lib/BoundedUZlib/src/bounded_crc32.c",
+      "sourceCommit": "df9a9a186660600c56594402c4ba9fb755b5d0d2",
+      "transformation": "Source prefix before first include, including all license comments",
+      "sha256": "47a5e79df76c39ea754c58c1424cce92f7a17aff8c52ea9b8a00418abeed5903",
+      "sourceFileSha256": "74f1dfd82991c0b7adb604b9f1fc5f3c0f3287479cabbc9765097fd294eb5643"
+    },
+    {
+      "file": "licenses/BoundedUZlib-zlib-notice.txt",
+      "source": "repository:lib/BoundedUZlib/src/bounded_tinflate.c",
+      "sourceCommit": "df9a9a186660600c56594402c4ba9fb755b5d0d2",
+      "transformation": "Leading source copyright/license comments",
+      "sha256": "0fdcefa59891f80873c181d21984c0dcda21980a270f5b99100b6a7b409e99e1",
+      "sourceFileSha256": "3e2d0069dbe37411b3faa6b9edc3ae2507c683f5c66f5e52811dfa7909902d24"
+    },
+    {
+      "file": "licenses/CC-BY-4.0-legalcode.html",
+      "source": "https://raw.githubusercontent.com/creativecommons/creativecommons.org/7f5253347532fc0cb6cf51d78a7085d081fb4216/docroot/legalcode/by_4.0.html",
+      "sourceCommit": "7f5253347532fc0cb6cf51d78a7085d081fb4216",
+      "transformation": "verbatim",
+      "sha256": "75944e5d91cb28d60b326f071069afd19ab50fcdd5e62dd3f024f850b83ee9b6"
+    },
+    {
+      "file": "licenses/CC-BY-4.0-legalcode.txt",
+      "source": "https://raw.githubusercontent.com/creativecommons/creativecommons.org/7f5253347532fc0cb6cf51d78a7085d081fb4216/docroot/legalcode/by_4.0.html",
+      "sourceCommit": "7f5253347532fc0cb6cf51d78a7085d081fb4216",
+      "transformation": "HTML div#deed rendered as UTF-8 text; original HTML retained",
+      "sha256": "2aaa8e80083df7e2154615447cac14091b4997635e018acce357728ea87af4ec",
+      "sourceFileSha256": "75944e5d91cb28d60b326f071069afd19ab50fcdd5e62dd3f024f850b83ee9b6"
+    },
+    {
+      "file": "licenses/EdgeOne-pages-blob-package.json",
+      "source": "https://registry.npmjs.org/@edgeone/pages-blob/-/pages-blob-0.0.18.tgz#package/package.json",
+      "sourceCommit": null,
+      "transformation": "Verbatim npm member; archive SHA512 matches lockfile",
+      "sha256": "aad7c2d33ca610060068ec245e0e9b7318ed8a78e2a0e2bd62f63e26cce767df",
+      "sourceFileSha256": "ebe3285e5db58c4442523d0bc993dd4440d4c55b21c43d1b2b90acd6c8af633f"
+    },
+    {
+      "file": "licenses/FreeUniversal-OFL-from-font.txt",
+      "source": "https://github.com/olikraus/u8g2/blob/d6c8499c5f2707cac8eccd09fd8f677d12b17977/tools/font/ttf/FreeUniversal-Bold.ttf",
+      "sourceCommit": "d6c8499c5f2707cac8eccd09fd8f677d12b17977",
+      "transformation": "Decoded TTF name records 0, 13 and 14 (duplicates collapsed)",
+      "sha256": "489ba24149a32a06051eafb78440c86755d8dac7cc1e6e2b50bd5679da66a9b5",
+      "sourceFileSha256": "dcbb9ada66b73922e7367414ad18396de55fd6990bf358c868a431f6009bedcf"
+    },
+    {
+      "file": "licenses/GxEPD2-LICENSE.txt",
+      "source": "repository:lib/GxEPD2/LICENSE",
+      "sourceCommit": "df9a9a186660600c56594402c4ba9fb755b5d0d2",
+      "transformation": "verbatim",
+      "sha256": "0b383d5a63da644f628d99c33976ea6487ed89aaa59f0b3257992deac1171e6b"
+    },
+    {
+      "file": "licenses/Nongli-LICENSE.txt",
+      "source": "https://github.com/JADE-Jerry/nongli/blob/b14baf1f7d2a5643e27d783a95a4ae7d93873488/LICENSE",
+      "sourceCommit": "b14baf1f7d2a5643e27d783a95a4ae7d93873488",
+      "transformation": "verbatim",
+      "sha256": "5ddf2e0145a15e3581ebb36356225589fb591ca1c7913b1fbbee7d8594be7228",
+      "upstreamSourceSha256": "29085059f7ee1d976f2b3e48c14843281536d396b5b6cf255be663546daf2f2f",
+      "installedTextMatchesUpstreamIgnoringCRLF": true
+    },
+    {
+      "file": "licenses/NotoSansSC-OFL.txt",
+      "source": "https://raw.githubusercontent.com/google/fonts/bd8f81ddb5c74d5c8897b36ad88b440266245103/ofl/notosanssc/OFL.txt",
+      "sourceCommit": "bd8f81ddb5c74d5c8897b36ad88b440266245103",
+      "transformation": "verbatim",
+      "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9"
+    },
+    {
+      "file": "licenses/OneButton-LICENSE.txt",
+      "source": "https://github.com/mathertel/OneButton/blob/9489276d30fd490bd3dd41ea49e15e6653a89e08/LICENSE",
+      "sourceCommit": "9489276d30fd490bd3dd41ea49e15e6653a89e08",
+      "transformation": "verbatim",
+      "sha256": "89df1a198e8920c3ae153e8137165d720b51e6c69a07cb64e5d008c11c6a0105",
+      "upstreamSourceSha256": "89df1a198e8920c3ae153e8137165d720b51e6c69a07cb64e5d008c11c6a0105",
+      "installedTextMatchesUpstreamIgnoringCRLF": true
+    },
+    {
+      "file": "licenses/OpenIconic-FONT-LICENSE.txt",
+      "source": "https://raw.githubusercontent.com/iconic/open-iconic/1d1e8885c5031874b32f4e480e371ce2b1c24144/FONT-LICENSE",
+      "sourceCommit": "1d1e8885c5031874b32f4e480e371ce2b1c24144",
+      "transformation": "verbatim",
+      "sha256": "f90e38cdf11a08c99776e9e2e5377e22009b93cb12510c044b69d6b3e28a433d"
+    },
+    {
+      "file": "licenses/QWeather-MIT-LICENSE.txt",
+      "source": "https://raw.githubusercontent.com/qwd/Icons/d7d4ef4d8334f9e70a75a088cb77804bf81daea4/LICENSE",
+      "sourceCommit": "d7d4ef4d8334f9e70a75a088cb77804bf81daea4",
+      "transformation": "verbatim",
+      "sha256": "23d1fc0f443ef17d507a059ccb863514b20205ffcc77859f8002b2bf7c58b361"
+    },
+    {
+      "file": "licenses/QWeather-README.md",
+      "source": "https://raw.githubusercontent.com/qwd/Icons/d7d4ef4d8334f9e70a75a088cb77804bf81daea4/README.md",
+      "sourceCommit": "d7d4ef4d8334f9e70a75a088cb77804bf81daea4",
+      "transformation": "verbatim",
+      "sha256": "64df53ebcaa7ccaf6a7cc90c1efc4b668383a4231d8094df7e54889b3d6cd027"
+    },
+    {
+      "file": "licenses/RX8010SJ-LICENSE.txt",
+      "source": "https://github.com/Wh1teRabbitHU/RX8010SJ/blob/fa9d6a9d37230abe4406d5ece60c18d5473e81f7/LICENSE",
+      "sourceCommit": "fa9d6a9d37230abe4406d5ece60c18d5473e81f7",
+      "transformation": "verbatim",
+      "sha256": "230184f60bae2feaf244f10a8bac053c8ff33a183bcc365b4d8b876d2b7f4809",
+      "upstreamSourceSha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "installedTextMatchesUpstreamIgnoringCRLF": true
+    },
+    {
+      "file": "licenses/Siji-GPL-2.0.txt",
+      "source": "https://github.com/stark/siji/blob/c691f200c1c66e76daa2afc9cbbd1aa39045c906/LICENSE",
+      "sourceCommit": "c691f200c1c66e76daa2afc9cbbd1aa39045c906",
+      "transformation": "verbatim",
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+    },
+    {
+      "file": "licenses/Siji-README.md",
+      "source": "https://github.com/stark/siji/blob/c691f200c1c66e76daa2afc9cbbd1aa39045c906/Readme.md",
+      "sourceCommit": "c691f200c1c66e76daa2afc9cbbd1aa39045c906",
+      "transformation": "verbatim",
+      "sha256": "7c5ac8bf9240a04831319fc0460f9d9bd7d4de5bcba0547ebbc78a8a9210433d"
+    },
+    {
+      "file": "licenses/Siji-U8g2-BDF-header.txt",
+      "source": "https://github.com/olikraus/u8g2/blob/d6c8499c5f2707cac8eccd09fd8f677d12b17977/tools/font/bdf/siji_with_6x10.bdf",
+      "sourceCommit": "d6c8499c5f2707cac8eccd09fd8f677d12b17977",
+      "transformation": "BDF prefix before first STARTCHAR; no glyph data",
+      "sha256": "e18bc59071f1cf91e3f0fa876bb49a1993db82c18c96b750ffed3d2fcb72276a",
+      "sourceFileSha256": "369fcfd0cef33e285b93e6e7b3b306800bdaa2b93cbdb7879851db7a08362d14"
+    },
+    {
+      "file": "licenses/Siji-author-BDF-header.txt",
+      "source": "https://github.com/stark/siji/blob/c691f200c1c66e76daa2afc9cbbd1aa39045c906/bdf/siji.bdf",
+      "sourceCommit": "c691f200c1c66e76daa2afc9cbbd1aa39045c906",
+      "transformation": "BDF prefix before first STARTCHAR; no glyph data",
+      "sha256": "3ca2ff105410dffd8fdba3285d53ceb9f612f70b400c8f03113ecde33157bdac",
+      "sourceFileSha256": "a8fb7e661573794b9ddba3661dccb84407dfb7b290e999f063156edb9c26ca2f"
+    },
+    {
+      "file": "licenses/U8g2-for-Adafruit-GFX-LICENSE.txt",
+      "source": "https://github.com/olikraus/U8g2_for_Adafruit_GFX/blob/6232c6956cd61a4d281973fd68239325e7d8aecd/LICENSE",
+      "sourceCommit": "6232c6956cd61a4d281973fd68239325e7d8aecd",
+      "transformation": "verbatim",
+      "sha256": "019c85fdd2c31be9a6b5e58b362398c647b758e6eeadfaaef67301f6b25d7cb8",
+      "upstreamSourceSha256": "019c85fdd2c31be9a6b5e58b362398c647b758e6eeadfaaef67301f6b25d7cb8",
+      "installedTextMatchesUpstreamIgnoringCRLF": true
+    },
+    {
+      "file": "licenses/WenQuanYi-COPYING.txt",
+      "source": "https://downloads.sourceforge.net/project/wqy/wqy-bitmapfont/1.0.0-RC1/wqy-bitmapsong-bdf-1.0.0-RC1_GPLv2%2B.tar.gz#wqy-bitmapsong/COPYING",
+      "sourceCommit": null,
+      "transformation": "Verbatim archive member",
+      "sha256": "871c2a85e6bbf7bec65043820b706a265ed95d4e58c577fbb2c9f60c39c26ca7",
+      "sourceFileSha256": "c29b2c2f5db73ff74d11a7dca9608414813da1c4240b7b6c829a58757b35ebe6"
+    },
+    {
+      "file": "licenses/WenQuanYi-U8g2-12px-BDF-header.txt",
+      "source": "https://github.com/olikraus/u8g2/blob/d6c8499c5f2707cac8eccd09fd8f677d12b17977/tools/font/bdf/wenquanyi_9pt.bdf",
+      "sourceCommit": "d6c8499c5f2707cac8eccd09fd8f677d12b17977",
+      "transformation": "BDF prefix before first STARTCHAR; no glyph data",
+      "sha256": "4c9b699746cf882229881d8dd8dac698721a88202013f929c9b458d5d6eef6f8",
+      "sourceFileSha256": "64a4f048908abdbf38b6b10af5fa2ba3e1dcf1e11151ecdf35b400feed6355dc"
+    },
+    {
+      "file": "licenses/WenQuanYi-U8g2-16px-BDF-header.txt",
+      "source": "https://github.com/olikraus/u8g2/blob/d6c8499c5f2707cac8eccd09fd8f677d12b17977/tools/font/bdf/wenquanyi_12pt.bdf",
+      "sourceCommit": "d6c8499c5f2707cac8eccd09fd8f677d12b17977",
+      "transformation": "BDF prefix before first STARTCHAR; no glyph data",
+      "sha256": "ab17c2b1db9f744fe374ba76c3854cf950b3ac5406e39576b40a75c78dfe6bf1",
+      "sourceFileSha256": "a76acbb6c18fa1d11e138f12dcb792e6e92c21c8f1067947b668014789df63ac"
+    },
+    {
+      "file": "licenses/WenQuanYi-original-README.txt",
+      "source": "https://downloads.sourceforge.net/project/wqy/wqy-bitmapfont/1.0.0-RC1/wqy-bitmapsong-bdf-1.0.0-RC1_GPLv2%2B.tar.gz#wqy-bitmapsong/README",
+      "sourceCommit": null,
+      "transformation": "Verbatim archive member",
+      "sha256": "eb14744af5dce390aef7e9ea6703f2025f8f5833c79dfb1332b5178b87a12c6e",
+      "sourceFileSha256": "c29b2c2f5db73ff74d11a7dca9608414813da1c4240b7b6c829a58757b35ebe6"
+    },
+    {
+      "file": "licenses/WenQuanYi-original-wenquanyi_12pt.bdf-header.txt",
+      "source": "https://downloads.sourceforge.net/project/wqy/wqy-bitmapfont/1.0.0-RC1/wqy-bitmapsong-bdf-1.0.0-RC1_GPLv2%2B.tar.gz#wqy-bitmapsong/wenquanyi_12pt.bdf",
+      "sourceCommit": null,
+      "transformation": "BDF prefix before first STARTCHAR; no glyph data",
+      "sha256": "441e996e2bfac53fb514a521a1d1040c3604a649bb0d8c528bd3111ab22da593",
+      "sourceFileSha256": "eb8e295f761f28691ed9f199ba74c222d3392c6144174cb0b66c78c89a97fa49"
+    },
+    {
+      "file": "licenses/WenQuanYi-original-wenquanyi_9pt.bdf-header.txt",
+      "source": "https://downloads.sourceforge.net/project/wqy/wqy-bitmapfont/1.0.0-RC1/wqy-bitmapsong-bdf-1.0.0-RC1_GPLv2%2B.tar.gz#wqy-bitmapsong/wenquanyi_9pt.bdf",
+      "sourceCommit": null,
+      "transformation": "BDF prefix before first STARTCHAR; no glyph data",
+      "sha256": "9a3028a645acd6ce709fbae46bee7dfae0d54b2cc6202f6f9e13219f9b1b139c",
+      "sourceFileSha256": "c02ad8f4db3000df9145540b6341fa4596df741b7b2d034c533311e2e8cc2116"
+    },
+    {
+      "file": "licenses/WiFiManager-LICENSE.txt",
+      "source": "https://github.com/tzapu/WiFiManager/blob/d82d0a1b9fca741b9ec44accdf553606a6576dda/LICENSE",
+      "sourceCommit": "d82d0a1b9fca741b9ec44accdf553606a6576dda",
+      "transformation": "verbatim",
+      "sha256": "db0247d220056ce3032ce5239229e52ea9695b6a91b58bb8c6b5b151ab9d8d6f",
+      "upstreamSourceSha256": "db0247d220056ce3032ce5239229e52ea9695b6a91b58bb8c6b5b151ab9d8d6f",
+      "installedTextMatchesUpstreamIgnoringCRLF": true
+    },
+    {
+      "file": "licenses/jcalendar-upstream-README.md",
+      "source": "https://raw.githubusercontent.com/JADE-Jerry/jcalendar/3fd62cde85ab618ed195cb95cc08a6c70b6aea43/README.md",
+      "sourceCommit": "3fd62cde85ab618ed195cb95cc08a6c70b6aea43",
+      "transformation": "verbatim",
+      "sha256": "e1d5dd45f0e52fe674c78913b7c9c799dc6a6bd604255a7b1a2abcdf66f8c77c"
+    },
+    {
+      "file": "licenses/u8g2-fntgrpadobex11.md",
+      "source": "https://github.com/olikraus/u8g2/wiki/fntgrpadobex11",
+      "sourceCommit": "37aaea7d0b62468dda42f0aee6cdf7a6b3351bec",
+      "transformation": "verbatim",
+      "sha256": "6ebd32af6834da757b017aa913d60fec2d309bda8485432df5d3b7558ef860ee"
+    },
+    {
+      "file": "licenses/u8g2-fntgrpfreeuniversal.md",
+      "source": "https://github.com/olikraus/u8g2/wiki/fntgrpfreeuniversal",
+      "sourceCommit": "37aaea7d0b62468dda42f0aee6cdf7a6b3351bec",
+      "transformation": "verbatim",
+      "sha256": "c809c130c3642f714e50b2e0787e765de3ddf497da55349df2e821542ad07137"
+    },
+    {
+      "file": "licenses/u8g2-fntgrpgeoff.md",
+      "source": "https://github.com/olikraus/u8g2/wiki/fntgrpgeoff",
+      "sourceCommit": "37aaea7d0b62468dda42f0aee6cdf7a6b3351bec",
+      "transformation": "verbatim",
+      "sha256": "60d20ae1bf60a1d51537744d4700c1d7bd498a841a798ea1c23f81a7c7f426e1"
+    },
+    {
+      "file": "licenses/u8g2-fntgrpiconic.md",
+      "source": "https://github.com/olikraus/u8g2/wiki/fntgrpiconic",
+      "sourceCommit": "37aaea7d0b62468dda42f0aee6cdf7a6b3351bec",
+      "transformation": "verbatim",
+      "sha256": "215871c297a08bc26f10929611949a5642cc22c3913d5b33745ecda8b46af285"
+    },
+    {
+      "file": "licenses/u8g2-fntgrpsiji.md",
+      "source": "https://github.com/olikraus/u8g2/wiki/fntgrpsiji",
+      "sourceCommit": "37aaea7d0b62468dda42f0aee6cdf7a6b3351bec",
+      "transformation": "verbatim",
+      "sha256": "e510df0ab080d3851a1ac1495bbd0e504dcca6662293cb9406bbf772dc7ab235"
+    },
+    {
+      "file": "licenses/u8g2-fntgrpwqy.md",
+      "source": "https://github.com/olikraus/u8g2/wiki/fntgrpwqy",
+      "sourceCommit": "37aaea7d0b62468dda42f0aee6cdf7a6b3351bec",
+      "transformation": "verbatim",
+      "sha256": "cbe2d6257d364233aed0f1eaef9479c3033ee8d663f075c747da81938078cf30"
+    },
+    {
+      "file": "licenses/Arduino-ESP32-WebServer-LGPL-2.1.txt",
+      "source": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt",
+      "transformation": "verbatim",
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95"
+    },
+    {
+      "file": "licenses/NotoSansSC-reproduction-metadata.json",
+      "source": "Noto Sans SC local installed font metadata; reproducible input match",
+      "transformation": "SFNT name table metadata plus exact generation comparison",
+      "sha256": "32d6cb940b0747887f15fe96a211adf6936bd3655a423167a9dd5ad5bf8122ca"
+    }
+  ],
+  "reviewedFiles": [
+    {
+      "file": "LICENSE",
+      "sha256": "0b383d5a63da644f628d99c33976ea6487ed89aaa59f0b3257992deac1171e6b"
+    },
+    {
+      "file": "platformio.ini",
+      "sha256": "7732c1d90684943d7fdced8c2d8a193737f45ba7be1b7278e7e2de323a859b9e"
+    },
+    {
+      "file": "src/screen_ink.cpp",
+      "sha256": "b76adff2402b5a81e6c594e81fac0b891f88917d28dcd1d9c66b874e123458fd"
+    },
+    {
+      "file": "src/u8g2_font_qweather_icon_16.c",
+      "sha256": "50a623a96024f07df7cda2e2b6451058a72d041119201457a74758fdcc6f8608"
+    },
+    {
+      "file": "include/subject_font.h",
+      "sha256": "111cc625c2bfa6437053500e7141907263e5e5c3d67b7e8fdf76dd0b71ba7b51"
+    },
+    {
+      "file": "tools/generate_subject_font.py",
+      "sha256": "0af7eaae8bf9c6609c9264aec587d3923b0afe2f85a6b0a4a78e6d14a1c32632"
+    },
+    {
+      "file": "remote/package-lock.json",
+      "sha256": "e67557251ae73aaab4f471728d6adeac19de2332aecbeea12ddea63ade4ba435"
+    },
+    {
+      "file": "assets/img/LOLIN32_Lite.png",
+      "sha256": "9dec3ccccb0774f13c517fa596cc613a30cd6816bffc8439589d073ff3f6f65a"
+    },
+    {
+      "file": "assets/img/battery_adc.png",
+      "sha256": "346fdea28717d1f8c2d6f039c9723d1a31ce08b04444083b95fbe64cd29c06df"
+    },
+    {
+      "file": "assets/img/flash_download_tool_guide.png",
+      "sha256": "b14a80be8e153916e581d01aef33587c89f95a06ec5d459481088017168a9381"
+    }
+  ],
+  "wenquanyiOriginalArchive": {
+    "source": "https://downloads.sourceforge.net/project/wqy/wqy-bitmapfont/1.0.0-RC1/wqy-bitmapsong-bdf-1.0.0-RC1_GPLv2%2B.tar.gz",
+    "sha256": "c29b2c2f5db73ff74d11a7dca9608414813da1c4240b7b6c829a58757b35ebe6",
+    "bytes": 4090344
+  },
+  "edgeOnePackage": {
+    "version": "0.0.18",
+    "source": "https://registry.npmjs.org/@edgeone/pages-blob/-/pages-blob-0.0.18.tgz",
+    "integrity": "sha512-5fpA33ECm/kMaUW5AfvGjyFHOotbhLmngdbbm49LEH1Ktz7E3dKfxHmNp/ubv2H83kqgV0886Az1JdUzie/TkQ==",
+    "sha256": "ebe3285e5db58c4442523d0bc993dd4440d4c55b21c43d1b2b90acd6c8af633f"
+  },
+  "webServerParserOverride": {
+    "source": "https://github.com/espressif/arduino-esp32/blob/2.0.17/libraries/WebServer/src/Parsing.cpp",
+    "sourceVersion": "2.0.17",
+    "license": "LGPL-2.1-or-later",
+    "installedOriginalSHA256": "122de5397729899ac8600d545f7ed4b8a02298351a4f1b0fa5c7fa73f87a14d0",
+    "projectFile": "src/webserver_parsing.cpp",
+    "changes": "Bound disconnected/idle multipart fields and upload bytes; preserve request-completion OTA activation",
+    "patchRetainsCopyrightAndLicenseHeader": true
+  },
+  "subjectFontReproduction": {
+    "fontSHA256": "763146584cf0710223441356b4395e279021b0806c196614377a7a0174ae074a",
+    "fontBytes": 17773244,
+    "fontNames": {
+      "0": "© 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'.",
+      "5": "Version 2.04;241114210130;non-release",
+      "1": "Noto Sans SC",
+      "13": "This Font Software is licensed under the SIL Open Font License, Version 1.1. This Font Software is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the SIL Open Font License for the specific language, permissions and limitations governing your use of this Font Software.",
+      "14": "http://scripts.sil.org/OFL"
+    },
+    "generationScriptSHA256": "0af7eaae8bf9c6609c9264aec587d3923b0afe2f85a6b0a4a78e6d14a1c32632",
+    "subjectHeaderReproducesExactlyIgnoringCRLF": true,
+    "historicInputIdentified": false
+  }
+}

@@ -1,0 +1,35 @@
+STARTFONT 2.1
+FONT -Wuncon-Siji-Medium-R-Normal--10-100-75-75-C-80-ISO10646-1
+SIZE 10 75 75
+FONTBOUNDINGBOX 12 12 0 -2
+STARTPROPERTIES 23
+FONTNAME_REGISTRY ""
+FOUNDRY "Wuncon"
+FAMILY_NAME "Siji"
+WEIGHT_NAME "Medium"
+SLANT "R"
+SETWIDTH_NAME "Normal"
+ADD_STYLE_NAME ""
+PIXEL_SIZE 10
+POINT_SIZE 100
+RESOLUTION_X 75
+RESOLUTION_Y 75
+SPACING "C"
+AVERAGE_WIDTH 80
+CHARSET_REGISTRY "ISO10646"
+CHARSET_ENCODING "1"
+COPYRIGHT "GPLv2"
+WEIGHT 10
+_GBDFED_INFO "Edited with gbdfed 1.6."
+X_HEIGHT 3
+QUAD_WIDTH 8
+DEFAULT_CHAR 0
+FONT_DESCENT 2
+FONT_ASCENT 8
+COMMENT """"""""""""""""""""""Procon - An Iconic Font based on Stlarch font, Sm4tik's xbm pack, FontAwesome and Lokaltog Symbol Font""""""""""""""""""""""
+COMMENT ""Siji font - an iconic bitmap font based on Stlarch by Stark""
+COMMENT "combined with X11 6x10 font, which has the following copyright: Public domain terminal emulator font.  Share and enjoy."
+ENDPROPERTIES
+
+
+
