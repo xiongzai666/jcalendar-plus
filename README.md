@@ -2,9 +2,9 @@
 
 基于 [JADE-Jerry/jcalendar](https://github.com/JADE-Jerry/jcalendar) 的 4.2 寸黑白红墨水屏日历扩展版：课程、月历、倒计时、天气和待办，配套可自行部署的手机配置网页。
 
-**当前公开预发布版：2.3.0。** 面向经典 ESP32、4 MB Flash、400 × 300 三色屏。原项目基础功能、驱动及作者信息保留于 [NOTICE](NOTICE.md)；许可证原文见 [LICENSE](LICENSE)。
+**当前公开预发布版：2.3.2-rc.3。** 面向经典 ESP32、4 MB Flash、400 × 300 三色屏。原项目基础功能、驱动及作者信息保留于 [NOTICE](NOTICE.md)；许可证原文见 [LICENSE](LICENSE)。
 
-本地源码为 **2.3.2-rc.3 候选**，未公开发布；当前下载仍为 v2.3.0。新候选保留本机 Update 的屏幕身份与完整请求激活检查，并修复 multipart 尾部断开后的解析循环。解析修复沿用 rc.2 的实际函数主机回归；本候选进一步移除 Siji 电量字体和三张授权不明参考图。指定慢网／取消、OTA 后续响应／启动选择与新电量图标已补实机证据，首次紧邻 GET 连接重置保留在验收记录中。旧版回退方式见 [刷机指南](docs/FLASHING.md)；首配、正常 OTA 和离线历史证据见 [验收记录](docs/RELEASE_ACCEPTANCE.md)。
+[v2.3.2-rc.3 预发布](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.3) 已提供四驱动固件、对应源码、许可附件和 SHA256。来源提交 `f83a87a`，四驱动及真实云端入口 CI 通过。本版核对本机 Update 的驱动身份和完整请求后激活，修复不完整 multipart 的解析退出，移除 Siji 电量字体和三张授权不明参考图。Z15 复用有效首配／OTA／离线及指定改变路径的实机证据；中断 OTA 后紧邻首次 GET 重置的边界仍保留。旧版回退见 [刷机指南](docs/FLASHING.md)，范围见 [验收记录](docs/RELEASE_ACCEPTANCE.md)。
 
 ## 能做什么
 
@@ -23,7 +23,7 @@
 
 ## 下载
 
-[GitHub 预发布 v2.3.0](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.0) 提供源码包、四种驱动固件包和 SHA256 校验。Z15 本地 RC2 已完成受控首配／OTA／离线与恢复验收；该结果不表示此旧下载已更新。其他驱动与全天资源仍待实测。
+[GitHub 预发布 v2.3.2-rc.3](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.3) 提供四驱动包、对应源码 ZIP、总 SHA256 和来源／验证清单。每个固件包附带 LICENSE、NOTICE 和第三方附件，源码说明见 [RELEASE_SOURCE](docs/RELEASE_SOURCE.md)。其他驱动只有构建验证，全天稳定性和续航未测。旧 [v2.3.0](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.0) 保留作历史下载。
 
 ## 快速开始
 
@@ -39,7 +39,7 @@
 
 | 环境 | 对应驱动 | 验证范围 |
 | --- | --- | --- |
-| `z15` | `GxEPD2_420c` | 本地2.3.1-rc.2受控首配／OTA／四页已验；2.3.0下载不因此更新 |
+| `z15` | `GxEPD2_420c` | 复用 RC2 首配／OTA／离线；rc.3 指定网络、取消及电量图标已补验 |
 | `z21` | `GxEPD2_420c_Z21` | 本次编译验证；需对应屏幕实测 |
 | `z98` | `GxEPD2_420c_GDEY042Z98` | 本次编译验证；需对应屏幕实测 |
 | `1680` | `GxEPD2_420c_1680` | 本次编译验证；需对应屏幕实测 |
