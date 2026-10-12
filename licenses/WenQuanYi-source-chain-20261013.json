@@ -1,0 +1,131 @@
+{
+  "reviewDate": "2026-10-13",
+  "commits": {
+    "converter": "34d1bf7e054ef5a331c45248cd238edc49498897",
+    "upstream": "3fd62cde85ab618ed195cb95cc08a6c70b6aea43"
+  },
+  "headResolution": "read-only git ls-remote via local proxy after unauthenticated API HTTP403 rate limit",
+  "u8g2FixedCommit": "d6c8499c5f2707cac8eccd09fd8f677d12b17977",
+  "files": {
+    "wenquanyi_9pt.bdf-converter": {
+      "url": "https://raw.githubusercontent.com/larryli/u8g2_wqy/34d1bf7e054ef5a331c45248cd238edc49498897/bdf/wenquanyi_9pt.bdf",
+      "bytes": 4350328,
+      "sha256": "dcf916124ab0d3d520b5994482ebc84d93dcd7cd19299b83f8fb696855cdb201"
+    },
+    "wenquanyi_9pt.bdf-u8g2": {
+      "url": "https://raw.githubusercontent.com/olikraus/u8g2/d6c8499c5f2707cac8eccd09fd8f677d12b17977/tools/font/bdf/wenquanyi_9pt.bdf",
+      "bytes": 4350329,
+      "sha256": "64a4f048908abdbf38b6b10af5fa2ba3e1dcf1e11151ecdf35b400feed6355dc"
+    },
+    "wenquanyi_12pt.bdf-converter": {
+      "url": "https://raw.githubusercontent.com/larryli/u8g2_wqy/34d1bf7e054ef5a331c45248cd238edc49498897/bdf/wenquanyi_12pt.bdf",
+      "bytes": 6759714,
+      "sha256": "b4bc0413cee9fb865b6f4bbd0a8e3923c057f0a55e414c7c5ccc0a62a4247a28"
+    },
+    "wenquanyi_12pt.bdf-u8g2": {
+      "url": "https://raw.githubusercontent.com/olikraus/u8g2/d6c8499c5f2707cac8eccd09fd8f677d12b17977/tools/font/bdf/wenquanyi_12pt.bdf",
+      "bytes": 6759714,
+      "sha256": "a76acbb6c18fa1d11e138f12dcb792e6e92c21c8f1067947b668014789df63ac"
+    },
+    "converter-README.md": {
+      "url": "https://raw.githubusercontent.com/larryli/u8g2_wqy/34d1bf7e054ef5a331c45248cd238edc49498897/README.md",
+      "bytes": 2222,
+      "sha256": "699ec02e323a53605545c4691e4cf71ae520e6bb98449e774f3f30051d6c20d2"
+    },
+    "converter-LICENSE": {
+      "url": "https://raw.githubusercontent.com/larryli/u8g2_wqy/34d1bf7e054ef5a331c45248cd238edc49498897/LICENSE",
+      "bytes": 1065,
+      "sha256": "b32f39f1c8d832de789e8646f5615b23ba7dedce40934ff4d81f8ff7b5c6eb31"
+    },
+    "converter-build.sh": {
+      "url": "https://raw.githubusercontent.com/larryli/u8g2_wqy/34d1bf7e054ef5a331c45248cd238edc49498897/build.sh",
+      "bytes": 3808,
+      "sha256": "de421eed715ff1758ff6751a03860b3e8aa3d0b50ebe6e322610313c7d422296"
+    },
+    "jcalendar-README.md": {
+      "url": "https://raw.githubusercontent.com/JADE-Jerry/jcalendar/3fd62cde85ab618ed195cb95cc08a6c70b6aea43/README.md",
+      "bytes": 13259,
+      "sha256": "e1d5dd45f0e52fe674c78913b7c9c799dc6a6bd604255a7b1a2abcdf66f8c77c"
+    }
+  },
+  "glyphComparison": {
+    "wenquanyi_9pt.bdf": {
+      "rawBytesEqual": false,
+      "converterGlyphs": 30503,
+      "u8g2Glyphs": 30503,
+      "onlyConverter": 0,
+      "onlyU8g2": 0,
+      "changedGlyphCount": 16,
+      "changedEncodingSample": [
+        242,
+        432,
+        601,
+        605,
+        607,
+        8733,
+        8734,
+        8735,
+        8925,
+        8926,
+        8927,
+        8928,
+        9548,
+        9549,
+        9618,
+        11960
+      ]
+    },
+    "wenquanyi_12pt.bdf": {
+      "rawBytesEqual": false,
+      "converterGlyphs": 41295,
+      "u8g2Glyphs": 41295,
+      "onlyConverter": 0,
+      "onlyU8g2": 0,
+      "changedGlyphCount": 109,
+      "changedEncodingSample": [
+        209,
+        216,
+        4366,
+        4371,
+        4403,
+        4405,
+        4411,
+        8538,
+        8592,
+        8602,
+        8603,
+        8604,
+        8605,
+        8606,
+        8608,
+        8610,
+        8611,
+        8612,
+        8614,
+        8617,
+        8618,
+        8619,
+        8620,
+        8621,
+        8622
+      ]
+    }
+  },
+  "licenseVersionClarified": false,
+  "downloadedCodeExecuted": false,
+  "evidencePurpose": "Fixed reviewed source chain, not identification of historical font-generation inputs",
+  "primaryDiscussionSources": [
+    "https://github.com/olikraus/u8g2/wiki/fntgrpwqy",
+    "https://github.com/olikraus/u8g2/issues/126#issuecomment-329354728",
+    "https://github.com/olikraus/u8g2/issues/455#issuecomment-357498851",
+    "https://github.com/larryli/u8g2_wqy/issues/1",
+    "https://github.com/larryli/u8g2_wqy/issues/1#issuecomment-357793435"
+  ],
+  "historicInputIdentified": false,
+  "maintainerDecision": {
+    "date": "2026-10-13",
+    "action": "Skip further GPL version confirmation; cancel inquiry",
+    "inquirySent": false,
+    "licenseVersionClarified": false
+  }
+}

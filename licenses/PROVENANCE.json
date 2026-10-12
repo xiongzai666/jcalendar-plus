@@ -321,6 +321,12 @@
       "source": "Noto Sans SC local installed font metadata; reproducible input match",
       "transformation": "SFNT name table metadata plus exact generation comparison",
       "sha256": "32d6cb940b0747887f15fe96a211adf6936bd3655a423167a9dd5ad5bf8122ca"
+    },
+    {
+      "file": "licenses/WenQuanYi-source-chain-20261013.json",
+      "source": "Fixed upstream BDF downloads and public maintainer discussions; URLs and hashes in attachment",
+      "transformation": "SHA-256 and encoding-keyed full glyph block comparison; no downloaded code executed",
+      "sha256": "891ade87bd28058a345208374ed30866bae3e75165f491a9d39c5c7b06cbd392"
     }
   ],
   "reviewedFiles": [
@@ -413,5 +419,28 @@
     "sourceReferenceRemoved": true,
     "linkedSymbolAbsentVerified": true,
     "verificationEnvironment": "z15"
+  },
+  "supplementDates": [
+    "2026-10-12",
+    "2026-10-13"
+  ],
+  "projectLicensePolicy": {
+    "decisionDate": "2026-10-13",
+    "license": "GPL-3.0 as stated in upstream LICENSE; original text unchanged",
+    "additionalNonCommercialRestriction": false,
+    "maintainerPersonalNonCommercialPreferenceWithdrawn": true,
+    "upstreamFurtherRestrictionTreatment": "GPLv3 section 7; original upstream README preserved as historical evidence",
+    "basis": [
+      "https://www.gnu.org/licenses/gpl-3.0.html#section7",
+      "https://www.gnu.org/licenses/gpl-faq.html#NoMilitary"
+    ],
+    "newUpstreamAuthorPermissionReceived": false,
+    "thirdPartyLicenseVersionsResolved": false
+  },
+  "wenQuanYiConfirmationDecision": {
+    "date": "2026-10-13",
+    "status": "Skipped at maintainer request",
+    "licenseVersionClarified": false,
+    "inquirySent": false
   }
 }
