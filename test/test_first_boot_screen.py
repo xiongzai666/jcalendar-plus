@@ -58,6 +58,7 @@ class Adafruit_GFX { public:
             stubs = r'''
 #include <cassert>
 #include <cstdio>
+#include <ctime>
 #include <cstring>
 #include <string>
 #include <vector>
