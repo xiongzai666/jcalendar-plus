@@ -52,7 +52,49 @@ def verify_build_receipt(root, build, environment, commit):
             raise ValueError('Verified build output segment changed; rebuild before packaging')
     return receipt
 
-def package_environment(build, output, environment, version, commit, boot_app0, dependencies=None):
+def release_attachments(root):
+    provenance = json.loads((root/'licenses/PROVENANCE.json').read_text(encoding='utf-8'))
+    contents = {name:(root/name).read_bytes() for name in
+        ('LICENSE','NOTICE.md','docs/THIRD_PARTY_LICENSES.md','docs/RELEASE_SOURCE.md','licenses/PROVENANCE.json')}
+    for attachment in provenance['attachments']:
+        name = attachment['file']
+        data = (root/name).read_bytes()
+        if hashlib.sha256(data).hexdigest() != attachment['sha256']:
+            raise ValueError('License attachment hash changed: '+name)
+        contents[name] = data
+    return contents
+
+def package_source(root, output, version, commit, platformio_home, library_environment='z15'):
+    tracked = subprocess.check_output(['git','ls-files','-z'],cwd=root).decode('utf-8').split('\0')
+    contents = {name:(root/name).read_bytes() for name in tracked if name}
+    dependency_roots = {
+        'third_party/libraries': root/'.pio/libdeps'/library_environment,
+        'third_party/framework-arduinoespressif32': platformio_home/'packages/framework-arduinoespressif32',
+        'third_party/platform-espressif32': platformio_home/'platforms/espressif32',
+    }
+    for prefix, directory in dependency_roots.items():
+        for path in sorted(directory.rglob('*')):
+            relative = path.relative_to(directory)
+            if not path.is_file() or any(part in ('.git','__pycache__','ArduinoUZlib') for part in relative.parts):
+                continue
+            if path.suffix.lower() in ('.a','.o','.bin','.elf','.exe','.dll','.pyc') or relative.name == 'integrity.dat':
+                continue
+            contents[prefix+'/'+relative.as_posix()] = path.read_bytes()
+    source_manifest = {
+        'version':version,'sourceCommit':commit,'libraryEnvironment':library_environment,
+        'files':{name:hashlib.sha256(data).hexdigest() for name,data in contents.items()},
+        'dependencies':{prefix:dependency_inventory(directory) for prefix,directory in dependency_roots.items()},
+        'excluded':'Git internals, compiled objects, device data; unused ArduinoUZlib wrapper omitted; actual decoder source in lib/BoundedUZlib',
+        'platformSourceReferences':['https://github.com/espressif/arduino-esp32/tree/2.0.17','https://github.com/espressif/esp-idf/tree/v4.4.7'],
+    }
+    contents['SOURCE_MANIFEST.json']=(json.dumps(source_manifest,ensure_ascii=False,indent=2)+'\n').encode('utf-8')
+    output.mkdir(parents=True,exist_ok=True)
+    archive=output/f'jcalendar-plus-{version}-source.zip'
+    with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
+        for name,data in contents.items(): z.writestr(name,data)
+    return archive
+
+def package_environment(build, output, environment, version, commit, boot_app0, dependencies=None, source_root=None):
     if environment not in ENVIRONMENTS: raise ValueError('Unsupported environment')
     paths = {name: (boot_app0 if name == 'boot_app0.bin' else build/name) for name in ADDRESSES}
     for name, path in paths.items():
@@ -67,7 +109,7 @@ def package_environment(build, output, environment, version, commit, boot_app0, 
                 'chip':'esp32', 'flashBytes':4194304, 'segments':segments,
                 'ota': {'applicationCapacity':APP_CAPACITY, 'imageFraction':paths['firmware.bin'].stat().st_size/APP_CAPACITY,
                         'layoutVerified':True, 'deviceUpgradeVerified':False},
-                'hardwareValidation':'historical Z15 hardware only; public defaults require device acceptance'}
+                'hardwareValidation':'Z15 scoped first-setup, OTA, offline and rc.3 changed-path evidence; other drivers build-only; no endurance or power claim'}
     if dependencies is not None: manifest['dependencies'] = dependencies
     output.mkdir(parents=True,exist_ok=True)
     archive = output/f'jcalendar-plus-{version}-{environment}.zip'
@@ -87,6 +129,8 @@ Z15 有历史实机使用记录；其余仅构建验证，不保证任意 4.2 �
 来源提交：{commit}
 """
     contents={name:path.read_bytes() for name,path in paths.items()}
+    if source_root is not None:
+        contents.update(release_attachments(source_root))
     contents['manifest.json']=(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n').encode('utf-8')
     contents['FLASHING.md']=guide.encode('utf-8')
     sums=''.join(hashlib.sha256(data).hexdigest()+'  '+name+'\n' for name,data in contents.items())
@@ -122,8 +166,9 @@ def main():
         for path in sorted((root/'lib').rglob('*')) if path.is_file() and '.git' not in path.parts}
     archives=[package_environment(root/'.pio/build'/env,args.output,env,version,commit,args.boot_app0,
         {'platformio':tool_dependencies,'libraries':dependency_inventory(root/'.pio/libdeps'/env),
-         'platformioIniSha256':hashlib.sha256((root/'platformio.ini').read_bytes()).hexdigest()})
+         'platformioIniSha256':hashlib.sha256((root/'platformio.ini').read_bytes()).hexdigest()},source_root=root)
         for env in args.environment or ENVIRONMENTS]
+    archives.append(package_source(root,args.output,version,commit,args.platformio_home,(args.environment or ENVIRONMENTS)[0]))
     sums=''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n' for p in archives)
     (args.output/'SHA256SUMS.txt').write_text(sums,encoding='utf-8')
     for archive in archives:print(archive)

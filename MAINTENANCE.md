@@ -45,7 +45,7 @@ python tools/release_bundle.py --boot-app0 PATH_TO_PLATFORMIO_FRAMEWORK/tools/pa
 
 `PATH_TO_PLATFORMIO_FRAMEWORK` 是本机 PlatformIO 安装的 `framework-arduinoespressif32` 包目录。工具生成 `.releases/jcalendar-plus-VERSION-ENV.zip` 与总 SHA256 文件；可用 `--environment` 单独选目标。打包不编译，要求输入就是步骤 2 验证过的构建。
 
-每包包含 4 个明确地址的段、清单、内部 SHA256 与刷机说明。应用更新用 `firmware.bin`。包中不应出现 NVS、完整 Flash 或用户配置。来源提交在 manifest 中；只发布选定公开分支，禁止镜像推送继承的私有历史。
+每包包含 4 个明确地址的段、清单、内部 SHA256、刷机说明、LICENSE、NOTICE、第三方许可原文及对应源码说明。应用更新用 `firmware.bin`。同次发布附带对应提交的源码 ZIP 和本次解析的固件库／框架源码，见 `docs/RELEASE_SOURCE.md`。包中不应出现 NVS、完整 Flash 或用户配置。来源提交在 manifest 中；只发布选定公开分支，禁止镜像推送继承的私有历史。
 
 5. 发布前独立复核包、许可证处理状态和 UI。新首启界面需要实体设备验收；编译和主机测试不能替代实屏检查。
 6. GitHub 发布／部署需要维护者明确批准，本地提交不代表批准发布。

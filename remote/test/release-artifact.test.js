@@ -30,8 +30,9 @@ test('compiled ZIP preserves CLI layout and rejects unverified inputs', async t 
   const config = join(dir, 'edgeone.json'); await writeFile(config, '{"outputDirectory":"public"}');
   const archive = join(dir, 'artifact.zip');
   await packArtifact(root, archive, { [name]: sha('compiled') }, config, sha(await readFile(config)));
-  const result = spawnSync(process.platform === 'win32' ? 'py' : 'python3',
-    [...(process.platform === 'win32' ? ['-3'] : []), '-c',
+  const python = process.env.J_CALENDAR_PYTHON || (process.platform === 'win32' ? 'py' : 'python3');
+  const result = spawnSync(python,
+    [...(python === 'py' ? ['-3'] : []), '-c',
       'import sys,json,zipfile;print(json.dumps(zipfile.ZipFile(sys.argv[1]).namelist()))', archive], { encoding: 'utf8' });
   assert.equal(result.status, 0, result.stderr);
   assert.deepEqual(JSON.parse(result.stdout).sort(), ['remote/.edgeone/' + name, 'remote/edgeone.json']);

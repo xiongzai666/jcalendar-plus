@@ -14,6 +14,44 @@ def partitions(app1=0x1e0000):
  return b''.join(struct.pack('<HBBII16sI',0x50aa,0,subtype,address,size,name,0)
   for subtype,address,size,name in ((0x10,0x10000,0x1e0000,b'app0'),(0x11,0x1f0000,app1,b'app1')))+b'\xff'*32
 class ReleaseBundleTests(unittest.TestCase):
+ def test_source_archive_uses_tracked_project_files_and_source_dependencies_only(self):
+  from unittest.mock import patch
+  with tempfile.TemporaryDirectory() as d:
+   root=Path(d);home=root/'pio-home';(root/'include').mkdir();(root/'include/version.h').write_bytes(b'version')
+   (root/'nvs.bin').write_bytes(b'private')
+   for directory in (root/'.pio/libdeps/z15',home/'packages/framework-arduinoespressif32',home/'platforms/espressif32'):
+    directory.mkdir(parents=True);(directory/'public.cpp').write_bytes(b'source');(directory/'compiled.a').write_bytes(b'binary')
+   wrapper=root/'.pio/libdeps/z15/ArduinoUZlib';wrapper.mkdir();(wrapper/'unknown.cpp').write_bytes(b'unlicensed-wrapper')
+   with patch.object(module.subprocess,'check_output',return_value=b'include/version.h\0'):
+    bundle=module.package_source(root,root/'out','2.3.2-rc.3','a'*40,home)
+   with zipfile.ZipFile(bundle) as archive:
+    names=archive.namelist()
+    self.assertIn('include/version.h',names)
+    self.assertIn('third_party/libraries/public.cpp',names)
+    self.assertNotIn('nvs.bin',names)
+    self.assertFalse(any(name.endswith('.a') or 'ArduinoUZlib/' in name for name in names))
+    manifest=json.loads(archive.read('SOURCE_MANIFEST.json'))
+    self.assertEqual(manifest['sourceCommit'],'a'*40)
+    for name,expected in manifest['files'].items():
+     self.assertEqual(hashlib.sha256(archive.read(name)).hexdigest(),expected)
+ def test_bundle_contains_verified_notices_and_corresponding_source_instructions(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=Path(d);(root/'licenses').mkdir();(root/'docs').mkdir();build=root/'build';build.mkdir()
+   for name in ('LICENSE','NOTICE.md','docs/THIRD_PARTY_LICENSES.md','docs/RELEASE_SOURCE.md'):
+    (root/name).write_bytes(b'notice-'+name.encode())
+   font=root/'licenses/font.txt';font.write_bytes(b'font-license')
+   (root/'licenses/PROVENANCE.json').write_text(json.dumps({'attachments':[{'file':'licenses/font.txt','sha256':hashlib.sha256(font.read_bytes()).hexdigest()}]}))
+   for name in ('bootloader.bin','firmware.bin','boot_app0.bin'):(build/name).write_bytes(b'data')
+   (build/'partitions.bin').write_bytes(partitions())
+   bundle=module.package_environment(build,root/'out','z15','2.3.2-rc.3','a'*40,build/'boot_app0.bin',source_root=root)
+   with zipfile.ZipFile(bundle) as archive:
+    self.assertEqual(archive.read('licenses/font.txt'),b'font-license')
+    self.assertEqual(archive.read('LICENSE'),b'notice-LICENSE')
+    self.assertIn('docs/RELEASE_SOURCE.md',archive.namelist())
+    self.assertIn('licenses/font.txt',archive.read('SHA256SUMS.txt').decode())
+   font.write_bytes(b'changed-license')
+   with self.assertRaisesRegex(ValueError,'license|attachment'):
+    module.package_environment(build,root/'out','z15','2.3.2-rc.3','a'*40,build/'boot_app0.bin',source_root=root)
  def test_release_refuses_stale_build_commit_sources_or_segments(self):
   with tempfile.TemporaryDirectory() as d:
    root=Path(d);(root/'include').mkdir();build=root/'.pio/build';(build/'z15').mkdir(parents=True)
