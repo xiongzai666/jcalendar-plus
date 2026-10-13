@@ -16,5 +16,5 @@ cxx=os.environ.get('J_CALENDAR_CXX') or shutil.which('clang++') or shutil.which(
 if not cxx:raise SystemExit('Set J_CALENDAR_CXX to a C++ compiler')
 cmd=[cxx,'c++'] if Path(cxx).stem=='zig' else [cxx]
 exe=out/'test.exe'
-subprocess.run(cmd+['-std=c++11','-DSI_DRIVER=15','-Itest/ota_upload_stub','-Iinclude','-I'+str(out),'test/ota_multipart_host.cpp','src/local_ota.cpp','-o',str(exe)],cwd=ROOT,check=True)
+subprocess.run(cmd+['-std=c++11','-DSI_DRIVER=15','-Itest/ota_upload_stub','-Iinclude','-I'+str(out),'test/ota_multipart_host.cpp','src/local_ota.cpp','-o',str(exe)]+(['-lws2_32'] if os.name=='nt' else []),cwd=ROOT,check=True)
 subprocess.run([str(exe)],check=True,timeout=5)

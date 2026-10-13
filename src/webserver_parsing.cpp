@@ -27,6 +27,8 @@
 #include "WiFiClient.h"
 #include "WebServer.h"
 #include "detail/mimetable.h"
+#include <lwip/sockets.h>
+#include <errno.h>
 
 #ifndef WEBSERVER_MAX_POST_ARGS
 #define WEBSERVER_MAX_POST_ARGS 32
@@ -339,8 +341,19 @@ int WebServer::_uploadReadByte(WiFiClient& client) {
 
   if (res < 0) {
     const uint32_t waitingAt = millis();
-    while(!client.available() && client.connected() && millis() - waitingAt < HTTP_MAX_POST_WAIT)
+    while(!client.available() && client.connected() && millis() - waitingAt < HTTP_MAX_POST_WAIT) {
+      // WiFiClient::connected() can stay true after the peer sends FIN.
+      char pending;
+      if (client.fd() >= 0) {
+        const int savedErrno = errno;
+        const int peek = recv(client.fd(), &pending, 1, MSG_PEEK | MSG_DONTWAIT);
+        const int socketError = errno;
+        errno = savedErrno; // SDK connected() consults errno even after a successful recv.
+        if (peek == 0 || (peek < 0 && (socketError == ECONNRESET || socketError == ENOTCONN || socketError == EPIPE)))
+          return -1;
+      }
       delay(2);
+    }
 
     res = client.read();
   }
@@ -488,9 +501,14 @@ bool WebServer::_parseForm(WiFiClient& client, String boundary, uint32_t len){
             if (!client.connected()) return _parseFormUploadAborted();
             // FILE_END only finishes the file. A missing form tail must release
             // the parser instead of repeatedly reading empty headers forever.
-            client.setTimeout(1);
-            line = client.readStringUntil('\r');
-            client.readStringUntil('\n');
+            line = "";
+            int tail = _uploadReadByte(client);
+            while (tail == '-' && line.length() < 2) {
+                line += "-";
+                tail = _uploadReadByte(client);
+            }
+            if (tail != '\r' || _uploadReadByte(client) != '\n')
+                return _parseFormUploadAborted();
             if (line == "--") {     // extra two dashes mean we reached the end of all form fields
                 log_v("Done Parsing POST");
                 break;
