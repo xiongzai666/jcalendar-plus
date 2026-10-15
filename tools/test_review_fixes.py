@@ -1,5 +1,5 @@
 """Exercise the source-bound review failures with real text validation and fonts."""
-import os, re, subprocess, sys, unittest
+import os, re, shutil, subprocess, sys, unittest
 from pathlib import Path
 
 ROOT = Path(sys.argv.pop(1)).resolve() if len(sys.argv)>1 and not sys.argv[1].startswith('-') else Path(__file__).resolve().parents[1]
@@ -143,7 +143,9 @@ int main(int argc,char** argv){assert(argc==2);std::string test=argv[1];u8g2Font
 }
 '''
         (OUT/'checks.cpp').write_text(source,encoding='utf8')
-        cxx=os.environ['J_CALENDAR_CXX'];compiler=[cxx,'c++'] if Path(cxx).stem=='zig' else [cxx]
+        cxx=os.environ.get('J_CALENDAR_CXX') or shutil.which('g++')
+        assert cxx, 'Set J_CALENDAR_CXX or install g++'
+        compiler=[cxx,'c++'] if Path(cxx).stem=='zig' else [cxx]
         cmd=compiler+['-std=c++11','-ftrivial-auto-var-init=pattern','-I'+str(OUT),'-I'+str(ROOT/'include'),'-I'+str(ROOT/'.pio/libdeps'/environment/'ArduinoJson/src'),'-I'+str(library),str(OUT/'checks.cpp'),str(OUT/'fonts.cpp'),str(library/'U8g2_for_Adafruit_GFX.cpp'),'-o',str(OUT/'checks.exe')]
         subprocess.run(cmd,check=True)
 
