@@ -1,6 +1,8 @@
 # 更新记录
 
-## 2.3.2-rc.4 — 2026-10-15（发行候选）
+## 2.3.2-rc.4 — 2026-10-15（公开预发布）
+
+[Release](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.4) 的七份附件已发布并核对服务器哈希，来源 `394e47b`；[CI 五项通过](https://github.com/xiongzai666/jcalendar-plus/actions/runs/38761400623)。
 
 - 完整初始化天气校时回退时值；本轮已联网但未校时成功时给出准确提示，保留省电关 Wi-Fi 行为。
 - 换远程源或令牌时清除旧 revision 与 pending 标记，首次重新获取完整配置。
