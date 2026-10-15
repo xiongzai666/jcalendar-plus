@@ -10,6 +10,7 @@ void si_wifi();
 int si_weather_status();
 void si_weather();
 
+void si_set_network_connected(bool connected);
 int si_screen_status();
 void si_screen();
 void si_set_initial_wifi_setup(bool required);

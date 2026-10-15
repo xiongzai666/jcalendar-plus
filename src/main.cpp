@@ -23,6 +23,7 @@
 #include "runtime_summary.h"
 #include "network_budget.h"
 #include "remote_sync.h"
+#include "remote_contract.h"
 #include "remote_retry.h"
 #include "date_overrides.h"
 #include "page_navigation_core.h"
@@ -42,7 +43,7 @@ WiFiManagerParameter para_qweather_key("qweather_key", "和风天气API Key", ""
 // WiFiManagerParameter para_test(test_html);
 WiFiManagerParameter para_qweather_type("qweather_type", "天气类型（0:每日天气，1:实时天气）", "0", 2, "pattern='\\[0-1]{1}'"); //     城市code
 WiFiManagerParameter para_qweather_location("qweather_loc", "位置ID", "", 64); //     城市code
-WiFiManagerParameter para_cd_day_label("cd_day_label", "倒数日（4字以内）", "", 16); //     倒数日
+WiFiManagerParameter para_cd_day_label("cd_day_label", "倒数日（8字以内）", "", 24); //     倒数日
 WiFiManagerParameter para_cd_day_date("cd_day_date", "日期（yyyyMMdd）", "", 8, "pattern='\\d{8}'"); //     城市code
 WiFiManagerParameter para_tag_days("tag_days", "日期Tag（yyyyMMddx，详见README）", "", 30); //     日期Tag
 WiFiManagerParameter para_si_week_1st("si_week_1st", "每周起始（0:周日，1:周一）", "0", 2, "pattern='\\[0-1]{1}'"); //     每周第一天
@@ -373,6 +374,7 @@ void setup() {
     wm.setEnableConfigPortal(false);
     wm.setConnectTimeout(10);
     bool connected = connectPreferredWiFi();
+    si_set_network_connected(connected);
     refreshInitialWifiSetupState(connected);
     if (connected) {
         Serial.println("Connect OK.");
@@ -585,11 +587,25 @@ void saveParamsCallback() {
     pref.putString(PREF_QWEATHER_KEY, para_qweather_key.getValue());
     pref.putString(PREF_QWEATHER_TYPE, strcmp(para_qweather_type.getValue(), "1") == 0 ? "1" : "0");
     pref.putString(PREF_QWEATHER_LOC, para_qweather_location.getValue());
-    pref.putString(PREF_CD_DAY_LABLE, para_cd_day_label.getValue());
+    const char* countdownLabel = para_cd_day_label.getValue();
+    if (!*countdownLabel || remote_contract::text(countdownLabel, 8, 24))
+        pref.putString(PREF_CD_DAY_LABLE, countdownLabel);
     pref.putString(PREF_CD_DAY_DATE, para_cd_day_date.getValue());
     pref.putString(PREF_TAG_DAYS, para_tag_days.getValue());
     pref.putString(PREF_SI_WEEK_1ST, strcmp(para_si_week_1st.getValue(), "1") == 0 ? "1" : "0");
     pref.putString(PREF_STUDY_SCHEDULE, para_study_schedule.getValue());
+    if (pref.getString(PREF_REMOTE_HOST, "") != para_remote_host.getValue() ||
+        pref.getString(PREF_REMOTE_TOKEN) != para_remote_token.getValue()) {
+        // Invalidate the old source before saving the new identity. An unmarked journal is ignored.
+        pref.remove(PREF_REMOTE_PENDING);
+        pref.remove(PREF_REMOTE_REV);
+        pref.remove(PREF_REMOTE_PAGE);
+        pref.remove(PREF_REMOTE_SYNC_AT);
+        pref.remove(PREF_REMOTE_SYNC_ERR);
+        pref.remove(PREF_REMOTE_ERR_CODE);
+        pref.remove(PREF_REMOTE_ERR_COUNT);
+        pref.remove(PREF_REMOTE_ERR_AT);
+    }
     pref.putString(PREF_REMOTE_HOST, para_remote_host.getValue());
     pref.putString(PREF_REMOTE_TOKEN, para_remote_token.getValue());
     const String certificate = normalizeRemoteCertificate(para_remote_ca.getValue());
@@ -664,7 +680,7 @@ void buttonDoubleClick(void* oneButton) {
     para_qweather_key.setValue(qToken.c_str(), 32);
     para_qweather_location.setValue(qLoc.c_str(), 64);
     para_qweather_type.setValue(qType.c_str(), 1);
-    para_cd_day_label.setValue(cddLabel.c_str(), 16);
+    para_cd_day_label.setValue(cddLabel.c_str(), 24);
     para_cd_day_date.setValue(cddDate.c_str(), 8);
     para_tag_days.setValue(tagDays.c_str(), 30);
     para_si_week_1st.setValue(week1st.c_str(), 1);

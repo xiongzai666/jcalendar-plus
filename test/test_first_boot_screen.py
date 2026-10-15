@@ -31,7 +31,7 @@ class FirstBootScreenTests(unittest.TestCase):
         main = (ROOT/'src/main.cpp').read_text(encoding='utf-8')
         # RC1 had no stored-network reader/setter. Its real screen task reproduces the missing guide.
         reader = function(main,'refreshInitialWifiSetupState','void refreshInitialWifiSetupState(bool) {}')
-        setter = function(screen,'si_set_initial_wifi_setup','void si_set_initial_wifi_setup(bool) {}')
+        setter = function(screen,'si_set_initial_wifi_setup','void si_set_initial_wifi_setup(bool) {}')+'\n'+function(screen,'si_set_network_connected')
         task = function(screen,'task_screen')
         setup = function(main,'setup')
         network = 'void startupNetworkPhase() {\n'+setup[setup.index('    Serial.println("Wm begin...");'):-1]+'\n}'
@@ -86,7 +86,7 @@ struct RecordingFonts:U8G2_FOR_ADAFRUIT_GFX { std::vector<Text> drawn;
 } u8g2Fonts;
 struct SerialLike {void println(const char*){}} Serial;
 int voltage;bool lowBattery;int _calendar_status=2,_si_type=2,_screen_status=0;
-bool _initial_wifi_setup=false,recovery=false;void* SCREEN_HANDLER=nullptr;
+bool _initial_wifi_setup=false,recovery=false,_network_round_connected=false;void* SCREEN_HANDLER=nullptr;
 struct {int tm_year=126,tm_mon=9,tm_mday=8;} tmInfo;
 String _cd_day_label,_cd_day_date;
 int readBatteryVoltage(){return 4000;}bool isBatteryLow(int){return false;}void delay(int){}void init_cal_layout_size(){}

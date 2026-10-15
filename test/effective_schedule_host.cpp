@@ -5,6 +5,16 @@
 #include "routine_fixture.h"
 
 int main() {
+    const char* rest[12];for(auto& subject:rest)subject="待配置";
+    EffectiveDay empty={defaultLessonClock(),0,false};
+    assert(!strcmp(effectiveRestText(empty,rest,false,2),"课程待配置"));
+    for(auto& subject:rest)subject="无课";
+    assert(!strcmp(effectiveRestText(empty,rest,false,2),"今日无课"));
+    for(auto& subject:rest)subject="放假";
+    assert(!strcmp(effectiveRestText(empty,rest,false,2),"今天放假"));
+    assert(!strcmp(effectiveRestText(empty,rest,false,0),"周日休息"));
+    empty.independent=true;assert(!strcmp(effectiveRestText(empty,rest,false,0),"今日无课"));
+    assert(!strcmp(effectiveRestText(empty,rest,true,2),"今天放假"));
     LessonClock clock;
     assert(parseLessonClock(TEST_DAILY_ROUTINE, clock));
     const char* all[12] = {"语文","英语","物理","数学","地理","化学","体育","班会","自习","自习","自习","自习"};

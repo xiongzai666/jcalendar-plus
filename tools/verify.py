@@ -28,6 +28,7 @@ if not args.skip_build:
         run([__import__('sys').executable, '-m', 'platformio', 'run', '-e', args.environment])
 os.environ['J_CALENDAR_ENVIRONMENT'] = args.environment
 run([__import__('sys').executable, '-m', 'unittest', 'discover', '-s', 'test', '-p', 'test_*.py'])
+run([sys.executable, 'tools/test_review_fixes.py'])
 run([node, '--test'], ROOT / 'remote')
 run([node, 'tools/check-build.mjs'], ROOT / 'remote')
 

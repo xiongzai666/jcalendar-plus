@@ -19,6 +19,20 @@ inline EffectiveDay makeEffectiveDay(const LessonClock& clock,
         if (effectiveSubject(subjects[i])) day.mask |= static_cast<uint16_t>(1u << i);
     return day;
 }
+inline const char* effectiveRestText(const EffectiveDay& day,
+                                    const char* const subjects[12],bool dayOff,int weekday) {
+    if(day.mask)return "今日课程结束";
+    if(dayOff)return "今天放假";
+    if(day.independent)return "今日无课";
+    if(weekday==0)return "周日休息";
+    bool holiday=true,unconfigured=false;
+    for(int i=0;i<12;++i){
+        const char* subject=subjects[i];
+        unconfigured|=!subject||!*subject||!strcmp(subject,"待配置");
+        holiday&=subject&&!strcmp(subject,"放假");
+    }
+    return unconfigured?"课程待配置":holiday?"今天放假":"今日无课";
+}
 inline int effectiveDismissal(const EffectiveDay& day, int section) {
     if (section < 0 || section > 2) return -1;
     for (int i = section * 4 + 3; i >= section * 4; --i)

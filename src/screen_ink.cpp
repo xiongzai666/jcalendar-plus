@@ -41,6 +41,8 @@ const String nl_mon_str[] = { "", "正", "二", "三", "四", "五", "六", "七
 
 int _screen_status = -1;
 int _calendar_status = -1;
+static bool _network_round_connected = false;
+void si_set_network_connected(bool connected) { _network_round_connected = connected; }
 static bool _initial_wifi_setup = false;
 void si_set_initial_wifi_setup(bool required) {
     _initial_wifi_setup = required;
@@ -312,7 +314,7 @@ void draw_cal_days(bool partial) {
         String d = _tag_days_str.substring(indexBegin + 6, indexBegin + 8);
         char t = _tag_days_str.charAt(indexBegin + 8);
 
-        if ((y.equals(String(tmInfo.tm_year + 1900)) || y.equals("0000")) && (m.equals(String(tmInfo.tm_mon + 1)) || m.equals("00"))) {
+        if ((y.equals(String(tmInfo.tm_year + 1900)) || y.equals("0000")) && (m.toInt() == tmInfo.tm_mon + 1 || m.equals("00"))) {
             const int tagDay = d.toInt();
             if (tagDay >= 1 && tagDay <= 31) tags[tagDay] = t;
         }
@@ -1026,7 +1028,7 @@ void si_calendar() {
             tmInfo = { 0 }; // 重置为0
             if (strptime(apiTime.c_str(), "%Y-%m-%dT%H:%M", &tmInfo) != NULL) {  // 将时间字符串转成tm时间 e.g. 2024-11-14T17:36+08:00
                 time_t set = mktime(&tmInfo);
-                timeval tv;
+                timeval tv = {};
                 tv.tv_sec = set;
                 isSetOK = (settimeofday(&tv, nullptr) == 0);
                 if (isSetOK) _screen_snapshot_time = time(nullptr);
@@ -1116,7 +1118,7 @@ void task_screen(void* param) {
             u8g2Fonts.drawUTF8(16, 32, "时间待同步");
             display.drawFastHLine(14, 44, 372, GxEPD_RED);
             u8g2Fonts.setForegroundColor(GxEPD_BLACK);
-            u8g2Fonts.drawUTF8(42, 130, "暂时无法连接 Wi-Fi");
+            u8g2Fonts.drawUTF8(42, 130, _network_round_connected ? "已联网，时间尚未校准" : "暂时无法连接 Wi-Fi");
             u8g2Fonts.drawUTF8(42, 168, "周课表和待办仍可查看");
             u8g2Fonts.setFont(FONT_SUB);
             u8g2Fonts.drawUTF8(42, 216, "短按上下键切换页面");

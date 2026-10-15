@@ -274,10 +274,9 @@ static void drawTodayLessons(int split) {
     u8g2Fonts.setBackgroundColor(GxEPD_WHITE);
 
     if (rest) {
-        drawLargeSubject(_study_schedule.isEmpty() && !context.day.independent && !context.override.dayOff ? "课表待配置" :
-                         context.day.mask ? "今日课程结束" :
-                         context.day.independent && !context.override.dayOff ? "今日无课" :
-                         (tmInfo.tm_wday == 0 && !context.override.dayOff ? "周日休息" : "今天放假"), split / 2, 125,
+        const char* subjects[12];
+        for(int i=0;i<12;++i)subjects[i]=context.courses[i].c_str();
+        drawLargeSubject(effectiveRestText(context.day,subjects,context.override.dayOff,tmInfo.tm_wday), split / 2, 125,
                          GxEPD_RED, split - 25);
         display.drawFastHLine(43, 178, split - 86, GxEPD_RED);
         u8g2Fonts.setFont(FONT_TEXT);
@@ -372,8 +371,9 @@ static void drawTimetableCountdown() {
     // Exam countdown.
     u8g2Fonts.setFont(FONT_TEXT);
     u8g2Fonts.setForegroundColor(GxEPD_BLACK);
-    centered((_cd_day_label.isEmpty() ? String("目标") : _cd_day_label) + "倒计时",
-             rightCenter, 64);
+    const String countdownTitle = (_cd_day_label.isEmpty() ? String("目标") : _cd_day_label) + "倒计时";
+    if (u8g2Fonts.getUTF8Width(countdownTitle.c_str()) > 142) u8g2Fonts.setFont(FONT_SUB);
+    centered(countdownTitle, rightCenter, 64);
     int daysLeft = -1;
     String targetDate;
     const bool hasDate = examCountdown(daysLeft, targetDate);
