@@ -1,5 +1,7 @@
 # J-Calendar Plus
 
+**2.3.2-rc.4 候选**整合天气校时、换源同步、热点名称、长标题、校时提示和日期 Tag 修复，以及 OTA 中断恢复修复。定向检查通过，发行结果以 Release 页面为准；以下 rc.3 是此前已发行版本。
+
 基于 [JADE-Jerry/jcalendar](https://github.com/JADE-Jerry/jcalendar) 的 4.2 寸黑白红墨水屏日历扩展版：课程、月历、倒计时、天气和待办，配套可自行部署的手机配置网页。
 
 **当前公开预发布版：2.3.2-rc.3。** 面向经典 ESP32、4 MB Flash、400 × 300 三色屏。原项目基础功能、驱动及作者信息保留于 [NOTICE](NOTICE.md)；许可证原文见 [LICENSE](LICENSE)。

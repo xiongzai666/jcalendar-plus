@@ -109,7 +109,7 @@ def package_environment(build, output, environment, version, commit, boot_app0, 
                 'chip':'esp32', 'flashBytes':4194304, 'segments':segments,
                 'ota': {'applicationCapacity':APP_CAPACITY, 'imageFraction':paths['firmware.bin'].stat().st_size/APP_CAPACITY,
                         'layoutVerified':True, 'deviceUpgradeVerified':False},
-                'hardwareValidation':'Z15 scoped first-setup, OTA, offline and rc.3 changed-path evidence; other drivers build-only; no endurance or power claim'}
+                'hardwareValidation':'Z15 recorded first-setup, OTA, offline and 2026-10-13 aborted-OTA recovery evidence; rc.4 changes host-tested, not newly installed; other drivers build-only; no endurance or power claim'}
     if dependencies is not None: manifest['dependencies'] = dependencies
     output.mkdir(parents=True,exist_ok=True)
     archive = output/f'jcalendar-plus-{version}-{environment}.zip'

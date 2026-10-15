@@ -4,7 +4,7 @@
 
 ## 源码获取与编译
 
-每个驱动包的 `manifest.json` 记录完整 `sourceCommit`。同次 GitHub 预发布提供 `jcalendar-plus-2.3.2-rc.3-source.zip`，包含该提交的项目源码、编译和安装工具、许可附件及本次解析的固件库源码。也可在 [公开仓库](https://github.com/xiongzai666/jcalendar-plus) 按完整提交检出；不要用旧版源码对应新版二进制。
+每个驱动包的 `manifest.json` 记录完整 `sourceCommit`。同次 GitHub 预发布提供 `jcalendar-plus-2.3.2-rc.4-source.zip`，包含该提交的项目源码、编译和安装工具、许可附件及本次解析的固件库源码。也可在 [公开仓库](https://github.com/xiongzai666/jcalendar-plus) 按完整提交检出；不要用旧版源码对应新版二进制。
 
 源码包根目录的 `SOURCE_MANIFEST.json` 记录项目提交、逐文件 SHA-256 和第三方来源。`third_party/libraries/` 保留构建中解析的库源码和原始声明；检入驱动、受限解码器及项目内修改直接位于 `lib/` 和 `src/`。ArduinoUZlib 未声明授权的包装层不随源码包补发；固件实际使用的解码器对应源码在 `lib/BoundedUZlib`。各平台依赖的名称、版本、来源和元数据哈希另在驱动包 manifest 中记录。
 
@@ -17,4 +17,4 @@
 - 项目 GPLv3 政策已确认；原作者及各组件版权保留。
 - 文泉驿转换字体的 GPLv2／GPLv2-or-later 差异按维护者决定跳过进一步确认，已记录但未澄清。原字体和转换库声明随包提供，不称取得额外授权。
 - 本次不分发编译后的云端包或 EdgeOne SDK 字节。项目源码包含 `remote` 的源码和锁文件；自行安装 SDK 时由对应包提供其许可，源码包没有代造 SDK 版权通知。
-- Z15 复用有效首配／OTA／离线证据及 rc.3 指定异常网络、取消和电量显示验证。其他驱动只有构建验证；未承诺全天稳定性或续航。中断 OTA 后紧邻首次 GET 重置、5 秒后正常的实测边界保留于验收记录。
+- Z15 复用有效首配／OTA／离线证据、rc.3 指定异常网络和电量验证，以及 [10 月 13 日 OTA 中止恢复](OTA_RECOVERY.md) 实测。rc.4 新增修复经过主机定向验证，尚未新装实机。其他驱动只有构建验证；未承诺全天稳定性或续航。旧候选的紧邻 GET 重置记录保留，不能代替修复后的恢复证据。
