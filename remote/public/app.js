@@ -1,3 +1,4 @@
+import { LESSON_LABELS, routineIssues } from './routine.js';
 import { TodoEditSession, orderedTodos, syncResult, safeDiagnostic } from './product-flow.js';
 import { getOverrideReview } from './override-review.js';
 import { planHolidayRange } from './holiday-range.js';
@@ -8,8 +9,6 @@ import { DraftJournal, mergeDraft, acceptSave, requestJSON, StatusChecker } from
 const $ = selector => document.querySelector(selector);
 const DAYS = ['一', '二', '三', '四', '五', '六'];
 const PERIODS = ['上午', '下午', '晚上'];
-const LESSON_LABELS = ['第1节', '第2节', '第3节', '第4节', '第5节', '第6节',
-  '第7节', '第8节', '晚自习1', '晚自习2', '晚自习3', '晚自习4'];
 const TITLES = { todos: '待办事项', schedule: '每周课程', overrides: '临时安排', routine: '每日作息', settings: '显示设置', history: '配置历史' };
 const FAILURE_LABELS = {
   wifi: 'Wi‑Fi 连接失败', connect: '站点连接或证书校验失败',
@@ -140,11 +139,12 @@ function markDirty() {
 
 function renderStatus() {
   const result = syncResult({saved,revision:cloudRevision,device,dirty:editsPending()});
-  $('#sync-headline').textContent = result.headline;
+  $('#sync-headline').textContent = result.kind === 'confirmed' ? '设备已确认接收配置' : result.headline;
   $('#sync-detail').textContent = result.detail;
   $('#sync-network').textContent = result.evidence;
   $('#sync-diagnostic').textContent = result.action;
-  $('#sync-diagnostic').hidden = false;
+  $('#sync-diagnostic').hidden = result.kind === 'confirmed';
+  $('.status-panel').classList.toggle('needs-attention', result.kind !== 'confirmed');
   renderSyncLog(); renderRuntimeSummary();
   const diagnostic = $('#diagnostic-output');
   if (diagnostic && !$('#diagnostic-details').hidden) diagnostic.textContent = JSON.stringify(safeDiagnostic({revision:cloudRevision,dirty:editsPending(),device}),null,2);
@@ -293,7 +293,7 @@ function renderSchedule() {
   editor.replaceChildren();
   PERIODS.forEach((name, groupIndex) => {
     const section = element('section', 'period-group');
-    section.append(element('h3', '', `${name} · 第 ${groupIndex * 4 + 1}–${groupIndex * 4 + 4} 节`));
+    section.append(element('h2', '', `${name} · 第 ${groupIndex * 4 + 1}–${groupIndex * 4 + 4} 节`));
     for (let slot = 0; slot < 4; slot++) {
       const index = groupIndex * 4 + slot;
       const label = element('label', 'course-field');
@@ -335,7 +335,7 @@ function renderOverrides() {
       if (result.note) review.append(element('p', 'override-review-note', result.note));
     };
     const head = element('div', 'override-head');
-    const title = element('h3', '', day.date);
+    const title = element('h2', '', day.date);
     const remove = element('button', 'remove-button', '删除日期');
     remove.type = 'button';
     remove.setAttribute('aria-label', `删除 ${day.date} 的临时安排`);
@@ -382,7 +382,7 @@ function renderOverrides() {
         PERIODS.forEach((name, group) => {
           const section = element('section', 'custom-period');
           const head = element('div', 'override-head');
-          head.append(element('h4', '', name));
+          head.append(element('h3', '', name));
           const rows = [...day.lessons].filter(row => Math.floor((row.slot-1)/4) === group)
             .sort((a,b) => a.slot-b.slot);
           const add = element('button', 'secondary-button', '＋ 添加时段');
@@ -459,29 +459,62 @@ function renderRoutine() {
     const row = element('div', 'routine-row');
     const isLesson = LESSON_LABELS.includes(item.label);
     [['start', '开始时间'], ['end', '结束时间'], ['label', '活动名称']].forEach(([key, label]) => {
+      if (key === 'label' && isLesson) {
+        const name = element('span', 'routine-name', item.label);
+        name.title = '课程节次名称固定；可修改上课与下课时间';
+        row.append(name);
+        return;
+      }
       const input = element('input');
       input.type = key === 'label' ? 'text' : 'time';
       if (key === 'label') input.maxLength = 16;
       input.value = item[key];
       input.setAttribute('aria-label', `第 ${index + 1} 项${label}`);
-      if (key === 'label' && isLesson) {
-        input.readOnly = true;
-        input.title = '课程节次名称固定；可修改上课与下课时间';
-      }
-      input.addEventListener('change', () => { items[index][key] = input.value; setRoutine(items); });
+      input.dataset.field = key;
+      input.addEventListener('change', () => { items[index][key] = input.value; setRoutine(items); renderRoutineErrors(); });
       row.append(input);
     });
-    const remove = element('button', 'remove-button', '×');
-    remove.type = 'button';
-    remove.setAttribute('aria-label', `删除第 ${index + 1} 项作息`);
-    if (isLesson) {
-      remove.disabled = true;
-      remove.title = '课程节次不可删除；可修改时间';
+    if (!isLesson) {
+      const remove = element('button', 'remove-button', '×');
+      remove.type = 'button';
+      remove.setAttribute('aria-label', `删除第 ${index + 1} 项作息`);
+      remove.addEventListener('click', () => { items.splice(index, 1); setRoutine(items); renderRoutine(); });
+      row.append(remove);
     }
-    remove.addEventListener('click', () => { items.splice(index, 1); setRoutine(items); renderRoutine(); });
-    row.append(remove);
+    const error = element('p', 'routine-error');
+    error.id = `routine-error-${index}`;
+    error.hidden = true;
+    row.append(error);
     editor.append(row);
   });
+  renderRoutineErrors();
+}
+
+function renderRoutineErrors({ focus = false } = {}) {
+  const issues = routineIssues(draft.settings.dailyRoutine);
+  const summary = $('#routine-errors');
+  summary.textContent = issues.length ? `请核对作息：${issues[0].message}` : '';
+  summary.hidden = !issues.length;
+  $('#routine-editor').querySelectorAll('.routine-row').forEach((row, index) => {
+    const errors = issues.filter(issue => issue.rows.includes(index));
+    row.classList.toggle('has-error', !!errors.length);
+    const message = row.querySelector('.routine-error');
+    message.textContent = errors.map(issue => issue.message).join('；');
+    message.hidden = !errors.length;
+    row.querySelectorAll('input').forEach(input => {
+      const invalid = errors.some(issue => issue.fields.includes(input.dataset.field));
+      input.setAttribute('aria-invalid', String(invalid));
+      if (invalid) input.setAttribute('aria-describedby', message.id);
+      else input.removeAttribute('aria-describedby');
+    });
+  });
+  if (focus && issues.length) {
+    switchTab('routine');
+    const input = $('#routine-editor input[aria-invalid="true"]');
+    if (input) input.focus();
+    else { summary.focus(); summary.scrollIntoView({ block: 'center' }); }
+  }
+  return issues;
 }
 
 function renderSettings() {
@@ -596,7 +629,10 @@ function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(button => {
     const active = button.dataset.tab === tab;
     button.classList.toggle('active', active);
-    if (active) button.setAttribute('aria-current', 'page');
+    if (active) {
+      button.setAttribute('aria-current', 'page');
+      button.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});
+    }
     else button.removeAttribute('aria-current');
   });
   for (const name of Object.keys(TITLES)) $(`#${name}-panel`).hidden = name !== tab;
@@ -643,6 +679,12 @@ $('#login-form').addEventListener('submit', async event => {
     $('#login-error').textContent = cause.message;
     $('#login-error').hidden = false;
   } finally { button.disabled = false; }
+});
+
+$('#help-toggle').addEventListener('click', () => {
+  const help = $('#help-content');
+  help.hidden = !help.hidden;
+  $('#help-toggle').setAttribute('aria-expanded', String(!help.hidden));
 });
 
 $('#sign-out').addEventListener('click', async () => {
@@ -696,6 +738,13 @@ $('#add-todo').addEventListener('submit', event => {
   });
   $('#todo-title').value = ''; $('#todo-due').value = ''; $('#todo-priority').value = 'normal';
   renderTodos(); markDirty();
+});
+
+$('#sort-routine').addEventListener('click', () => {
+  const items = parseRoutine(draft.settings.dailyRoutine);
+  items.sort((a, b) => a.start.localeCompare(b.start));
+  setRoutine(items); renderRoutine();
+  toast('已按开始时间整理，请核对后保存到云端');
 });
 
 $('#add-routine').addEventListener('click', () => {
@@ -808,6 +857,7 @@ $('#import-file').addEventListener('change', async event => {
 
 $('#save').addEventListener('click', async () => {
   if (!requireAppliedTodo()) return;
+  if (renderRoutineErrors({focus:true}).length) return;
   if (activeTab !== 'overrides' && JSON.stringify(draft.settings.dateOverrides || []) !==
       JSON.stringify(saved.settings.dateOverrides || [])) {
     switchTab('overrides');

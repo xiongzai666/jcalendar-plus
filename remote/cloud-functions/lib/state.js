@@ -1,3 +1,4 @@
+import { routineIssues } from '../../public/routine.js';
 import { DEFAULT_SETTINGS } from './defaults.js';
 
 export const STATE_KEY = 'devices/main/state.json';
@@ -14,8 +15,6 @@ export const EMPTY_STATE = Object.freeze({
 });
 
 const DAYS = ['一', '二', '三', '四', '五', '六'];
-const LESSON_LABELS = ['第1节', '第2节', '第3节', '第4节', '第5节', '第6节',
-  '第7节', '第8节', '晚自习1', '晚自习2', '晚自习3', '晚自习4'];
 const timeValue = value => Number(value.slice(0, 2)) * 60 + Number(value.slice(3, 5));
 const validTime = value => /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
 const displayText = value => typeof value === 'string' && !/[\u0000-\u001f\u007f\uD800-\uDFFF]|[\u{10000}-\u{10ffff}]/u.test(value);
@@ -50,28 +49,6 @@ function validSchedule(value) {
   });
 }
 
-function validRoutine(value) {
-  if (typeof value !== 'string') return false;
-  const entries = records(value);
-  if (entries.length === 0 || entries.length > 64) return false;
-  let previousEnd = -1;
-  let nextLesson = 0;
-  for (const entry of entries) {
-    const match = /^(\d\d:\d\d)-(\d\d:\d\d),(.+)$/.exec(entry);
-    if (!match || !validTime(match[1]) || !validTime(match[2]) ||
-        !displayText(match[3]) || !match[3].trim() || [...match[3]].length > 16) return false;
-    const start = timeValue(match[1]);
-    const end = timeValue(match[2]);
-    if (start < previousEnd || end <= start) return false;
-    previousEnd = end;
-    if (LESSON_LABELS.includes(match[3])) {
-      if (match[3] !== LESSON_LABELS[nextLesson]) return false;
-      nextLesson++;
-    }
-  }
-  return nextLesson === LESSON_LABELS.length;
-}
-
 function validEarlyReading(value) {
   if (typeof value !== 'string') return false;
   const entries = records(value);
@@ -100,8 +77,10 @@ export function validateSettings(settings) {
     return '天气 Location ID 应为 9 位数字';
   if ('studySchedule' in settings && !validSchedule(settings.studySchedule))
     return '课程表应包含周一至周六、每天 12 节';
-  if ('dailyRoutine' in settings && !validRoutine(settings.dailyRoutine))
-    return '作息时间有重叠，或缺少按顺序排列的 12 节课程';
+  if ('dailyRoutine' in settings) {
+    const issues = routineIssues(settings.dailyRoutine);
+    if (issues.length) return issues[0].message;
+  }
   if ('earlyReading' in settings && !validEarlyReading(settings.earlyReading))
     return '早读安排格式错误';
   if ('defaultPage' in settings && ![0, 1, 2, 3].includes(settings.defaultPage))

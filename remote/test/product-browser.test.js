@@ -4,13 +4,14 @@ import {createServer} from 'node:http';
 import {readFile,mkdir} from 'node:fs/promises';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {join,resolve} from 'node:path';
+import {DEFAULT_SETTINGS} from '../cloud-functions/lib/defaults.js';
 // Opt-in browser QA: supply a locally installed Playwright module. No download or production request.
 const modulePath=process.env.PRODUCT_BROWSER_MODULE;
 test('real desktop and mobile editor protects drafts, focus, conflicts, login failures and diagnostic privacy', {skip:!modulePath}, async()=>{
  const {chromium}=await import(pathToFileURL(modulePath));
- const browser=await chromium.launch({headless:true});
+ const browser=await chromium.launch({headless:true,...(process.env.PRODUCT_BROWSER_EXECUTABLE?{executablePath:process.env.PRODUCT_BROWSER_EXECUTABLE}:{})});
  const root=fileURLToPath(new URL('../public/',import.meta.url));
- let state={schema:1,revision:7,updatedAt:new Date().toISOString(),settings:{studySchedule:'444;',dailyRoutine:'',earlyReading:'',countdownLabel:'示例',countdownDate:'20270101',weatherLocation:'101010100',defaultPage:2,dateOverrides:[],fourthPageMode:'todos',dismissalWeatherEnabled:false},todos:Array.from({length:7},(_,i)=>({id:`virtual-${i}`,title:`任务${i}`,due:`2026-10-${10+i}`,priority:'normal',done:false}))};
+ let state={schema:1,revision:7,updatedAt:new Date().toISOString(),settings:{...DEFAULT_SETTINGS,countdownLabel:'示例',countdownDate:'20270101'},todos:Array.from({length:7},(_,i)=>({id:`virtual-${i}`,title:`任务${i}`,due:`2026-10-${10+i}`,priority:'normal',done:false}))};
  let saveMode='ok',hold=null,pendingSave=null,cloudRevision=7,statusAuth=false;
  const device={reportedRevision:7,seenAt:new Date().toISOString(),runtime:{firmware:'2.5.6',nowReadAt:0,dailyReadAt:0,nextNetworkAt:1,activePage:3,reportedAt:new Date().toISOString()},token:'never-copy',id:'never-copy',email:'never-copy@example.com'};
  const server=createServer(async(req,res)=>{
@@ -75,6 +76,7 @@ test('real desktop and mobile editor protects drafts, focus, conflicts, login fa
    assert.equal(await page.locator('#todo-edit-title').inputValue(),'正在输入');
    assert.equal(await page.evaluate(()=>{const event=new Event('beforeunload',{cancelable:true});window.dispatchEvent(event);return event.defaultPrevented;}),true);
    await page.getByRole('button',{name:'取消',exact:true}).click();
+   await page.locator('#device-details > summary').click();
    await page.locator('#diagnostic-details summary').click();
    const diagnostic=await page.locator('#diagnostic-output').textContent();assert.doesNotMatch(diagnostic,/never-copy|virtual-|任务|example.com/);
    assert.match(await page.locator('#sync-headline').textContent(),/已保存|已确认|新配置/);

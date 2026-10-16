@@ -27,7 +27,7 @@ test('build is deployable under a repository subpath and contains no cloud authe
    const saved=await session.requestJSON('/api/admin/state',{method:'PUT',body:JSON.stringify(state)});
    assert.equal(saved.state.revision,2);assert.equal(networkCalls,0);
   }finally{globalThis.fetch=fetchBefore;}
-  const portable=await import('data:text/javascript;base64,'+Buffer.from(validation).toString('base64'));
+  const portable=await import(pathToFileURL(join(dir,'config-validation.js')));
   const seed=createDemoSeed(new Date('2026-10-02T08:00:00Z'));
   assert.equal(portable.validateUpdate(seed),validateUpdate(seed));
   for(const change of [{countdownDate:'20250229'},{countdownLabel:'😀'},{weatherLocation:'bad'}]){

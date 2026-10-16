@@ -185,9 +185,9 @@ test('lesson times come from twelve ordered rows in the editable routine', () =>
     .replace('13:40-14:25,第5节', '13:45-14:25,第5节');
   assert.equal(validateSettings({ ...DEFAULT_SETTINGS, dailyRoutine: changed }), null);
   assert.match(validateSettings({ ...DEFAULT_SETTINGS,
-    dailyRoutine: changed.replace('第5节', '课外活动') }), /12 节课程/);
+    dailyRoutine: changed.replace('第5节', '课外活动') }), /第5节/);
   assert.match(validateSettings({ ...DEFAULT_SETTINGS,
-    dailyRoutine: changed.replace('第5节', '第4节') }), /12 节课程/);
+    dailyRoutine: changed.replace('第5节', '第4节') }), /第5节/);
 });
 
 test('import validation requires admin login and does not write cloud state', async () => {

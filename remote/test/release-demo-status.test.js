@@ -16,6 +16,10 @@ test('generated demo state language describes browser storage and simulated devi
   const status = product.syncResult({ saved: response.state, revision: response.state.revision, device: response.device });
   assert.doesNotMatch(status.headline + status.detail + status.evidence, /云端|(?<!模拟)设备已确认/);
   assert.match(status.headline + status.detail, /模拟/);
+  const stale=product.syncResult({saved:response.state,revision:response.state.revision,device:{...response.device,seenAt:new Date(Date.now()-5*3600000).toISOString()}});
+  assert.doesNotMatch(stale.action,/短按|实物/);assert.match(stale.action,/演示/);
+  const confirmed=product.syncResult({saved:response.state,revision:response.state.revision,device:response.device});
+  assert.match(confirmed.action,/模拟/);assert.doesNotMatch(confirmed.action,/请核对实物/);
   const draft = product.syncResult({ saved: response.state, revision: response.state.revision, device: response.device, dirty: true });
   assert.match(draft.headline + draft.action, /浏览器/);
 });

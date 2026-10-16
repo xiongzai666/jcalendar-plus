@@ -19,18 +19,19 @@
         <strong>J-Calendar Plus</strong>
         <span>墨水屏远程配置</span>
       </div>
+      <button id="help-toggle" class="text-button" type="button" aria-expanded="false" aria-controls="help-content">帮助</button>
       <button id="sign-out" class="text-button" type="button" hidden>退出</button>
     </header>
 
-    <details class="first-use-guide">
-      <summary>首次使用：选择配置方式</summary>
-      <h2>仅在设备本机使用</h2>
+    <section id="help-content" class="first-use-guide" aria-labelledby="help-title" hidden>
+      <h2 id="help-title">首次使用：选择配置方式</h2>
+      <h3>仅在设备本机使用</h3>
       <ol><li>按屏幕标签选择驱动，并查看发行说明中的实机验证范围。</li><li>短按上键唤醒，等待刷新结束；双击上键，或长按约 5 秒后松开，连接热点并输入屏幕上的 12 位随机密码。</li><li>连接热点后打开 http://192.168.4.1，填写网络和天气配置并保存，再核对四页显示。</li></ol>
       <p>无需部署远程服务即可继续使用。墨水屏刷新期间请等待。</p>
-      <h2>启用手机远程配置</h2>
+      <h3>启用手机远程配置</h3>
       <ol><li>部署自己的 HTTPS 服务，检查环境变量、云函数和 Blob 存储。健康接口成功后，还需测试登录、保存和重新读取。</li><li>用管理密码登录本站。设备填写 Token 原文，服务端保存其哈希；可信根证书用于 HTTPS 校验。</li><li>替换示例模板并保存，短按设备上键同步。</li><li>核对云端和设备回报版本，再查看屏幕。可在「设置」下载配置备份。</li></ol>
       <p>管理密码、设备 Token、热点密码各有用途，请勿放进截图或诊断摘要。</p>
-    </details>
+    </section>
 
     <section id="login-view" class="login-view" aria-labelledby="login-title">
       <div class="login-illustration" aria-hidden="true">
@@ -52,25 +53,33 @@
         <div>
 
           <strong id="sync-headline">读取中…</strong>
-          <p id="sync-detail">正在检查云端版本</p>
-          <p id="sync-network"></p>
           <p id="sync-diagnostic" class="sync-diagnostic" hidden></p>
         </div>
         <button id="reload" class="secondary-button" type="button">重新检查</button>
       </section>
-      <details class="sync-log">
-        <summary>最近同步记录</summary>
-        <ol id="sync-log-list"></ol>
-        <p>设备离线时无法实时上报失败原因；恢复联网后会补报最近一次故障和连续失败次数。</p>
-      </details>
-      <details id="diagnostic-details" class="sync-log">
-        <summary>脱敏诊断摘要</summary>
-        <p>只含现有版本、报告时间、错误类别和草稿状态。驱动未上报时为未知；不含配置内容或凭据。</p>
-        <button id="copy-diagnostic" class="secondary-button" type="button">复制脱敏摘要</button>
-        <pre id="diagnostic-output" tabindex="0"></pre>
+      <details id="device-details" class="device-details">
+        <summary>设备详情</summary>
+        <div class="device-detail-content">
+          <h2>配置同步</h2>
+          <p id="sync-detail">正在检查云端版本</p>
+          <p id="sync-network"></p>
+          <p>设备版本回报只确认配置接收，物理屏幕显示请核对实物。</p>
+          <p>设备通常每两小时同步配置，短按上键可触发。手机保存无法立即唤醒休眠中的设备。</p>
+          <h2>最近同步记录</h2>
+          <ol id="sync-log-list"></ol>
+          <p>设备离线时无法实时上报失败原因；恢复联网后会补报最近一次故障和连续失败次数。</p>
+          <h2>设备运行摘要</h2>
+          <div id="runtime-summary"></div>
+          <p>以下为上次联网报告；读取时间是获取天气的时间，预计联网时间会随手动唤醒或后续刷新调整。跨天时补齐三日天气；开启放学提醒时，放学前约 10 分钟更新，相近刷新会合并。</p>
+          <details id="diagnostic-details" class="sync-log">
+            <summary>脱敏诊断摘要</summary>
+            <p>只含版本、报告时间、错误类别和草稿状态。驱动未上报时为未知；不含配置内容或凭据。</p>
+            <button id="copy-diagnostic" class="secondary-button" type="button">复制脱敏摘要</button>
+            <pre id="diagnostic-output" tabindex="0"></pre>
+          </details>
+        </div>
       </details>
       <p id="draft-notice" class="sync-diagnostic" role="status" hidden></p>
-      <details class="sync-log"><summary>设备运行摘要</summary><div id="runtime-summary"></div><p>以下为设备上次联网时的报告；读取时间是获取天气的时间，预计联网时间可能随手动唤醒或后续刷新调整。</p></details>
       <button id="rebase-draft" class="secondary-button" type="button" hidden>核对云端新版本</button>
 
       <div class="page-heading">
@@ -88,8 +97,8 @@
         <button class="tab" data-tab="history" type="button">历史</button>
       </nav>
 
-      <section id="todos-panel" class="panel" aria-labelledby="todos-heading">
-        <div class="section-heading"><div><h2 id="todos-heading">要做的事</h2><p>屏幕显示前 6 条未完成事项，每条最多 16 字；请在网页中勾选完成。</p></div><span id="todo-count" class="count"></span></div>
+      <section id="todos-panel" class="panel" aria-labelledby="page-title">
+        <div class="section-heading"><div><p>屏幕显示前 6 条未完成事项，每条最多 16 字；请在网页中勾选完成。</p></div><span id="todo-count" class="count"></span></div>
         <form id="add-todo" class="todo-form">
           <label class="field grow"><span>新增待办</span><input id="todo-title" type="text" maxlength="16" placeholder="例如：完成数学试卷" required></label>
           <label class="field"><span>截止日期</span><input id="todo-due" type="date"></label>
@@ -100,14 +109,14 @@
         <div id="todo-list" class="todo-list"></div>
       </section>
 
-      <section id="schedule-panel" class="panel" aria-labelledby="schedule-heading" hidden>
-        <div class="section-heading"><div><h2 id="schedule-heading">每周课程</h2><p>周一至周六，每天上午、下午、晚上各 4 节。</p></div></div>
+      <section id="schedule-panel" class="panel" aria-labelledby="page-title" hidden>
+        <div class="section-heading"><div><p>周一至周六，每天上午、下午、晚上各 4 节。</p></div></div>
         <div id="day-tabs" class="day-tabs" aria-label="选择星期"></div>
         <div id="schedule-editor" class="schedule-editor"></div>
       </section>
 
-      <section id="overrides-panel" class="panel" aria-labelledby="overrides-heading" hidden>
-        <div class="section-heading"><div><h2 id="overrides-heading">临时调课与放假</h2><p>只影响指定日期。可沿用常规时间调课，也可启用独立作息；当天的课程和“下一项”随之调整。</p></div></div>
+      <section id="overrides-panel" class="panel" aria-labelledby="page-title" hidden>
+        <div class="section-heading"><div><p>只影响指定日期。可沿用常规时间调课，也可启用独立作息；当天的课程和“下一项”随之调整。</p></div></div>
         <form id="add-override" class="override-add">
           <label class="field"><span>选择日期</span><input id="override-date" type="date" required></label>
           <button class="secondary-button" type="submit">添加日期</button>
@@ -129,24 +138,24 @@
         <div id="override-list" class="override-list"></div>
       </section>
 
-      <section id="routine-panel" class="panel" aria-labelledby="routine-heading" hidden>
-        <div class="section-heading"><div><h2 id="routine-heading">每日作息</h2><p>课程的上、下课时间以这里为准，屏幕时间和自动切课同步更新。12 节课程名称固定；所有活动须按顺序且不能重叠。</p></div></div>
+      <section id="routine-panel" class="panel" aria-labelledby="page-title" hidden>
+        <div class="section-heading"><div><p>课程的上、下课时间以这里为准，屏幕时间和自动切课同步更新。12 节课程名称固定；所有活动须按顺序且不能重叠。修改时间或添加活动后，可按时间整理，再核对并保存。</p></div></div>
+        <div class="routine-actions"><button id="sort-routine" class="secondary-button" type="button">按时间整理</button><button id="add-routine" class="secondary-button" type="button">添加作息</button></div>
+        <p id="routine-errors" class="form-message" role="status" tabindex="-1" hidden></p>
         <div id="routine-editor" class="routine-editor"></div>
-        <button id="add-routine" class="secondary-button" type="button">添加作息</button>
       </section>
 
-      <section id="settings-panel" class="panel" aria-labelledby="settings-heading" hidden>
-        <div class="section-heading"><div><h2 id="settings-heading">显示设置</h2><p>修改后在设备下一次联网时应用。</p></div></div>
+      <section id="settings-panel" class="panel" aria-labelledby="page-title" hidden>
+        <div class="section-heading"><div><p>调整屏幕内容、早读科目，或导入与下载配置备份。</p></div></div>
         <div class="settings-grid">
           <label class="field"><span>倒计时名称</span><input id="countdown-label" type="text" maxlength="8"></label>
           <label class="field"><span>目标日期</span><input id="countdown-date" type="date"></label>
           <label class="field"><span>天气城市 ID（Location ID）</span><input id="weather-location" type="text" inputmode="numeric" pattern="[0-9]{9}" maxlength="9"></label>
           <label class="field"><span>开机默认页面</span><select id="default-page"><option value="2">课程与倒计时</option><option value="1">日间周课表</option><option value="0">月历</option><option value="3">待办事项</option></select></label>
         </div>
-        <div class="subsection-heading"><h3>早读科目</h3><p>早读期间显示当天科目，课间显示下一节。晨会与跑操：周一为晨会，其余上课日为跑操。</p></div>
+        <div class="subsection-heading"><h2>早读科目</h2><p>早读期间显示当天科目，课间显示下一节。晨会与跑操：周一为晨会，其余上课日为跑操。</p></div>
         <div id="early-reading-editor" class="early-reading-editor"></div>
-        <aside class="sync-note"><strong>同步方式</strong><p>每两小时联网，并在实际放学前约 10 分钟更新天气；相近刷新会合并。短按上键也会同步。手机保存无法立即唤醒休眠中的设备。</p></aside>
-        <div class="subsection-heading"><h3>配置备份</h3><p>下载当前云端的课程、作息、临时安排和待办；文件不含 Wi‑Fi 密码或设备令牌。导入后先核对，再手动保存到云端。</p></div>
+        <div class="subsection-heading"><h2>配置备份</h2><p>下载当前云端的课程、作息、临时安排和待办；文件不含 Wi‑Fi 密码或设备令牌。导入后先核对，再手动保存到云端。</p></div>
         <div class="config-transfer-actions">
           <button id="export-config" class="secondary-button" type="button">下载配置备份</button>
           <button id="select-import" class="secondary-button" type="button">导入备份文件</button>
@@ -155,8 +164,8 @@
         <p id="import-status" class="import-status" role="status" hidden></p>
       </section>
 
-      <section id="history-panel" class="panel" aria-labelledby="history-heading" hidden>
-        <div class="section-heading"><div><h2 id="history-heading">配置历史</h2><p>保留最近 10 个云端版本。恢复会创建一个新版本，设备下次联网时应用。</p></div></div>
+      <section id="history-panel" class="panel" aria-labelledby="page-title" hidden>
+        <div class="section-heading"><div><p>保留最近 10 个云端版本。恢复会创建一个新版本，设备下次联网时应用。</p></div></div>
         <div id="history-list" class="history-list" aria-live="polite"></div>
       </section>
     </div>
