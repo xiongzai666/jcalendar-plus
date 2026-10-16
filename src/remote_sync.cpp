@@ -270,7 +270,8 @@ RemoteSyncResult remote_sync(bool retryAttempt) {
     const String host = pref.getString(PREF_REMOTE_HOST, "");
     const String token = pref.getString(PREF_REMOTE_TOKEN);
     const String ca = pref.getString(PREF_REMOTE_CA);
-    const uint32_t revision = pref.getUInt(PREF_REMOTE_REV, 0);
+    // Old firmware can acknowledge a revision without storing the new countdown setting.
+    const uint32_t revision = pref.isKey(PREF_FESTIVAL_CD) ? pref.getUInt(PREF_REMOTE_REV, 0) : 0;
     const char* network = pref.getUChar(PREF_WIFI_LAST, 1) == 2 ? "backup" : "primary";
     pref.end();
     if (token.isEmpty()) return RemoteSyncResult::Skipped;

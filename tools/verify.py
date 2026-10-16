@@ -32,6 +32,7 @@ run([sys.executable, 'tools/test_review_fixes.py'])
 run([node, '--test'], ROOT / 'remote')
 run([node, 'tools/check-build.mjs'], ROOT / 'remote')
 
+run([sys.executable, 'tools/test_festival_upgrade.py'])
 run([sys.executable, 'tools/test_festival_graphics.py'])
 
 cpp = os.environ.get('J_CALENDAR_CXX') or shutil.which('g++')
