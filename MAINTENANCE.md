@@ -21,7 +21,7 @@ python tools/verify.py --environment z98
 python tools/verify.py --environment 1680
 ```
 
-门禁：Python 发布工具测试、Node 测试、全部业务 JS 语法和本地 import、网页 SHA256 清单、目标编译、16 组 C++ 主机测试、分区容量。CI 使用 Node 22、Python 3.11、PlatformIO 6.2.0；固定 registry 版本和 Git 依赖提交见 `platformio.ini`。
+验证包含 Python 发布工具与审查修复测试、Node 测试、业务 JS 语法和本地导入、网页 SHA256 清单、目标固件编译、20 组 C++ 策略测试、实际 multipart 解析测试及分区容量检查。CI 使用 Node 22、Python 3.11、PlatformIO 6.2.0；固定 registry 版本和 Git 依赖提交见 `platformio.ini`。
 
 Windows 可设置 `J_CALENDAR_NODE`、`J_CALENDAR_CXX` 到 Node 与 Zig 的路径；不要求本机路径写入源码。`--skip-build` 只复用已与当前源匹配的构建，不能证明改动后的固件编译过。
 
@@ -34,16 +34,20 @@ Windows 可设置 `J_CALENDAR_NODE`、`J_CALENDAR_CXX` 到 Node 与 Zig 的路�
 
 ## 发布步骤
 
-1. 修改 `include/version.h` 和 CHANGELOG。
+1. 发行新固件时更新 `include/version.h` 和 [更新记录](CHANGELOG.md)。仅修改文档无需变更固件版本或重发旧附件。
 2. 四种环境新鲜编译，跑统一门禁；目标分区 `0x1e0000`，达到 95% 需审查剩余空间。
 3. 检查默认服务／凭据、敏感路径、示例配置和文档链接。只提交明确源码，不提交 `.pio`、`.env`、个人备份。
-4. 提交已验证源，保持工作树干净，然后生成包：
+4. 提交已验证源码，保持工作树干净。先运行 `build_firmware.py` 为四驱动构建生成来源与产物收据，再打包：
+
+```sh
+python tools/build_firmware.py
+```
 
 ```sh
 python tools/release_bundle.py --boot-app0 PATH_TO_PLATFORMIO_FRAMEWORK/tools/partitions/boot_app0.bin
 ```
 
-`PATH_TO_PLATFORMIO_FRAMEWORK` 是本机 PlatformIO 安装的 `framework-arduinoespressif32` 包目录。工具生成 `.releases/jcalendar-plus-VERSION-ENV.zip` 与总 SHA256 文件；可用 `--environment` 单独选目标。打包不编译，要求输入就是步骤 2 验证过的构建。
+`PATH_TO_PLATFORMIO_FRAMEWORK` 是本机 PlatformIO 安装的 `framework-arduinoespressif32` 包目录。工具生成 `.releases/jcalendar-plus-VERSION-ENV.zip` 与总 SHA256 文件；可用 `--environment` 单独选目标。打包工具不编译，要求固件输入、当前提交和构建收据一致。来源变动后需重新构建并生成收据；详细规则见 [构建与验收](docs/RELEASE_ACCEPTANCE.md)。
 
 每包包含 4 个明确地址的段、清单、内部 SHA256、刷机说明、LICENSE、NOTICE、第三方许可原文及对应源码说明。应用更新用 `firmware.bin`。同次发布附带对应提交的源码 ZIP 和本次解析的固件库／框架源码，见 `docs/RELEASE_SOURCE.md`。包中不应出现 NVS、完整 Flash 或用户配置。来源提交在 manifest 中；只发布选定公开分支，禁止镜像推送继承的私有历史。
 
@@ -66,7 +70,7 @@ python tools/generate_subject_font.py --font /path/to/NotoSansSC-VF.ttf
 
 ## 交互演示
 
-公开演示运行于 https://xiongzai666.github.io/jcalendar-plus/ ，使用 GitHub Pages 和 `.github/workflows/demo-pages.yml` 自动发布。
+[公开演示](https://xiongzai666.github.io/jcalendar-plus/) 使用 GitHub Pages，由 `.github/workflows/demo-pages.yml` 自动发布。
 
 ```sh
 cd remote
@@ -77,4 +81,4 @@ npm run build:demo
 
 示例和历史在 `jcalendar.demo.state.v1`，草稿在 `jcalendar.demo.draft.v1`；不会清空其他浏览器数据。没有可用存储时在内存中工作，刷新会重置并明确提示。页面 CSP 禁止网络连接，设备信息是模拟状态，生产 `remote/public` 与实际 API 行为不变。
 
-修改演示逻辑运行 `cd remote && node --test` 和 `npm run build:demo`，再在桌面／手机尺寸测试保存、刷新保留和恢复示例。发布在 main push 或手动 dispatch 时执行；新固件 Release 包不随网页演示变更自动重发。
+修改演示逻辑运行 `cd remote && node --test` 和 `npm run build:demo`，再在桌面／手机尺寸测试保存、刷新保留和恢复示例。向 `main` 推送 `remote/**` 或演示工作流变更，或手动触发工作流时，会发布演示；新固件 Release 包不随网页演示变更自动重发。

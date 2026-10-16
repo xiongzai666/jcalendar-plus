@@ -8,9 +8,9 @@
 
 源码包根目录的 `SOURCE_MANIFEST.json` 记录项目提交、逐文件 SHA-256 和第三方来源。`third_party/libraries/` 保留构建中解析的库源码和原始声明；检入驱动、受限解码器及项目内修改直接位于 `lib/` 和 `src/`。ArduinoUZlib 未声明授权的包装层不随源码包补发；固件实际使用的解码器对应源码在 `lib/BoundedUZlib`。各平台依赖的名称、版本、来源和元数据哈希另在驱动包 manifest 中记录。
 
-依照 `MAINTENANCE.md` 安装 Python、PlatformIO 6.2.0 和所选环境依赖后编译。源码包附带的库可供核查和复现；`platformio.ini` 仍按固定版本／提交获取依赖，不改现有编译方式。Arduino-ESP32 对应 2.0.17，实际 PlatformIO 框架包版本以 manifest 为准；已安装框架源码与构建脚本另附于 `third_party/framework-arduinoespressif32/`、`third_party/platform-espressif32/`。官方对应平台源码及许可见 [Arduino-ESP32 2.0.17](https://github.com/espressif/arduino-esp32/tree/2.0.17)、[ESP-IDF 4.4.7](https://github.com/espressif/esp-idf/tree/v4.4.7)；ESP-IDF 和工具链分别遵守自身声明，不能用本项目许可证替代。
+依照 [维护指南](../MAINTENANCE.md) 安装 Python、PlatformIO 6.2.0 和所选环境依赖后编译。源码包附带的库可供核查和复现；`platformio.ini` 仍按固定版本／提交获取依赖，不改现有编译方式。Arduino-ESP32 对应 2.0.17，实际 PlatformIO 框架包版本以 manifest 为准；已安装框架源码与构建脚本另附于 `third_party/framework-arduinoespressif32/`、`third_party/platform-espressif32/`。官方对应平台源码及许可见 [Arduino-ESP32 2.0.17](https://github.com/espressif/arduino-esp32/tree/2.0.17)、[ESP-IDF 4.4.7](https://github.com/espressif/esp-idf/tree/v4.4.7)；ESP-IDF 和工具链分别遵守自身声明，不能用本项目许可证替代。
 
-固件仅限经典 ESP32、4 MB Flash 和对应 400 × 300 三色屏。首次刷机按包内 `FLASHING.md`；保留配置升级及串口回退先读仓库 `docs/FLASHING.md`。不提供用户 NVS、私密凭据、全 Flash 备份或个人课程配置。
+固件仅限经典 ESP32、4 MB Flash 和对应 400 × 300 三色屏。首次刷机按包内 `FLASHING.md` 操作；保留配置升级及串口回退先读 [刷机指南](FLASHING.md)。不提供用户 NVS、私密凭据、全 Flash 备份或个人课程配置。
 
 ## 本次许可处理与证据范围
 

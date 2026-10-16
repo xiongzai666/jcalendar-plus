@@ -1,60 +1,71 @@
 # J-Calendar Plus
 
-基于 [JADE-Jerry/jcalendar](https://github.com/JADE-Jerry/jcalendar) 的 4.2 寸黑白红墨水屏日历扩展版：课程、月历、倒计时、天气和待办，配套可自行部署的手机配置网页。
+基于 [JADE-Jerry/jcalendar](https://github.com/JADE-Jerry/jcalendar) 的 4.2 寸黑白红墨水屏日历，显示课程、月历、倒计时、天气和待办，配套可自行部署的手机配置网页。
 
-**当前公开预发布版：2.3.2-rc.4。** 面向经典 ESP32、4 MB Flash、400 × 300 三色屏。原项目基础功能、驱动及作者信息保留于 [NOTICE](NOTICE.md)；许可证原文见 [LICENSE](LICENSE)。
+**当前公开预发布版：[v2.3.2-rc.4](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.4)。** 适用于经典 ESP32、4 MB Flash、400 × 300 三色屏。原作者和组件来源见 [NOTICE](NOTICE.md)，项目许可证见 [LICENSE](LICENSE)。
 
-[v2.3.2-rc.4 预发布](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.4) 已提供四驱动固件、对应源码、许可附件和 SHA256。来源提交 `394e47b`，四驱动及真实云端入口 CI 五项通过。本版修复天气校时、换源同步、热点名称、长标题、校时提示和月份 Tag，包含已验证的 OTA 中断恢复修复。新增路径经过主机定向验证，尚未新装实机；Z15 历史实机范围见 [验收记录](docs/RELEASE_ACCEPTANCE.md)。升级和回退先读 [刷机指南](docs/FLASHING.md)。
+## 主要功能
 
-## 能做什么
-
-- 四页显示：课程＋倒计时、日间周课表、月历、待办；支持实体按键切页与深睡眠唤醒。
-- 每周 12 节课程、作息与早读；指定日期放假、调课、独立起止时间，保存前核对。
-- 学校安排在月历标记为红色「假」、黑色「课」，优先于一般节假日。
-- 和风天气实时／三日缓存；有实际课程的放学前额外获取天气，提示带伞；提示只在放学前窗口出现。
-- 手机网页编辑、草稿恢复、配置导入／导出、最近 10 个版本恢复、同步状态和有限日志。
-- 主／备用 Wi-Fi、联网校时、证书校验、设备专用 Token、离线缓存及受限重试。
+- **四页显示**：课程与倒计时、日间周课表、月历、待办；按键切页，深睡眠时由上键唤醒。
+- **课程与作息**：每周 12 节课程、早读和常规作息；支持指定日期放假、调课及独立起止时间，保存前可核对生效内容。
+- **学校日历**：学校安排以红色「假」、黑色「课」标记，优先于一般节假日。
+- **天气**：和风天气实时数据与三日预报缓存；有实际课程时，在放学前额外查询并提示带伞，提示只在放学前窗口出现。
+- **手机配置**：编辑课程、作息、临时安排和待办；支持草稿恢复、导入导出、最近 10 个版本恢复、同步状态与有限日志。
+- **联网与离线使用**：主／备用 Wi-Fi、联网校时、HTTPS 证书校验、设备专用 Token、离线缓存和受限重试。
 
 ## 在线演示
 
-[打开交互演示](https://xiongzai666.github.io/jcalendar-plus/)：无需登录，可试改课程、作息、临时安排与待办，体验保存前核对、导入／导出及历史恢复。
+[打开交互演示](https://xiongzai666.github.io/jcalendar-plus/)，无需登录即可试改课程、作息、临时安排和待办，体验保存前核对、导入导出及历史恢复。
 
-保存只作用于当前浏览器，状态和设备报告均为示例；点击「恢复示例」可重新开始。真实设备使用仍需自行部署服务。
+演示数据只保存在当前浏览器，设备报告为模拟状态。点击「恢复示例」可重新开始；真实设备的远程配置需要自行部署服务。
 
-## 下载
+## 下载与升级
 
-[GitHub 预发布 v2.3.2-rc.4](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.4) 提供四驱动包、对应源码 ZIP、总 SHA256 和来源／验证清单。每个固件包附带 LICENSE、NOTICE 和第三方附件，源码说明见 [RELEASE_SOURCE](docs/RELEASE_SOURCE.md)。其他驱动只有构建验证，全天稳定性和续航未测。旧 [v2.3.2-rc.3](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.3) 与 [v2.3.0](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.0) 保留作历史下载。
+[v2.3.2-rc.4 发行页](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.4) 提供：
+
+- `z15`、`z21`、`z98`、`1680` 四种驱动的固件 ZIP，每包含刷机说明、许可附件及内部校验清单。
+- 对应源码 ZIP、`SHA256SUMS.txt` 和 `RELEASE_MANIFEST.json`。源码包内容见 [发行源码说明](docs/RELEASE_SOURCE.md)。
+
+本版修复天气校时、远程服务换源后的配置同步、倒计时名称保存与显示、日期 Tag 和课程状态提示，并纳入 OTA 中断恢复修复。完整变化见 [更新记录](CHANGELOG.md)。
+
+**首次刷机和保留配置升级使用不同步骤。** 先按 [刷机指南](docs/FLASHING.md) 核对驱动与分区；本机网页 Update 只上传对应驱动的 `firmware.bin`。
+
+旧 [v2.3.2-rc.3](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.3) 和 [v2.3.0](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.0) 保留供历史下载。
 
 ## 快速开始
 
-1. 核对 [硬件和接线](docs/HARDWARE.md)：屏幕尺寸、三色、分辨率相同仍不代表驱动兼容。
-2. 按 [刷机指南](docs/FLASHING.md) 选择驱动、编译／刷入对应固件。
-3. 黑色上键唤醒，待刷新完成后长按约 5 秒松开，连接屏幕上的 `J-Calendar` 热点和 **设备随机的 12 位密码**，访问 `http://192.168.4.1`。
-4. 填写 Wi-Fi、天气等本机配置。需要远程编辑时，按 [云端部署指南](docs/DEPLOYMENT.md) 部署自己的服务，并在设备填写自己的域名、Token 和根证书。
-5. 手机网页中的课表／日期／城市是**待替换的模板**。配置真实数据、核对后保存；设备下次联网才应用，网页「保存成功」不等于设备已收到。
+1. 核对 [硬件和接线](docs/HARDWARE.md)，确认屏幕控制器与驱动。相同尺寸、颜色和分辨率不代表驱动兼容。
+2. 按 [刷机指南](docs/FLASHING.md) 下载或编译对应固件，再刷入设备。
+3. 短按上键唤醒，等待刷新结束。连续短按上键两次（双击），或长按约 5 秒后松开，进入配置热点。
+4. 连接屏幕显示的 `J-Calendar` 热点，输入设备生成的 **12 位随机密码**，访问 `http://192.168.4.1`，填写 Wi-Fi 和天气配置。
+5. 如需手机远程编辑，按 [部署指南](docs/DEPLOYMENT.md) 建立自己的 HTTPS 服务，再在设备中填写域名、设备 Token 和根证书。替换网页中的示例课程、日期与城市，核对后保存。
 
-没有远程服务也可使用本机配置、月历、天气和本地课程显示。完整作息、临时安排和待办编辑建议使用配套网页。
+手机保存先写入云端，设备下次联网才会应用。需要立即检查时，可短按上键唤醒设备；网页「重新检查」只读取状态。
 
-## 兼容性
+仅在设备本机配置也可使用月历、天气和本地课程显示。完整作息、临时安排和待办编辑建议使用配套网页。两种使用方式见 [首次使用指南](docs/FIRST_USE.md)。
 
-| 环境 | 对应驱动 | 验证范围 |
+## 兼容性与验证范围
+
+| 环境 | 屏幕驱动 | 验证范围 |
 | --- | --- | --- |
-| `z15` | `GxEPD2_420c` | 复用历史首配／OTA／离线与中止恢复；rc.4 新增路径主机验证，未新装实机 |
-| `z21` | `GxEPD2_420c_Z21` | 本次编译验证；需对应屏幕实测 |
-| `z98` | `GxEPD2_420c_GDEY042Z98` | 本次编译验证；需对应屏幕实测 |
-| `1680` | `GxEPD2_420c_1680` | 本次编译验证；需对应屏幕实测 |
+| `z15` | `GxEPD2_420c` | 已有首配、正常 OTA、离线恢复和 OTA 中止恢复实机记录；rc.4 新增路径已通过主机定向验证，rc.4 未重新安装实机 |
+| `z21` | `GxEPD2_420c_Z21` | 构建通过，尚无对应屏幕实测 |
+| `z98` | `GxEPD2_420c_GDEY042Z98` | 构建通过，尚无对应屏幕实测 |
+| `1680` | `GxEPD2_420c_1680` | 构建通过，尚无对应屏幕实测 |
 
-具体类名以 [驱动选择头](include/GxEPD2_display_selection_new_style.h) 为准。ESP32-C3／S3 不在本版支持承诺内；二色屏也不能直接用三色包。不要仅凭商品「4.2 寸三色」选固件。
+rc.4 来源为 `394e47b`，[四驱动构建与云端入口 CI 共 5 项通过](https://github.com/xiongzai666/jcalendar-plus/actions/runs/38761400623)。全天稳定性、功耗和续航未测，当前保持预发布。详细结果见 [构建与验收记录](docs/RELEASE_ACCEPTANCE.md)。
+
+驱动映射以 [驱动选择头文件](include/GxEPD2_display_selection_new_style.h) 为准。ESP32-C3／S3 不在本版支持范围内；二色屏不能直接使用三色包。
 
 ## 手机配置页面
 
-下面是本地演示的待配置模板，不是私人配置：
+下图为本地演示中的待配置模板：
 
 ![手机课程配置预览](assets/img/phone-preview.png)
 
 ## 本地开发
 
-要求 Python 3.11、PlatformIO 6.2.0、Node.js 22 和 C++ 主机编译器（Linux `g++`；Windows 可指定 Zig）。
+需要 Python 3.11、PlatformIO 6.2.0、Node.js 22 和 C++ 主机编译器。Linux 可用 `g++`；Windows 可指定 Zig。
 
 ```sh
 python -m pip install platformio==6.2.0
@@ -65,23 +76,20 @@ cd remote
 npm run dev
 ```
 
-本地网页为 `http://localhost:8787`，演示密码 `local-demo-only`；演示存储只在内存中，重启丢失，不能作为公网生产服务。开发命令与发布流程见 [维护指南](MAINTENANCE.md)。
+本地网页地址为 `http://localhost:8787`，演示密码为 `local-demo-only`。本地服务使用内存存储，重启后数据丢失，不适合公网部署。开发、验证和打包流程见 [维护指南](MAINTENANCE.md)。
 
-## 文档
+## 文档导航
 
-- [使用与刷新逻辑](docs/USAGE.md)
-- [硬件／接线](docs/HARDWARE.md) · [刷机](docs/FLASHING.md)
-- [手机网页与云端部署](docs/DEPLOYMENT.md)
-- [公开候选构建与实机验收](docs/RELEASE_ACCEPTANCE.md)
-- [配置格式和模板](examples/README.md)
-- [故障排查](docs/TROUBLESHOOTING.md)
-- [维护](MAINTENANCE.md) · [版本变化](CHANGELOG.md)
-- [参与贡献](CONTRIBUTING.md) · [安全问题](SECURITY.md)
+- 使用：[首次使用](docs/FIRST_USE.md) · [按键与刷新逻辑](docs/USAGE.md) · [故障排查](docs/TROUBLESHOOTING.md)
+- 安装：[硬件与接线](docs/HARDWARE.md) · [编译与刷机](docs/FLASHING.md) · [云端部署](docs/DEPLOYMENT.md)
+- 配置：[配置模板](examples/README.md) · [手机配置站点](remote/README.md)
+- 开发：[维护指南](MAINTENANCE.md) · [更新记录](CHANGELOG.md) · [构建与验收](docs/RELEASE_ACCEPTANCE.md)
+- 贡献：[参与贡献](CONTRIBUTING.md) · [安全问题](SECURITY.md) · [来源与授权](NOTICE.md)
 
-## 项目定位与授权状态
+## 许可证与服务限制
 
-本项目沿用上游 **GPLv3**，不附加非商业限制；商业使用同样须遵守适用的 GPLv3 条款。版权、修改说明、对应源码和第三方许可要求继续保留。已移除 Siji 字体和三张授权不明参考图；文泉驿转换字体的 GPL 版本差异已记录，2026-10-13 按维护者决定跳过进一步确认；发行附件按实际分发内容准备。详见 [NOTICE](NOTICE.md) 与 [第三方许可核查](docs/THIRD_PARTY_LICENSES.md)。
+本项目沿用上游 **GPLv3**，不附加非商业限制；商业使用同样须遵守适用条款。第三方组件按各自许可处理，版权、修改说明和对应源码要求继续保留。
 
-当前服务是一人一设备设计；未新增多用户系统或分布式并发保存。设备离线时无法即时收到手机修改，也无法实时上传故障原因。
+当前源码已移除 Siji 字体和三张授权未确认的参考图。文泉驿转换字体的 GPL 版本差异已留档，维护者于 2026-10-13 决定跳过进一步确认。详情见 [NOTICE](NOTICE.md) 和 [第三方许可记录](docs/THIRD_PARTY_LICENSES.md)。
 
-后续未发行源码已补充中断 OTA 的 FIN 与尾部读取修复，Z15 定向结果及测量边界见 [OTA 恢复记录](docs/OTA_RECOVERY.md)。当前下载仍对应上面的已发布版本。
+远程服务面向一人一设备，未提供多用户系统或分布式并发保存保证。设备离线时不能立即接收手机修改，也不能实时上传故障原因。
