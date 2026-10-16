@@ -18,7 +18,7 @@ export async function buildDemo(output=join(remote,'.demo-dist')){
   await writeFile(join(output,'config-validation.js'),validation);
   const wording=source=>source.replaceAll('保存到云端','保存演示').replaceAll('云端','演示数据').replaceAll('设备下次联网时应用','仅保存在当前浏览器').replaceAll('设备下次联网同步','仅在当前浏览器生效').replaceAll('设备将在下次联网时应用','仅在当前浏览器生效').replaceAll('设备已同步最新配置','模拟设备 · 已应用演示配置').replaceAll('最近连接','模拟连接').replaceAll('主 Wi‑Fi','示例网络').replaceAll('设备离线时无法实时上报失败原因；恢复联网后会补报最近一次故障和连续失败次数。','下方记录和运行摘要为模拟数据，不代表真实设备状态。').replaceAll('以下为设备上次联网时的报告；读取时间是获取天气的时间，预计联网时间可能随手动唤醒或后续刷新调整。','运行摘要是模拟示例，演示站不会获取天气或连接设备。').replaceAll('每两小时联网，并在实际放学前约 10 分钟更新天气；相近刷新会合并。短按上键也会同步。手机保存无法立即唤醒休眠中的设备。','这是功能演示：改动只保存在当前浏览器。真实设备需自行部署服务，并在下次联网时获取配置。');
   let html=await readFile(join(output,'index.html'),'utf8');
-  html=wording(html).replace('lang="zh-CN"','lang="zh-CN" class="demo-root"').replaceAll(/((?:src|href)=")\/(?!\/)/g,'$1./').replace('<title>J-Calendar · 远程配置</title>','<title>J-Calendar Plus · 交互演示</title>').replace('墨水屏远程配置','墨水屏配置 · 交互演示').replace('设备连接','演示状态');
+  html=wording(html).replace('lang="zh-CN"','lang="zh-CN" class="demo-root"').replaceAll(/((?:src|href)=")\/(?!\/)/g,'$1./').replace('<title>J-Calendar Plus · 远程配置</title>','<title>J-Calendar Plus · 交互演示</title>').replace('墨水屏远程配置','墨水屏配置 · 交互演示').replace('设备连接','演示状态');
   html=html.replace('<head>',`<head>\n  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">`);
   html=html.replace('</head>','  <link rel="stylesheet" href="./demo/demo.css">\n</head>');
   html=html.replace('</header>',`</header>\n      <aside class="demo-banner" aria-label="演示说明"><div><strong>交互演示 · 示例数据</strong><p id="demo-storage-note">保存仅在当前浏览器，不会连接真实设备。</p></div><div class="demo-actions"><a href="https://github.com/xiongzai666/jcalendar-plus" target="_blank" rel="noopener noreferrer">查看源码</a><button id="demo-reset" class="secondary-button" type="button">恢复示例</button></div></aside>`);
@@ -33,10 +33,11 @@ export async function buildDemo(output=join(remote,'.demo-dist')){
   let product=await readFile(productPath,'utf8');
   product=product.replaceAll('保存到云端','保存到当前浏览器').replaceAll('云端','当前浏览器')
     .replaceAll('短按设备上键同步配置，再重新检查。','演示修改仅在当前浏览器生效。')
-    .replaceAll('短按设备上键检查；离线原因尚未知。','演示不会检查真实设备；当前显示为模拟状态。')
-    .replaceAll('请核对实物屏幕；版本回报不能证明物理显示。','这是模拟回报，演示不会连接实物屏幕。')
-    .replaceAll('替换模板并保存本人配置，再核对设备。','修改示例并保存到当前浏览器。')
-    .replaceAll('设备','模拟设备');
+    .replaceAll('短按设备上键检查；离线原因尚不明确。','演示不检查硬件连接；此处为模拟状态。')
+    .replaceAll('设备已确认收到配置，请核对实物屏幕。','这是模拟回报，演示不会连接实物屏幕。')
+    .replaceAll('替换模板并保存自己的配置，再核对设备。','修改示例并保存到当前浏览器。')
+    .replaceAll('设备','模拟设备')
+    .replaceAll('已保存，等待模拟设备同步配置','演示已保存在当前浏览器');
   await writeFile(productPath,product);
   await writeFile(join(output,'.nojekyll'),'');
   await writeFile(join(output,'package.json'),'{"type":"module"}\n');

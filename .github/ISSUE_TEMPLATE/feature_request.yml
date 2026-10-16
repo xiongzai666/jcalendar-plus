@@ -4,11 +4,11 @@ body:
   - type: textarea
     id: scenario
     attributes:
-      label: 使用场景与目前不方便之处
+      label: 使用场景与遇到的问题
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
       label: 方案与取舍
-      description: 是否增加联网／耗电，屏幕放在哪里，如何避免配置复杂
+      description: 说明是否增加联网或耗电、内容在屏幕上的位置，以及配置方式

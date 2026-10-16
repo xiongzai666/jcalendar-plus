@@ -20,7 +20,7 @@ socket.once('secureConnect', () => {
       .find(candidate => candidate.subject === last.issuer && last.verify(candidate.publicKey));
   }
   if (!root) {
-    console.error('未能找到链路对应的根证书；请不要关闭设备端证书校验。');
+    console.error('未找到证书链对应的根证书，请检查站点证书配置并保持设备证书校验开启。');
     process.exitCode = 2;
   } else {
     console.log(root.toString());

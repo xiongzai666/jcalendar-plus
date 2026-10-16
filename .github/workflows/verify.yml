@@ -1,4 +1,4 @@
-name: Verify J-Calendar
+name: 验证 J-Calendar Plus
 
 on:
   push:
@@ -15,11 +15,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install pinned cloud build tools
+      - name: 安装固定版本的云端构建工具
         run: |
           npm ci --prefix remote
           npm install --prefix "$RUNNER_TEMP/edgeone-cli" edgeone@1.6.41
-      - name: Compile and exercise a clean fixture candidate without deployment
+      - name: 编译并验证隔离云端包
         env:
           HTTP_PROXY: ''
           HTTPS_PROXY: ''
@@ -42,9 +42,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install verification dependencies
+      - name: 安装验证依赖
         run: |
           pip install platformio==6.2.0
           npm ci --prefix remote
-      - name: Verify phone, cloud, firmware and all C++ policies
+      - name: 验证网页、云端、固件及 C++ 策略
         run: python tools/verify.py --environment ${{ matrix.environment }}

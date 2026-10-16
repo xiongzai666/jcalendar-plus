@@ -113,19 +113,27 @@ def package_environment(build, output, environment, version, commit, boot_app0, 
     if dependencies is not None: manifest['dependencies'] = dependencies
     output.mkdir(parents=True,exist_ok=True)
     archive = output/f'jcalendar-plus-{version}-{environment}.zip'
-    guide = f"""# J-Calendar Plus {version} / {environment}
-经典 ESP32、4 MB Flash；按实际屏幕型号选择驱动。
-先检查 SHA256SUMS.txt。应用文件最大 1,966,080 字节。
+    guide = f"""# J-Calendar Plus {version} · {environment}
 
-首次刷机（仅全新设备；erase_flash 会清空 Wi-Fi、Token、课表等数据）：
+适用于经典 ESP32、4 MB Flash，安装前请确认屏幕驱动。
+先用 SHA256SUMS.txt 校验文件。应用文件上限为 1,966,080 字节。
+
+## 首次刷机
+
+以下命令仅适用于全新设备。erase_flash 会清空 Wi-Fi、Token、课表等数据。
+
+```sh
 python -m esptool --chip esp32 --port PORT erase_flash
 python -m esptool --chip esp32 --port PORT write_flash 0x1000 bootloader.bin 0x8000 partitions.bin 0xe000 boot_app0.bin 0x10000 firmware.bin
+```
 
-升级：本机配置页 Update 上传 firmware.bin；不要上传整包、bootloader 或 partitions。
+## 保留配置升级
+
+在本机配置页 Update 上传对应驱动的 firmware.bin；不要上传整个 ZIP、bootloader 或 partitions。
 串口直接写 0x10000 仅适用于确定使用 app0、相同分区的设备；使用过 OTA 时优先网页更新。
-未知原固件/分区先备份并参考仓库 docs/FLASHING.md，禁止盲目擦除。
-本包只来自编译目录，未读取或包含设备 NVS/完整 Flash 备份。
-Z15 有历史实机使用记录；其余仅构建验证，不保证任意 4.2 寸三色屏可用。
+原固件或分区未知时，先备份并阅读仓库 docs/FLASHING.md，确认后再操作。
+本包由编译目录生成，不含设备 NVS 或完整 Flash 备份。
+Z15 已有实机记录，其他驱动只有构建验证；具体范围见仓库 docs/RELEASE_ACCEPTANCE.md。
 来源提交：{commit}
 """
     contents={name:path.read_bytes() for name,path in paths.items()}

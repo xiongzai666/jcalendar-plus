@@ -1,14 +1,14 @@
-# 文泉驿转换字体许可询问草稿
+# 文泉驿转换字体许可询问（历史草稿）
 
-日期：2026-10-13。状态：**已取消发送**。维护者决定跳过文泉驿转换字体的 GPL 版本确认；保留此草稿为历史记录，本文不是维护者回复或授权证据。
+日期：2026-10-13。**已取消发送，GPL 版本仍未确认。** 维护者决定跳过进一步确认，以下保留当时的询问草稿。当前处理状态见 [第三方许可记录](THIRD_PARTY_LICENSES.md)。
 
-拟发布位置：`olikraus/u8g2` 的 GitHub issue。只询问字体 GPL 版本，不再向 jcalendar 作者发送商用限制询问。本次不发布此询问；不继续等待发送授权或维护者回复。
+原拟发布到 `olikraus/u8g2` 的 GitHub Issue，仅询问字体 GPL 版本。该询问与面向 jcalendar 作者的商用限制询问均已取消；没有发送，也不再等待回复。草稿不是维护者回复或授权证据。
 
-## 标题
+## 原拟标题
 
 Clarify GPL version of WenQuanYi wqy12/wqy16 font data for GPLv3 firmware
 
-## 正文
+## 英文原稿
 
 Hello, we are preparing the corresponding source and license notices for an open-source GPLv3 ESP32 firmware that uses `u8g2_font_wqy12_t_gb2312` and `u8g2_font_wqy16_t_gb2312` through U8g2_for_Adafruit_GFX 1.8.0.
 
@@ -26,6 +26,6 @@ Could you clarify:
 
 We are keeping the original copyright and license notices and preparing corresponding source. We are not treating the MIT license of the conversion-script repository as a replacement for the font license, or treating the document embedding exception as an exception for firmware linking. Thank you for helping us record the applicable terms accurately.
 
-## 发布回执
+## 处理记录
 
 未发布，无 issue URL；2026-10-13 按维护者决定取消。GPL 版本尚未确认。

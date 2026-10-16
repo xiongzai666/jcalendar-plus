@@ -21,9 +21,9 @@ export function syncResult({saved,revision,device,dirty=false,now=Date.now()}) {
   const stamp=value=>Number.isFinite(Date.parse(value))?new Date(value).toLocaleString('zh-CN',{hour12:false}):'未知';
   let kind='waiting',headline='已保存，等待设备同步配置',action='短按设备上键同步配置，再重新检查。';
   if (dirty) {kind='draft';headline='修改还未保存到云端';action='完成编辑后，保存到云端。';}
-  else if (revision===0 && !saved?.updatedAt) {kind='template';headline='云端模板待填写';action='替换模板并保存本人配置，再核对设备。';}
-  else if (stale) {kind='stale';headline='暂未收到新的设备报告';action='短按设备上键检查；离线原因尚未知。';}
-  else if (device && reported===revision) {kind='confirmed';headline=`设备已确认配置 v${revision}`;action='请核对实物屏幕；版本回报不能证明物理显示。';}
+  else if (revision===0 && !saved?.updatedAt) {kind='template';headline='云端模板待填写';action='替换模板并保存自己的配置，再核对设备。';}
+  else if (stale) {kind='stale';headline='暂未收到新的设备报告';action='短按设备上键检查；离线原因尚不明确。';}
+  else if (device && reported===revision) {kind='confirmed';headline=`设备已确认配置 v${revision}`;action='设备已确认收到配置，请核对实物屏幕。';}
   else if (Number.isFinite(at) && at>=Date.parse(saved?.updatedAt)) {kind='connected';headline='设备已连接，新配置尚未确认';action='查看最近同步记录，核对配置读取与确认结果。';}
   return {kind,headline,action,detail:`云端配置 v${revision ?? '未知'} · 设备回报 v${reported ?? '未知'}`,
     evidence:`云端保存 ${stamp(saved?.updatedAt)} · 最近设备报告 ${stamp(device?.seenAt)}`};

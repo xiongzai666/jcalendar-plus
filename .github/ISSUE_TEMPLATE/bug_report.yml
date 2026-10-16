@@ -1,5 +1,5 @@
 name: 故障报告
-description: 提交已去除敏感信息的复现资料
+description: 提供硬件、复现步骤和脱敏后的错误信息
 body:
   - type: textarea
     id: hardware
@@ -17,5 +17,5 @@ body:
   - type: textarea
     id: evidence
     attributes:
-      label: 去敏后的错误或照片
+      label: 脱敏后的错误信息或照片
       description: 不要上传密码、Token、私人服务地址、NVS 或完整 Flash 备份

@@ -40,7 +40,7 @@ async function api(path, options = {}) {
       const persisted = saved && draft ? journal.save(saved, draft, todoEditor.value) : journal.persistent;
       $('#workspace').hidden = true;
       $('#login-view').hidden = false;
-      $('#login-error').textContent = '登录已过期，请重新登录。' + (pending ? persisted ? '未保存修改已保留在这台手机。' : '修改暂存于当前页面；请勿刷新或关闭，重新登录后可以继续编辑。' : '');
+      $('#login-error').textContent = '登录已过期，请重新登录。' + (pending ? persisted ? '未保存修改已保留在当前浏览器。' : '修改暂存于当前页面；请勿刷新或关闭，重新登录后可以继续编辑。' : '');
       $('#login-error').hidden = false;
       $('#save-bar').hidden = true;
     }
@@ -153,15 +153,15 @@ function renderStatus() {
 function renderRuntimeSummary() {
   const container = $('#runtime-summary'); container.replaceChildren();
   const runtime = device?.runtime;
-  if (!runtime) { container.append(element('p','','等待新版固件报告')); return; }
+  if (!runtime) { container.append(element('p','','暂未收到设备运行报告')); return; }
   const stamp = value => value ? new Date(value * 1000).toLocaleString('zh-CN',{hour12:false}) : '暂无';
   const values = [
     ['固件版本', runtime.firmware],
-    ['实况读取', `${stamp(runtime.nowReadAt)}${runtime.nowFailed ? ' · 最近获取失败' : ''}`],
-    ['日预报读取', `${stamp(runtime.dailyReadAt)}${runtime.dailyFailed ? ' · 最近获取失败' : ''}`],
+    ['实况获取时间', `${stamp(runtime.nowReadAt)}${runtime.nowFailed ? ' · 最近获取失败' : ''}`],
+    ['预报获取时间', `${stamp(runtime.dailyReadAt)}${runtime.dailyFailed ? ' · 最近获取失败' : ''}`],
     ['上次报告的预计联网', `${stamp(runtime.nextNetworkAt)}${runtime.nextNetworkAt && runtime.nextNetworkAt * 1000 <= Date.now() ? ' · 时间已过，待新报告确认' : ''}`],
     ['上次所在页面', ['月历','日间周课表','课程与倒计时','待办事项'][runtime.activePage]],
-    ['摘要上报', new Date(runtime.reportedAt).toLocaleString('zh-CN',{hour12:false})],
+    ['摘要上报时间', new Date(runtime.reportedAt).toLocaleString('zh-CN',{hour12:false})],
   ];
   for (const [name, value] of values) container.append(element('p','', `${name}：${value}`));
 }
@@ -253,7 +253,7 @@ function renderTodos() {
 function focusTodoEditor() { $('#todo-edit-title')?.focus(); }
 function requireAppliedTodo() {
   if (!todoEditor.value) return true;
-  toast('请先将这项编辑应用到草稿，或取消编辑。'); focusTodoEditor(); return false;
+  toast('请先点击「应用到草稿」或「取消」。'); focusTodoEditor(); return false;
 }
 function renderTodoEditor(row, todo) {
   row.classList.add('editing');
@@ -274,7 +274,7 @@ function renderTodoEditor(row, todo) {
   const cancel=element('button','remove-button','取消');cancel.type='button';
   const focusRow=id=>{ const button=[...document.querySelectorAll('[data-edit-todo]')].find(node=>node.dataset.editTodo===id);button?.focus();button?.scrollIntoView({block:'nearest'}); };
   cancel.addEventListener('click',()=>{todoEditor.cancel();renderTodos();markDirty();focusRow(todo.id);});
-  form.addEventListener('submit',event=>{event.preventDefault();try {const id=todoEditor.apply(draft);renderTodos();markDirty();focusRow(id);const rank=orderedTodos(draft.todos).filter(item=>!item.done).findIndex(item=>item.id===id);toast(`已应用到草稿；${rank<0?'该项已完成，不投影到设备':rank<6?'该项进入设备前 6 条':'该项未进入设备前 6 条'}。请保存到云端。`);}catch(cause){toast(cause.message);focusTodoEditor();}});
+  form.addEventListener('submit',event=>{event.preventDefault();try {const id=todoEditor.apply(draft);renderTodos();markDirty();focusRow(id);const rank=orderedTodos(draft.todos).filter(item=>!item.done).findIndex(item=>item.id===id);toast(`已应用到草稿；${rank<0?'该项已完成，设备不显示':rank<6?'该项进入设备前 6 条':'该项未进入设备前 6 条'}。请保存到云端。`);}catch(cause){toast(cause.message);focusTodoEditor();}});
   actions.append(apply,cancel);form.append(actions,element('p','todo-edit-note','应用后仍需保存到云端；取消不会改变草稿。'));row.append(form);
 }
 
@@ -617,7 +617,7 @@ async function load({ discard = false } = {}) {
   cloudRevision = saved.revision;
   draft = structuredClone(saved);
   let restored = false;
-  if (record && (samePage || confirm('发现这台手机未保存的修改，是否恢复继续编辑？'))) {
+  if (record && (samePage || confirm('发现当前浏览器未保存的修改，是否恢复继续编辑？'))) {
     saved = record.base; draft = record.draft; todoEditor.value = record.todoEdit || null;
     draft.settings.dateOverrides ||= []; restored = true;
   } else { journal.clear(); todoEditor.cancel(); }
@@ -648,7 +648,7 @@ $('#login-form').addEventListener('submit', async event => {
 $('#sign-out').addEventListener('click', async () => {
   if (!requireAppliedTodo()) return;
   const persisted = saved && draft ? journal.save(saved, draft, todoEditor.value) : journal.persistent;
-  if (editsPending() && !confirm(persisted ? '未保存修改会保留在这台手机，确定退出吗？' :
+  if (editsPending() && !confirm(persisted ? '未保存修改会保留在当前浏览器，确定退出吗？' :
     '未保存修改仅保留在当前页面，刷新或关闭后会丢失，确定退出吗？')) return;
   await api('/api/session', { method: 'DELETE' });
   saved = draft = device = null;

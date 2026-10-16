@@ -1,16 +1,13 @@
 # BoundedUZlib
 
-Project copy of the decoder and checksums from the pinned ArduinoUZlib
-commit `20aff95cd80c141f80bdbf66895409a0046d2c2f`, derived from Joergen Ibsen's
-tinf and Paul Sokolovsky's uzlib. Original copyright and license notices remain
-in every applicable source file. This is an altered project copy.
+本目录是项目修改过的解码器与校验代码，来自 ArduinoUZlib 固定提交 `20aff95cd80c141f80bdbf66895409a0046d2c2f`，上游为 Joergen Ibsen 的 tinf 和 Paul Sokolovsky 的 uzlib。各源文件保留原作者版权及许可声明。
 
-Changes: public names use the `bounded_uzlib_` prefix; optional paranoid table
-and end-of-block checks are enabled; literal and distance decoder error returns
-and input exhaustion are rejected before using a symbol as a table index.
-The existing third-party dependency is unchanged.
+## 项目修改
 
-Only inflate, gzip header parsing and checksums are compiled. Input/allocation/
-output limits, header CRC, data CRC, output size and complete consumption are
-enforced by `include/bounded_gzip.h`. Main firmware and host tests compile this
-same checked-in C source, rather than relying on an ignored dependency patch.
+- 公开符号增加 `bounded_uzlib_` 前缀。
+- 启用可选的解码表和块结束检查。
+- 在将符号用作表索引前，检查字面量、距离解码错误及输入耗尽。
+
+原第三方依赖保持。当前只编译 inflate、gzip 头解析和校验代码；[bounded_gzip.h](../../include/bounded_gzip.h) 负责限制输入、分配和输出，并检查头部 CRC、数据 CRC、输出长度及输入是否完整消费。
+
+固件与主机测试均编译本目录已检入的 C 源码，便于复现，无需修改被 Git 忽略的依赖目录。

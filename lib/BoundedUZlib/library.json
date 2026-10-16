@@ -1,7 +1,7 @@
 {
   "name": "BoundedUZlib",
   "version": "1.0.0",
-  "description": "Project prefixed uzlib decoder with explicit symbol error bounds",
+  "description": "项目使用的 uzlib 解码器，采用独立符号前缀并检查解码错误边界",
   "frameworks": "arduino",
   "platforms": "espressif32"
 }

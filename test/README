@@ -1,3 +1,9 @@
-Host policy tests run through python tools/verify.py; they are not PlatformIO on-device tests.
-C++ uses g++ or J_CALENDAR_CXX (Zig), Python uses unittest, and remote/test uses Node.js.
-Fixtures are synthetic regression inputs, independent from public product defaults.
+# 测试说明
+
+运行 `python tools/verify.py` 可执行主机策略测试；这些测试不在实体设备上运行。
+
+- C++ 测试使用 g++，也可通过 `J_CALENDAR_CXX` 指定 Zig。
+- Python 测试使用 unittest。
+- `remote/test` 中的网页与云端测试使用 Node.js。
+
+夹具均为独立构造的回归输入，不依赖公开产品的默认配置。完整命令及实机验证范围见 [维护指南](../MAINTENANCE.md) 和 [构建与验收记录](../docs/RELEASE_ACCEPTANCE.md)。

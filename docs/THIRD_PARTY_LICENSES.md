@@ -1,8 +1,8 @@
 # 第三方许可与公开发行核查
 
-核查日期：2026-10-11；补录：2026-10-12、2026-10-13。原源码核查基点：`df9a9a186660600c56594402c4ba9fb755b5d0d2`，本次从 `5d9c277` 继续核对实际分发内容。2.3.2-rc.3 已移除 Siji 引用和三张参考图，公开发行结论仍受第 5 节的未解决事项约束。
+核查日期：2026-10-11；补录：2026-10-12、2026-10-13；发行状态更新：2026-10-16。最初核查基点为 `df9a9a186660600c56594402c4ba9fb755b5d0d2`，后续从 `5d9c277` 继续核对实际分发内容。当前 rc.4 已提供固件、对应源码和许可附件；各项处理结果与未确认范围见第 5 节。
 
-附件原文位于 [licenses](../licenses/)，逐文件出处、上游证据提交号、转换方式及 SHA-256 见 [PROVENANCE.json](../licenses/PROVENANCE.json)。证据提交号用于固定本次查阅的上游内容，不等同于本项目最初转换字形时所用的提交号。本文不修改冻结 RC2 的二进制、清单或签名。
+附件原文位于 [licenses](../licenses/)，逐文件出处、上游证据提交号、转换方式及 SHA-256 见 [PROVENANCE.json](../licenses/PROVENANCE.json)。证据提交号固定的是核查时查阅的上游版本，不代表最初生成字形时使用的版本。文档更新不改变历史冻结包、清单或签名。
 
 ## 1. 项目与驱动
 
@@ -38,7 +38,7 @@
 | 项目文件或符号 | 来源、版权与授权 | 本次记录 |
 | --- | --- | --- |
 | `src/u8g2_font_qweather_icon_16.c` | QWeather，图标 **CC BY 4.0**；图标库代码 MIT | 字形是 QWeather Icons 的子集及位图格式转换（本文件头记载 132/233 个字形），须保留 QWeather 署名、来源链接、许可链接及转换说明；[官方声明](https://github.com/qwd/Icons/blob/d7d4ef4d8334f9e70a75a088cb77804bf81daea4/README.md)、[代码 MIT](../licenses/QWeather-MIT-LICENSE.txt)、[图标 CC BY 4.0 原文](../licenses/CC-BY-4.0-legalcode.txt) |
-| `include/subject_font.h` | Noto Sans SC Bold，SIL OFL 1.1 | 由 `tools/generate_subject_font.py` 转为课程名称位图子集；[OFL](../licenses/NotoSansSC-OFL.txt) 保留 Adobe 版权和 Reserved Font Name `Source`。本次以本机 Noto Sans SC `Version 2.04;241114210130;non-release`、SHA `763146584cf0710223441356b4395e279021b0806c196614377a7a0174ae074a` 逐字复现现有头文件（忽略换行差异）。[输入元数据与结果](../licenses/NotoSansSC-reproduction-metadata.json)提供可匹配输入，不声称恢复了当时实际用过的文件 |
+| `include/subject_font.h` | Noto Sans SC Bold，SIL OFL 1.1 | 由 `tools/generate_subject_font.py` 转为课程名称位图子集；[OFL](../licenses/NotoSansSC-OFL.txt) 保留 Adobe 版权和 Reserved Font Name `Source`。核查时以本机 Noto Sans SC `Version 2.04;241114210130;non-release`、SHA `763146584cf0710223441356b4395e279021b0806c196614377a7a0174ae074a` 逐字复现现有头文件（忽略换行差异）。[输入元数据与结果](../licenses/NotoSansSC-reproduction-metadata.json) 提供了可匹配的输入文件；最初生成字形时使用的文件尚未恢复 |
 | `u8g2_font_wqy12_t_gb2312`、`u8g2_font_wqy16_t_gb2312` | WenQuanYi Project Board of Trustees、Qianqian Fang，2004–2010；U8g2 声明 GPLv2，带字体嵌入例外 | [U8g2 官方说明](https://github.com/olikraus/u8g2/wiki/fntgrpwqy)、[12 px BDF 声明](../licenses/WenQuanYi-U8g2-12px-BDF-header.txt)、[16 px BDF 声明](../licenses/WenQuanYi-U8g2-16px-BDF-header.txt)。原作者发行包的版本 0.9.9.8 另写 GPLv2 or later，见 [12 px 原声明](../licenses/WenQuanYi-original-wenquanyi_9pt.bdf-header.txt)、[16 px 原声明](../licenses/WenQuanYi-original-wenquanyi_12pt.bdf-header.txt)；完整 [GPLv2](../licenses/WenQuanYi-COPYING.txt) 和 [嵌入例外](../licenses/WenQuanYi-original-README.txt) 一并保留 |
 | `u8g2_font_fub14_tn`、`fub17_tn`、`fub20_tn`、`fub25_tn` | FreeUniversal，Stephen Wilson 2009；原 Sil-Sophia，SIL International 1994–2008；SIL OFL 1.1 | [U8g2 官方说明](https://github.com/olikraus/u8g2/wiki/fntgrpfreeuniversal)、[从上游 Bold TTF 提取的完整版权和 OFL](../licenses/FreeUniversal-OFL-from-font.txt)。保留字体内原始授权元数据，包括 Reserved Font Name `SILSophia` |
 | `u8g2_font_open_iconic_all_2x_t`、`open_iconic_all_4x_t` | Open Iconic，Waybury 2014；字体 SIL OFL 1.1 | [字体许可原文](../licenses/OpenIconic-FONT-LICENSE.txt)。适用字体授权，不把项目中 SVG 图标的其他授权混用于该字形数据 |
@@ -48,7 +48,7 @@
 
 文泉驿原作者包来自 [官方 SourceForge 发布目录](https://sourceforge.net/projects/wqy/files/wqy-bitmapfont/1.0.0-RC1/)。已下载归档的 SHA-256 为 `c29b2c2f5db73ff74d11a7dca9608414813da1c4240b7b6c829a58757b35ebe6`。U8g2 保存的 BDF 与原作者包的字形区不是逐字节相同，不能仅凭相同版本号认定转换来源已完全对齐。其嵌入例外针对使用字体的文档，没有在本文中扩大解释为固件链接例外。
 
-2026-10-13 补核来源链：U8g2 官方 Wiki 指向 [larryli/u8g2_wqy](https://github.com/larryli/u8g2_wqy)，该仓库的 `build.sh` 将 9 pt／12 pt BDF 分别转换为 wqy12／wqy16 GB2312。转换仓库的 MIT 声明不能替代字体本身的 GPL。U8g2 维护者在 [BDF 边界问题](https://github.com/larryli/u8g2_wqy/issues/1) 和 [修正说明](https://github.com/larryli/u8g2_wqy/issues/1#issuecomment-357793435) 中记录了修改并纳入 U8g2 的过程。固定版本比对中，两份 9 pt BDF 的 30,503 个编码一致，16 个字形块不同；12 pt 的 41,295 个编码一致，109 个字形块不同。此结果说明存在修改，不声称全部差异都仅为边界修正。源文件 URL、SHA 和比对结果见 [来源链记录](../licenses/WenQuanYi-source-chain-20261013.json)。这些查阅版本不是已恢复的历史生成输入；GPLv2 简写是否保留原字体的「or later」，以及修改部分的版本选择，尚未确认。维护者于 2026-10-13 明确决定跳过进一步确认，本轮不再发送询问或继续等待回复。
+2026-10-13 补核来源链：U8g2 官方 Wiki 指向 [larryli/u8g2_wqy](https://github.com/larryli/u8g2_wqy)，该仓库的 `build.sh` 将 9 pt／12 pt BDF 分别转换为 wqy12／wqy16 GB2312。转换仓库的 MIT 声明不能替代字体本身的 GPL。U8g2 维护者在 [BDF 边界问题](https://github.com/larryli/u8g2_wqy/issues/1) 和 [修正说明](https://github.com/larryli/u8g2_wqy/issues/1#issuecomment-357793435) 中记录了修改并纳入 U8g2 的过程。固定版本比对中，两份 9 pt BDF 的 30,503 个编码一致，16 个字形块不同；12 pt 的 41,295 个编码一致，109 个字形块不同。这些差异说明字形经过修改，具体改动不一定全部属于边界修正。源文件 URL、SHA 和比对结果见 [来源链记录](../licenses/WenQuanYi-source-chain-20261013.json)。这些查阅版本不是已恢复的历史生成输入；GPLv2 简写是否保留原字体的「or later」，以及修改部分的版本选择，尚未确认。维护者于 2026-10-13 明确决定跳过进一步确认，本轮不再发送询问或继续等待回复。
 
 2.3.2-rc.3 的电量图标改用项目内 GFX 图元，原五档电压阈值保留；废弃注释中的 Siji 引用一并移除。原许可附件保留用于解释历史来源，不作为当前固件的字体组件。
 
@@ -58,7 +58,7 @@ OFL 字体及其转换子集继续受 OFL 约束。项目 GPLv3 不替代 OFL；
 
 ## 4. 远程服务依赖与历史参考图
 
-`remote/package-lock.json` 仅列出 `@edgeone/pages-blob` 0.0.18。已从 [npm 固定版本包](https://registry.npmjs.org/@edgeone/pages-blob/-/pages-blob-0.0.18.tgz) 提取 [package.json 原文](../licenses/EdgeOne-pages-blob-package.json)，其中声明 `license: MIT`；压缩包 SHA-512 与锁文件 `integrity` 完全一致，归档 SHA-256 见出处清单。该 npm 包仅包含 4 个文件，没有单独的 LICENSE、版权人声明或源码仓库字段。本次不补造版权人；分发该 SDK 时还需取得并附带其完整版权和许可通知。
+`remote/package-lock.json` 仅列出 `@edgeone/pages-blob` 0.0.18。已从 [npm 固定版本包](https://registry.npmjs.org/@edgeone/pages-blob/-/pages-blob-0.0.18.tgz) 提取 [package.json 原文](../licenses/EdgeOne-pages-blob-package.json)，其中声明 `license: MIT`；压缩包 SHA-512 与锁文件 `integrity` 完全一致，归档 SHA-256 见出处清单。该 npm 包仅包含 4 个文件，没有单独的 LICENSE、版权人声明或源码仓库字段。该归档未提供可引用的完整版权信息；分发 SDK 字节时仍需取得并附带完整版权和许可通知。
 
 下列三图在 2.3.2-rc.3 从当前源码删除；硬件说明改为文字，没有替换为另一组来源不明的图片。
 
@@ -77,9 +77,9 @@ OFL 字体及其转换子集继续受 OFL 约束。项目 GPLv3 不替代 OFL；
 3. **文泉驿版本：按维护者决定跳过确认**。已有来源链和 GPLv2／GPLv2-or-later 的声明差异继续留档，未收到版本澄清或额外授权。不再列为本轮待执行任务；不能将跳过确认或文档嵌入例外表述为固件组合许可已获确认。
 4. **三张图片：当前分发缺口已移除**。已删除原文件和使用处，保留接线文字与历史 SHA；不在新源码包中附回这些文件。
 5. **生成来源留档**：课程字形已补齐可精确复现的输入版本、SHA 与字体内授权元数据。QWeather 最初转换输入版本仍未恢复；保留已核的 CC BY 4.0、来源、署名与转换说明，不能把缺少历史输入版本直接等同于没有图标授权。
-6. **发行包附件**：仅当云端包包含 EdgeOne SDK 字节时，取得并附带该 SDK 完整版权和许可通知；ESP32 固件不含这个 Node SDK。如发行包纳入 ArduinoUZlib 包装层，补齐该层授权。清理上述事项后，把相应许可证、NOTICE、源代码提供方式和出处清单纳入新的公开发行包。冻结 RC2 没有因此获得新的授权结论，也没有被重新签署。
+6. **发行包附件：rc.4 已提供**。固件包与对应源码包已包含实际分发组件的许可证、NOTICE、源码获取说明和出处清单，详见 [发行源码说明](RELEASE_SOURCE.md)。当前发行物不含 EdgeOne SDK 字节或 ArduinoUZlib 未声明授权的包装层。若后续分发这些内容，仍需分别补齐 SDK 的完整版权和许可通知、包装层的授权。历史冻结包及签名保持。
 
-本次完成许可分类、原文附件、课程字形复现，以及 Siji／参考图的实际移除。项目许可政策已确认；文泉驿版本确认已按维护者决定跳过，实际发行附件按包内容准备。版本未确认的事实保留，不将本轮收尾表述为「全部第三方许可已获确认」。
+已完成许可分类、原文附件、课程字形复现，以及 Siji 和参考图的移除。项目 GPLv3 政策已确认，当前发行附件已交付；文泉驿版本差异保留为未确认事项，按维护者决定停止进一步询问。当前记录不表示全部第三方许可均已确认。
 
 ## 6. 询问草稿与处理决定（均未发送）
 
