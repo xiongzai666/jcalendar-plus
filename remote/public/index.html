@@ -153,7 +153,19 @@
           <label class="field"><span>天气城市 ID（Location ID）</span><input id="weather-location" type="text" inputmode="numeric" pattern="[0-9]{9}" maxlength="9"></label>
           <label class="field"><span>开机默认页面</span><select id="default-page"><option value="2">课程与倒计时</option><option value="1">日间周课表</option><option value="0">月历</option><option value="3">待办事项</option></select></label>
         </div>
-        <div class="subsection-heading"><h2>早读科目</h2><p>早读期间显示当天科目，课间显示下一节。晨会与跑操：周一为晨会，其余上课日为跑操。</p></div>
+                  <div class="subsection-heading"><h2>右下角倒计时</h2><p>独立于主倒计时。节日和节气每年自动更新，当天显示“今天”。</p></div>
+          <div class="settings-grid" id="festival-countdown-editor">
+            <label class="field"><span>倒计时方式</span><select id="festival-mode">
+              <option value="auto-festival">最近节日（默认）</option><option value="festival">指定节日</option>
+              <option value="auto-term">最近节气</option><option value="term">指定节气</option><option value="custom">自定义日期</option>
+            </select></label>
+            <label class="field" id="festival-target-field" hidden><span id="festival-target-label">选择节日</span><select id="festival-target" aria-labelledby="festival-target-label"></select></label>
+            <label class="field" id="festival-label-field" hidden><span>显示名称（1–4 字）</span><input id="festival-label" type="text" maxlength="4" aria-describedby="festival-note festival-error"></label>
+            <label class="field" id="festival-date-field" hidden><span>目标日期</span><input id="festival-date" type="date" min="2025-01-01" max="2099-12-31" aria-describedby="festival-note festival-error"></label>
+          </div>
+          <p id="festival-note" class="field-hint" hidden>自定义日期到期后显示“已到期”。名称最多 4 字，不支持表情符号。</p>
+          <p id="festival-error" class="field-error" role="alert" hidden></p>
+<div class="subsection-heading"><h2>早读科目</h2><p>早读期间显示当天科目，课间显示下一节。晨会与跑操：周一为晨会，其余上课日为跑操。</p></div>
         <div id="early-reading-editor" class="early-reading-editor"></div>
         <div class="subsection-heading"><h2>配置备份</h2><p>下载当前云端的课程、作息、临时安排和待办；文件不含 Wi‑Fi 密码或设备令牌。导入后先核对，再手动保存到云端。</p></div>
         <div class="config-transfer-actions">

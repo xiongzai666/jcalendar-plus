@@ -25,3 +25,7 @@ QWeather 图标版权所属 QWeather，图标采用 [CC BY 4.0](https://creative
 2026-10-11 已补齐 [第三方许可分类与核查记录](docs/THIRD_PARTY_LICENSES.md)、[许可原文附件](licenses/) 和 [出处及 SHA-256 清单](licenses/PROVENANCE.json)。保留原作者声明与各组件自己的许可。
 
 当前 rc.4 固件包及对应源码包已附带实际分发组件的版权、许可与来源材料；包内容见 [发行源码说明](docs/RELEASE_SOURCE.md)。文泉驿转换字体的 GPL 版本差异仍未澄清，维护者于 2026-10-13 决定跳过进一步确认；跳过不等于取得新的许可证据。Siji 与三张参考图已移除，课程字形的可复现输入已补齐。EdgeOne SDK 的完整通知要求适用于包含其字节的云端包，当前发行物不含该 SDK。各项证据及尚未确认的范围见第三方许可记录第 5 节；历史冻结包、清单和签名保持。
+
+## 节气日期数据
+
+`include/solar_term_data.h` 的日期事实整理自 [香港天文台公历与农历日期对照表](https://www.hko.gov.hk/en/gts/time/conversion.htm)，范围为 2025–2099 年，于 2026-10-17 取得。原始逐年文本为 `https://www.hko.gov.hk/tc/gts/time/calendar/text/files/T{year}c.txt`；时区为 UTC+8。远期临近午夜的节气日期采用该表公布值。

@@ -1,3 +1,4 @@
+import { FESTIVALS, SOLAR_TERMS, validateFestivalCountdown } from './festival-countdown.js';
 import { LESSON_LABELS, routineIssues } from './routine.js';
 import { TodoEditSession, orderedTodos, syncResult, safeDiagnostic } from './product-flow.js';
 import { getOverrideReview } from './override-review.js';
@@ -517,7 +518,33 @@ function renderRoutineErrors({ focus = false } = {}) {
   return issues;
 }
 
+function renderFestivalSettings() {
+  const value=draft.settings.festivalCountdown || {mode:'auto-festival'};
+  $('#festival-mode').value=value.mode;
+  const specific=value.mode==='festival' || value.mode==='term',custom=value.mode==='custom';
+  $('#festival-target-field').hidden=!specific;
+  $('#festival-label-field').hidden=!custom;$('#festival-date-field').hidden=!custom;$('#festival-note').hidden=!custom;
+  const select=$('#festival-target');select.replaceChildren();
+  if (specific) {
+    $('#festival-target-label').textContent=value.mode==='term'?'选择节气':'选择节日';
+    const options=value.mode==='term'?SOLAR_TERMS.map((name,index)=>[index,name]):FESTIVALS;
+    for (const [id,name] of options) { const option=element('option','',name);option.value=String(id);select.append(option); }
+    select.value=String(value.target);
+  }
+  $('#festival-label').value=value.label || '';
+  $('#festival-date').value=value.date?.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') || '';
+  festivalSettingsError();
+}
+function festivalSettingsError() {
+  const error=validateFestivalCountdown(draft.settings.festivalCountdown);
+  $('#festival-error').textContent=error || '';$('#festival-error').hidden=!error;
+  for (const id of ['festival-label','festival-date'])
+    $(`#${id}`).setAttribute('aria-invalid',String(!!error && draft.settings.festivalCountdown?.mode==='custom'));
+  return error;
+}
+
 function renderSettings() {
+  renderFestivalSettings();
   const settings = draft.settings;
   $('#countdown-label').value = settings.countdownLabel || '';
   $('#countdown-date').value = settings.countdownDate?.replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3') || '';
@@ -570,8 +597,8 @@ function renderHistory() {
       if (JSON.stringify(version.settings.dateOverrides || []) !==
           JSON.stringify(saved.settings.dateOverrides || [])) changes.push('临时安排');
       if (JSON.stringify(version.todos) !== JSON.stringify(saved.todos)) changes.push('待办');
-      if (['countdownLabel', 'countdownDate', 'weatherLocation', 'defaultPage']
-          .some(key => version.settings[key] !== saved.settings[key])) changes.push('显示设置');
+      if (['festivalCountdown', 'countdownLabel', 'countdownDate', 'weatherLocation', 'defaultPage']
+          .some(key => JSON.stringify(version.settings[key]) !== JSON.stringify(saved.settings[key]))) changes.push('显示设置');
       content.append(element('span', 'history-meta',
         changes.length ? `相较当前：${changes.join('、')}不同` : '内容与当前一致'));
     }
@@ -711,7 +738,7 @@ $('#rebase-draft').addEventListener('click', async () => {
   try {
     const payload = await api('/api/admin/state');
     const merged = mergeDraft(saved, draft, payload.state);
-    const names = { countdownLabel: '倒计时名称', countdownDate: '倒计时日期',
+    const names = { festivalCountdown:'右下角倒计时', countdownLabel: '倒计时名称', countdownDate: '倒计时日期',
       weatherLocation: '天气城市', studySchedule: '每周课表', dailyRoutine: '每日作息',
       earlyReading: '早读', defaultPage: '默认页', dateOverrides: '临时安排', todos: '待办' };
     const labels = merged.conflicts.map(path => names[path.replace('settings.', '')] || path);
@@ -805,6 +832,25 @@ $('#remove-expired-overrides').addEventListener('click', () => {
   toast(`已移除 ${expired.length} 个过期日期；请保存到云端`);
 });
 
+$('#festival-mode').addEventListener('change', event => {
+  const mode=event.target.value,old=draft.settings.festivalCountdown;
+  draft.settings.festivalCountdown=mode==='custom'?
+    {mode,label:old?.label || '纪念日',date:old?.date || localDateKey(new Date()).replaceAll('-','')}:
+    mode==='festival'?{mode,target:old?.mode===mode?old.target:'spring-festival'}:
+    mode==='term'?{mode,target:old?.mode===mode?old.target:23}:{mode};
+  renderFestivalSettings();markDirty();
+});
+$('#festival-target').addEventListener('change', event => {
+  const value=draft.settings.festivalCountdown;
+  value.target=value.mode==='term'?Number(event.target.value):event.target.value;markDirty();
+});
+$('#festival-label').addEventListener('input', event => {
+  draft.settings.festivalCountdown.label=event.target.value;festivalSettingsError();markDirty();
+});
+$('#festival-date').addEventListener('change', event => {
+  draft.settings.festivalCountdown.date=event.target.value.replaceAll('-','');festivalSettingsError();markDirty();
+});
+
 [['countdown-label', 'countdownLabel'], ['weather-location', 'weatherLocation']].forEach(([id, key]) => {
   $(`#${id}`).addEventListener('input', event => { draft.settings[key] = event.target.value; markDirty(); });
 });
@@ -858,6 +904,7 @@ $('#import-file').addEventListener('change', async event => {
 $('#save').addEventListener('click', async () => {
   if (!requireAppliedTodo()) return;
   if (renderRoutineErrors({focus:true}).length) return;
+  if (festivalSettingsError()) { switchTab('settings'); $('#festival-label').focus(); return; }
   if (activeTab !== 'overrides' && JSON.stringify(draft.settings.dateOverrides || []) !==
       JSON.stringify(saved.settings.dateOverrides || [])) {
     switchTab('overrides');

@@ -58,6 +58,9 @@ bool validPayload(JsonDocument& doc) {
 
 bool savePayload(JsonDocument& doc) {
     JsonObject settings = doc["settings"];
+    String festivalConfig;
+    if (settings["festivalCountdown"].isNull()) festivalConfig="{\"mode\":\"auto-festival\"}";
+    else serializeJson(settings["festivalCountdown"],festivalConfig);
     String todos;
     serializeJson(doc["todos"], todos);
     String overrides;
@@ -66,6 +69,7 @@ bool savePayload(JsonDocument& doc) {
     Preferences pref;
     if (!pref.begin(PREF_NAMESPACE)) return false;
     bool ok = pref.putString(PREF_CD_DAY_LABLE, settings["countdownLabel"].as<String>()) > 0;
+    ok = pref.putString(PREF_FESTIVAL_CD,festivalConfig)>0 && ok;
     ok = pref.putString(PREF_CD_DAY_DATE, settings["countdownDate"].as<String>()) > 0 && ok;
     ok = pref.putString(PREF_QWEATHER_LOC, settings["weatherLocation"].as<String>()) > 0 && ok;
     ok = pref.putString(PREF_STUDY_SCHEDULE, settings["studySchedule"].as<String>()) > 0 && ok;
@@ -89,6 +93,7 @@ bool savePayload(JsonDocument& doc) {
     pref.end();
     if (!ok || !pref.begin(PREF_NAMESPACE, true)) return false;
     ok = pref.getString(PREF_CD_DAY_LABLE) == settings["countdownLabel"].as<String>() &&
+         pref.getString(PREF_FESTIVAL_CD)==festivalConfig &&
          pref.getString(PREF_CD_DAY_DATE) == settings["countdownDate"].as<String>() &&
          pref.getString(PREF_QWEATHER_LOC) == settings["weatherLocation"].as<String>() &&
          pref.getString(PREF_STUDY_SCHEDULE) == settings["studySchedule"].as<String>() &&

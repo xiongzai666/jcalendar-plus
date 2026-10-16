@@ -91,9 +91,28 @@ inline bool reading(const char* value) {
     }
     return !*cursor;
 }
+inline bool festivalCountdown(JsonVariantConst value) {
+    if (value.isNull()) return false;
+    if (!value.is<JsonObjectConst>() || !value["mode"].is<const char*>()) return false;
+    const auto object=value.as<JsonObjectConst>();
+    const char* mode=value["mode"];
+    if (!strcmp(mode,"auto-festival") || !strcmp(mode,"auto-term")) return object.size()==1;
+    if (!strcmp(mode,"term")) return object.size()==2 && value["target"].is<int>() &&
+        value["target"].as<int>()>=0 && value["target"].as<int>()<24;
+    if (!strcmp(mode,"festival")) {
+        if (object.size()!=2 || !value["target"].is<const char*>()) return false;
+        const char* target=value["target"];
+        const char* ids[]={"new-year","spring-festival","lantern","qingming","labour","dragon-boat","qixi","mid-autumn","national","double-ninth"};
+        for (const char* id:ids) if (!strcmp(id,target)) return true;
+        return false;
+    }
+    return !strcmp(mode,"custom") && object.size()==3 && text(value["label"] | "",4,12) &&
+        validDate(value["date"] | "",true);
+}
 inline bool validPayload(JsonVariantConst doc) {
     if ((doc["schema"] != 1 && doc["schema"] != 2) || !doc["revision"].is<uint32_t>() || measureJson(doc) > 11500) return false;
     const auto settings = doc["settings"].as<JsonObjectConst>();
+    if (!settings["festivalCountdown"].isUnbound() && !festivalCountdown(settings["festivalCountdown"])) return false;
     if (settings.isNull() || !text(settings["countdownLabel"] | "",8,24) ||
         !validDate(settings["countdownDate"] | "",true) ||
         !schedule(settings["studySchedule"] | "") || !routine(settings["dailyRoutine"] | "") ||

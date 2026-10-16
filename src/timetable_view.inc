@@ -44,45 +44,49 @@ static String lunarDayText(int day) {
     return nl10_str[day / 10] + nl_str[day % 10];
 }
 
-static String nextFestival(int& daysAway) {
-    struct tm date = tmInfo;
-    date.tm_hour = 12;
-    date.tm_min = date.tm_sec = 0;
-    date.tm_isdst = -1;
-    const time_t start = mktime(&date);
-    int monthDays[31] = {};
-    int cachedYear = 0, cachedMonth = 0;
-    for (int offset = 1; offset <= 370; ++offset) {
-        time_t probe = start + static_cast<time_t>(offset) * 86400;
-        struct tm candidate;
-        localtime_r(&probe, &candidate);
-        const int year = candidate.tm_year + 1900;
-        const int month = candidate.tm_mon + 1;
-        if (year < 1902 || year > 2099) break;
-        if (year != cachedYear || month != cachedMonth) {
-            nl_month_days(year, month, monthDays);
-            cachedYear = year;
-            cachedMonth = month;
-        }
-        const int lunar = monthDays[candidate.tm_mday - 1];
-        const char* name = nullptr;
-        if (month == 1 && candidate.tm_mday == 1) name = "元旦";
-        else if (month == 5 && candidate.tm_mday == 1) name = "劳动节";
-        else if (month == 10 && candidate.tm_mday == 1) name = "国庆节";
-        else if (lunar > 0 && lunar == 101) name = "春节";
-        else if (lunar > 0 && lunar == 115) name = "元宵节";
-        else if (lunar > 0 && lunar == 505) name = "端午节";
-        else if (lunar > 0 && lunar == 707) name = "七夕节";
-        else if (lunar > 0 && lunar == 815) name = "中秋节";
-        else if (lunar > 0 && lunar == 909) name = "重阳节";
-        if (name) {
-            daysAway = offset;
-            return name;
-        }
+static void drawFestivalCountdown(int split) {
+    JsonDocument config;
+    deserializeJson(config,_festival_countdown.c_str());
+    festival_countdown::Settings settings;
+    settings.mode=config["mode"] | "auto-festival";
+    settings.target=config["target"] | "";
+    settings.term=config["target"] | -1;
+    settings.label=config["label"] | "";
+    settings.date=config["date"] | "";
+    const auto countdown=festival_countdown::resolve(settings,tmInfo.tm_year+1900,tmInfo.tm_mon+1,tmInfo.tm_mday);
+    u8g2Fonts.setFont(FONT_TEXT);
+    u8g2Fonts.setForegroundColor(GxEPD_BLACK);
+    if (!countdown.found) { centered("暂无日期",split+75,283);return; }
+    const String label=countdown.label;
+    if (countdown.days<=0) {
+        const String status=countdown.days==0?"今天":"已到期";
+        const int width=u8g2Fonts.getUTF8Width(label.c_str())+8+u8g2Fonts.getUTF8Width(status.c_str());
+        const int left=split+(150-width)/2;
+        drawViewText(left,283,label);
+        u8g2Fonts.setForegroundColor(GxEPD_RED);
+        drawViewText(left+u8g2Fonts.getUTF8Width(label.c_str())+8,283,status);
+        u8g2Fonts.setForegroundColor(GxEPD_BLACK);
+        return;
     }
-    daysAway = -1;
-    return "暂无节日";
+    const String number=String(countdown.days);
+    const int labelWidth=u8g2Fonts.getUTF8Width(label.c_str());
+    const int unitWidth=u8g2Fonts.getUTF8Width("天");
+    const uint8_t* fonts[]={u8g2_font_fub25_tn,u8g2_font_fub17_tn,u8g2_font_helvB12_tn};
+    const uint8_t* numberFont=fonts[2];
+    int numberWidth=0;
+    for (const auto* font:fonts) {
+        u8g2Fonts.setFont(font);numberWidth=u8g2Fonts.getUTF8Width(number.c_str());
+        numberFont=font;
+        if (labelWidth+10+numberWidth+unitWidth<=146) break;
+    }
+    const auto layout=festivalInlineLayout(split,150,labelWidth,numberWidth,unitWidth);
+    u8g2Fonts.setFont(FONT_TEXT);drawViewText(layout.labelX,283,label);
+    u8g2Fonts.setFont(numberFont);u8g2Fonts.setForegroundColor(GxEPD_RED);
+    u8g2Fonts.drawUTF8(layout.numberX,285,number.c_str());
+    u8g2Fonts.setFont(FONT_TEXT);u8g2Fonts.setForegroundColor(GxEPD_BLACK);
+    u8g2Fonts.drawUTF8(layout.unitX,283,"天");
 }
+
 
 static bool examCountdown(int& daysLeft, String& targetLabel) {
     if (_cd_day_date.length() != 8) return false;
@@ -433,30 +437,7 @@ static void drawTimetableCountdown() {
     }
     display.drawFastHLine(split + 1, 248, 149, GxEPD_BLACK);
 
-    // Next festival and its remaining days are the card's heading.
-    int festivalDays = -1;
-    String festival = nextFestival(festivalDays);
-    if (festivalDays >= 0) {
-        const String number = String(festivalDays);
-        const uint8_t* numberFont = festivalDays >= 100
-            ? u8g2_font_fub17_tn : u8g2_font_fub25_tn;
-        u8g2Fonts.setFont(numberFont);
-        const int numberWidth = u8g2Fonts.getUTF8Width(number.c_str());
-        u8g2Fonts.setFont(FONT_TEXT);
-        const int festivalWidth = u8g2Fonts.getUTF8Width(festival.c_str());
-        const int unitWidth = u8g2Fonts.getUTF8Width("天");
-        const auto layout = festivalInlineLayout(split,150,festivalWidth,numberWidth,unitWidth);
-        const int startX = layout.labelX;
-        u8g2Fonts.setForegroundColor(GxEPD_BLACK);
-        drawViewText(startX, 283, festival);
-        const int numberX = layout.numberX;
-        u8g2Fonts.setFont(numberFont);
-        u8g2Fonts.setForegroundColor(GxEPD_RED);
-        u8g2Fonts.drawUTF8(numberX, 285, number.c_str());
-        u8g2Fonts.setFont(FONT_TEXT);
-        u8g2Fonts.setForegroundColor(GxEPD_BLACK);
-        u8g2Fonts.drawUTF8(layout.unitX, 283, "天");
-    }
+    drawFestivalCountdown(split);
 }
 
 static void loadDaytimeCourses(String courses[6][8]) {

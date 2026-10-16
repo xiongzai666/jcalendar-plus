@@ -397,3 +397,18 @@ test('history retains only the ten latest revisions', async () => {
     { revision: 12, restoreRevision: 2 }, { cookie }), env, store);
   assert.equal(tooOld.status, 400);
 });
+
+test('corner countdown survives admin save, device projection and history restoration',async()=>{
+  const store=fakeStore(),cookie=await login(store),settings=structuredClone(DEFAULT_SETTINGS);
+  settings.festivalCountdown={mode:'custom',label:'宝宝生日',date:'20280229'};
+  const write=async revision=>handleRequest(request('/api/admin/state','PUT',{revision,settings,todos:[]},{cookie}),env,store);
+  assert.equal((await write(0)).status,200);
+  const headers={authorization:`Bearer ${token}`};
+  const device=await handleRequest(request('/api/device/state?revision=0&maxSchema=2','GET',undefined,headers),env,store);
+  assert.equal(device.status,200);assert.deepEqual((await device.json()).settings.festivalCountdown,settings.festivalCountdown);
+  settings.festivalCountdown={mode:'term',target:23};assert.equal((await write(1)).status,200);
+  const restored=await handleRequest(request('/api/admin/restore','POST',{revision:2,restoreRevision:1},{cookie}),env,store);
+  assert.equal(restored.status,200);assert.deepEqual((await restored.json()).state.settings.festivalCountdown,{mode:'custom',label:'宝宝生日',date:'20280229'});
+  settings.festivalCountdown={mode:'custom',label:'五个汉字名',date:'20280229'};
+  assert.equal((await write(3)).status,400);
+});

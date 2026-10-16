@@ -70,6 +70,15 @@ test('built Pages demo supports compact navigation, safe routine sorting and loc
    assert.match(await page.locator('#diagnostic-output').textContent(),/physicalDisplay/);
    assert.match(await page.locator('#device-details').innerText(),/模拟/);
    assert.deepEqual(errors,[]);assert.deepEqual(unexpected,[]);
+   await page.locator('[data-tab="settings"]').click();
+   await page.locator('#festival-mode').selectOption('term');
+   assert.equal(await page.locator('#festival-target option').count(),24);
+   await page.locator('#festival-target').selectOption('23');
+   await page.locator('#save').click();await page.locator('#save-bar').waitFor({state:'hidden'});
+   await page.reload();await page.locator('#workspace').waitFor({state:'visible'});await page.locator('[data-tab="settings"]').click();
+   assert.equal(await page.locator('#festival-mode').inputValue(),'term');
+   assert.equal(await page.locator('#festival-target').inputValue(),'23');
+   assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem('jcalendar.demo.state.v1')).current.settings.festivalCountdown),{mode:'term',target:23});
    await context.close();
   }
  }finally{await browser.close();await new Promise(r=>server.close(r));await rm(output,{recursive:true,force:true});}

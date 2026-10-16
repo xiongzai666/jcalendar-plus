@@ -1,3 +1,4 @@
+import { validateFestivalCountdown } from '../../public/festival-countdown.js';
 import { routineIssues } from '../../public/routine.js';
 import { DEFAULT_SETTINGS } from './defaults.js';
 
@@ -61,10 +62,12 @@ function validEarlyReading(value) {
 
 export function validateSettings(settings) {
   if (!settings || typeof settings !== 'object' || Array.isArray(settings)) return '设置格式错误';
-  const allowed = new Set(['countdownLabel', 'countdownDate', 'weatherLocation',
+  const countdownError = validateFestivalCountdown(settings.festivalCountdown);
+  if (countdownError) return countdownError;
+  const allowed = new Set(['countdownLabel', 'countdownDate', 'weatherLocation', 'festivalCountdown',
     'studySchedule', 'dailyRoutine', 'earlyReading', 'defaultPage', 'dateOverrides']);
   if (Object.keys(settings).some(key => !allowed.has(key))) return '设置包含未知字段';
-  if ([...allowed].filter(key => key !== 'dateOverrides').some(key => !(key in settings))) return '设置缺少必要字段';
+  if ([...allowed].filter(key => !['dateOverrides','festivalCountdown'].includes(key)).some(key => !(key in settings))) return '设置缺少必要字段';
   if (!displayText(settings.countdownLabel) || !byteLimit(settings.countdownLabel, 24)) return '倒计时名称含不支持的字符或过长';
   if (!byteLimit(settings.studySchedule, 4000) || !byteLimit(settings.dailyRoutine, 4000) ||
       !byteLimit(settings.earlyReading, 300)) return '课表、作息或早读内容过长';

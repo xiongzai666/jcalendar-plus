@@ -1,3 +1,3 @@
 #ifndef J_VERSION
-#define J_VERSION "2.3.2-rc.4"
+#define J_VERSION "2.3.2-rc.5"
 #endif

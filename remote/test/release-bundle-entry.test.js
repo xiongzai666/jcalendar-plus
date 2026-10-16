@@ -37,12 +37,14 @@ test('complete CLI server entry authenticates, persists, projects, acknowledges 
   const admin = { cookie }, device = { authorization: `Bearer ${token}` };
   const fixture = JSON.parse(await readFile(new URL('../../test/fixtures/remote-config.json', import.meta.url), 'utf8'));
   const settings = fixture.settings;
+  settings.festivalCountdown={mode:"term",target:23};
   const todos = Array.from({ length: 8 }, (_, i) => ({ id: `fixture-${i}`, title: `任务${i}`, due: '', priority: 'normal', done: i === 7 }));
   const saved = await call('/api/admin/state', 'PUT', { revision: 0, settings, todos }, admin);
   assert.equal(saved.status, 200); assert.equal((await saved.json()).state.revision, 1);
   assert.equal(values.get('devices/main/state.json').todos.length, 8);
   const projected = await call('/api/device/state?revision=0&maxSchema=2', 'GET', undefined, device);
   assert.equal(projected.status, 200); const projection = await projected.json();
+  assert.deepEqual(projection.settings.festivalCountdown,{mode:"term",target:23});
   assert.equal(projection.revision, 1); assert.equal(projection.pendingCount, 7); assert.equal(projection.todos.length, 6);
   assert.ok(projection.todos.every(item => !item.done));
   assert.equal((await call('/api/admin/history', 'GET', undefined, device)).status, 401);

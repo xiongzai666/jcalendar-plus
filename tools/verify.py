@@ -32,16 +32,20 @@ run([sys.executable, 'tools/test_review_fixes.py'])
 run([node, '--test'], ROOT / 'remote')
 run([node, 'tools/check-build.mjs'], ROOT / 'remote')
 
+run([sys.executable, 'tools/test_festival_graphics.py'])
+
 cpp = os.environ.get('J_CALENDAR_CXX') or shutil.which('g++')
 if not cpp:
     raise SystemExit('Set J_CALENDAR_CXX to g++ or zig for C++ policy tests')
 compiler = [cpp, 'c++'] if Path(cpp).stem == 'zig' else [cpp]
 with tempfile.TemporaryDirectory(prefix='jcalendar-verify-') as directory:
-    tests = ['lesson_clock', 'schedule_optimization', 'effective_schedule', 'weather_cache',
+    tests = ['festival_countdown', 'lesson_clock', 'schedule_optimization', 'effective_schedule', 'weather_cache',
              'calendar_override', 'display_policy', 'custom_date', 'bounded_string', 'remote_contract', 'network_budget', 'http_body', 'deadline_client', 'dns_candidates', 'owned_task', 'task_start', 'bounded_gzip', 'qweather_v1', 'public_defaults', 'ota_image', 'ota_upload']
     for name in tests:
         binary = Path(directory) / (name + ('.exe' if os.name == 'nt' else ''))
         extra = []
+        if name == 'festival_countdown':
+            extra += [f'-I.pio/libdeps/{args.environment}/Nongli/src', f'.pio/libdeps/{args.environment}/Nongli/src/nongli.cpp']
         if name == 'ota_upload':
             extra += ['-DSI_DRIVER=15', '-Itest/ota_upload_stub', 'src/local_ota.cpp']
         if name == 'bounded_gzip':

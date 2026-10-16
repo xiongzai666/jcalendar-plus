@@ -1,3 +1,4 @@
+#include "festival_countdown_core.h"
 #include "screen_ink.h"
 #include <ArduinoJson.h>
 
@@ -47,6 +48,7 @@ static bool _initial_wifi_setup = false;
 void si_set_initial_wifi_setup(bool required) {
     _initial_wifi_setup = required;
 }
+String _festival_countdown;
 String _cd_day_label;
 String _cd_day_date;
 String _tag_days_str;
@@ -988,6 +990,7 @@ void si_calendar() {
     Preferences pref;
     pref.begin(PREF_NAMESPACE);
     int32_t _calendar_date = pref.getInt(PREF_SI_CAL_DATE);
+    _festival_countdown = pref.getString(PREF_FESTIVAL_CD,"{\"mode\":\"auto-festival\"}");
     _cd_day_label = pref.getString(PREF_CD_DAY_LABLE);
     _cd_day_date = pref.getString(PREF_CD_DAY_DATE);
     _tag_days_str = pref.getString(PREF_TAG_DAYS);
@@ -1051,7 +1054,7 @@ void si_calendar() {
     Serial.printf("Calendar Show Time: %s\n", buffer);
 
     nl_month_days(tmInfo.tm_year + 1900, tmInfo.tm_mon + 1, lunarDates);
-    nl_year_jq(tmInfo.tm_year + 1900, jqAccDate);
+    festival_countdown::solarTermOrdinals(tmInfo.tm_year + 1900, jqAccDate);
 
     _calendar_status = 1;
     return;

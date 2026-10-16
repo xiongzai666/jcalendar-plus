@@ -14,6 +14,7 @@
 #define PREF_QWEATHER_KEY "QWEATHER_KEY" // QWEATHER KEY/TOKEN
 #define PREF_QWEATHER_TYPE "QWEATHER_TYPE" // 0: 每日天气，1: 实时天气
 #define PREF_QWEATHER_LOC "QWEATHER_LOC" // 地理位置
+#define PREF_FESTIVAL_CD "FESTIVAL_CD" // 右下角倒计时配置
 #define PREF_CD_DAY_DATE "CD_DAY_DATE" // 倒计日
 #define PREF_CD_DAY_LABLE "CD_DAY_LABLE" // 倒计日名称
 #define PREF_TAG_DAYS "TAG_DAYS" // tag day
