@@ -1,0 +1,37 @@
+
+RUN test_review_fixes
+......
+----------------------------------------------------------------------
+Ran 6 tests in 2.492s
+
+OK
+clock: review behavior passed
+label: review behavior passed
+network: review behavior passed
+source: review behavior passed
+tags: review behavior passed
+title: 高考倒计时: x=286 width=79
+八个汉字倒计时名倒计时: x=260 width=131
+目标倒计时: x=286 width=79
+review behavior passed
+
+RUN test_festival_graphics
+Actual corner fonts and pixels: four Chinese characters, 1–5 digits, today and expired remain within 150x51
+
+RUN test_display_style
+In file included from E:\Lemon\Documents\ChatGPT\墨水屏\work\demo-sync-20261016\integration\test\display_style_host.cpp:111:
+C:\Users\Lemon\AppData\Local\Temp\display-style-6h3a1nf_/calendar.inc:276:60: warning: format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long long') [-Wformat]
+  275 |         snprintf(calendarDate, sizeof(calendarDate), "%04d-%02d-%02d",
+      |                                                                 ~~~~
+      |                                                                 %02zu
+  276 |                  tmInfo.tm_year + 1900, tmInfo.tm_mon + 1, iDay + 1);
+      |                                                            ^~~~~~~~
+1 warning generated.
+Weekly word ink bottoms: 145 / 145
+Weekly bold course ink: 345
+Long weather clear gaps: 3/3/4; raster widths 28/29
+Lunar auxiliary ink height: 11
+Lunar auxiliary ink height: 11
+Typography: selected bold weekly style, equal course bottoms, long-weather spacing and quiet lunar hierarchy passed.
+Long weather complete and separated for current and old-data states passed.
+Production drawing bodies, native fonts, long countdown, custom timetable and page identities passed.

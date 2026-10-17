@@ -1,5 +1,6 @@
 #include "school_schedule_data.h"
 #include "subject_font.h"
+#include "weather_font.h"
 #include "date_overrides.h"
 #include "lesson_clock.h"
 #include "schedule_optimization.h"
@@ -45,8 +46,8 @@ static void drawWeatherCondition(const String& value, int center, bool old) {
     String first = fitText(value, 32);
     String rest = value.substring(first.length());
     if (!old && u8g2Fonts.getUTF8Width(rest.c_str()) <= 48) {
-        centered(first, center, 207);
-        centered(rest, center, 226);
+        drawWeather155(display, first.c_str(), center, 207, GxEPD_BLACK);
+        drawWeather155(display, rest.c_str(), center, 226, GxEPD_BLACK);
         return;
     }
     u8g2Fonts.setFont(FONT_SUB);
