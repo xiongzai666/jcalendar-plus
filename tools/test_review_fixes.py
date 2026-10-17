@@ -31,6 +31,7 @@ class ReviewFixes(unittest.TestCase):
 #include <cstddef>
 class Print {public:virtual size_t write(uint8_t)=0;virtual ~Print(){};};
 class Adafruit_GFX {public:
+ void drawPixel(int,int,uint16_t){}
  void drawFastHLine(int16_t,int16_t,int16_t,uint16_t){}
  void drawFastVLine(int16_t,int16_t,int16_t,uint16_t){}
 };
@@ -44,6 +45,10 @@ class Adafruit_GFX {public:
 #include <map>
 #include <vector>
 #include <algorithm>
+#define PROGMEM
+#define pgm_read_byte(p) (*(const uint8_t*)(p))
+#define pgm_read_dword(p) (*(const uint32_t*)(p))
+#include "readable_font.h"
 #include "remote_contract.h"
 #include "U8g2_for_Adafruit_GFX.h"
 #include "_preference.h"
@@ -132,7 +137,8 @@ int main(int argc,char** argv){assert(argc==2);std::string test=argv[1];u8g2Font
  if(test=="title")for(const char* label:{"高考","八个汉字倒计时名",""}){
   drawn.clear();drawTitle(label);std::string text;
   for(auto& d:drawn){assert(d.x>=251&&d.x+d.width<=399);text+=d.text;printf("%s: x=%d width=%d\n",d.text.c_str(),d.x,d.width);}
-  assert(text==std::string(*label?label:fallbackLabel)+"倒计时");
+  const std::string want=std::string(*label?label:fallbackLabel)+"倒计时";
+  assert(text==want||(text.empty()&&readableWidth(want.c_str())>0&&readableWidth(want.c_str())<=142));
  }
  if(test=="network"){
   network(true);assert(drawn.back().text=="已联网，时间尚未校准");

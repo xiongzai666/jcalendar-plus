@@ -17,6 +17,7 @@ with tempfile.TemporaryDirectory(prefix='festival-graphics-') as temp:
 class Print {public:virtual size_t write(uint8_t)=0;virtual ~Print(){};};
 class Adafruit_GFX {public:
  uint16_t pixels[400*300];Adafruit_GFX(){std::fill(pixels,pixels+400*300,65535);}
+ void drawPixel(int x,int y,uint16_t c){if(x>=0&&x<400&&y>=0&&y<300)pixels[y*400+x]=c;}
  void drawFastHLine(int16_t x,int16_t y,int16_t length,uint16_t color){for(int i=0;i<length;++i)if(x+i>=0&&x+i<400&&y>=0&&y<300)pixels[y*400+x+i]=color;}
  void drawFastVLine(int16_t x,int16_t y,int16_t length,uint16_t color){for(int i=0;i<length;++i)if(x>=0&&x<400&&y+i>=0&&y+i<300)pixels[(y+i)*400+x]=color;}
 };
@@ -32,6 +33,10 @@ class Adafruit_GFX {public:
 #include <cstdio>
 #include <fstream>
 #include <ArduinoJson.h>
+#define PROGMEM
+#define pgm_read_byte(p) (*(const uint8_t*)(p))
+#define pgm_read_dword(p) (*(const uint32_t*)(p))
+#include "readable_font.h"
 #include "festival_countdown_core.h"
 #include "display_policy_core.h"
 #include "U8g2_for_Adafruit_GFX.h"

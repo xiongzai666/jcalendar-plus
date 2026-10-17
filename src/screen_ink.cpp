@@ -134,9 +134,9 @@ void init_cal_layout_size() {
     calLayout.weekY = calLayout.topH - 5;
 
     calLayout.lunarYearX = 204;
-    calLayout.lunarYearY = 16;
+    calLayout.lunarYearY = 17;
     calLayout.lunarDayX = 204;
-    calLayout.lunarDayY = 34;
+    calLayout.lunarDayY = 36;
 
     calLayout.cdDayX = 140;
     calLayout.cdDayY = calLayout.topH - 5;
@@ -251,7 +251,7 @@ void draw_cal_year(bool partial) {
     // 今日农历年份，e.g. 乙巳年 蛇
     // 如果农历月份小于公历月份，那么说明是上一年
     u8g2Fonts.setCursor(calLayout.lunarYearX, calLayout.lunarYearY);
-    u8g2Fonts.setFont(FONT_SUB);
+    u8g2Fonts.setFont(FONT_TEXT);
     u8g2Fonts.setFontMode(1);
     u8g2Fonts.setFontDirection(0);
     u8g2Fonts.setForegroundColor(GxEPD_BLACK);
@@ -259,7 +259,7 @@ void draw_cal_year(bool partial) {
 
     // 今日农历日期
     u8g2Fonts.setCursor(calLayout.lunarDayX, calLayout.lunarDayY);
-    u8g2Fonts.setFont(FONT_SUB);
+    u8g2Fonts.setFont(FONT_TEXT);
     u8g2Fonts.setForegroundColor(GxEPD_BLACK);
     if (!todayLunarDay.isEmpty()) {
         u8g2Fonts.print(todayLunarDay);
@@ -545,59 +545,45 @@ void draw_cd_day(String label, String date) {
     int16_t endX = calLayout.weatherX;
     int16_t y = calLayout.cdDayY;
 
-    if (diff == 0) {
-        String prefix = "今日 ";
-        String suffix = " ！！！";
-        u8g2Fonts.setFont(FONT_SUB);
-        int16_t preWidth = u8g2Fonts.getUTF8Width(prefix.c_str());
-        int16_t suffixWidth = u8g2Fonts.getUTF8Width(suffix.c_str());
-        u8g2Fonts.setFont(FONT_SUB);
-        int16_t labelWidth = u8g2Fonts.getUTF8Width(label.c_str());
-        int16_t margin = (endX - beginX - preWidth - labelWidth - suffixWidth) / 2;
-
-        u8g2Fonts.setCursor((margin > 0 ? margin : 0) + beginX, y); // 居中显示
-        u8g2Fonts.setForegroundColor(GxEPD_BLACK);
-        u8g2Fonts.setFont(FONT_SUB);
-        u8g2Fonts.print(prefix.c_str()); // 今天
-        u8g2Fonts.setForegroundColor(GxEPD_RED);
-        u8g2Fonts.setFont(FONT_TEXT);
-        u8g2Fonts.print(label.c_str()); // ****
-        u8g2Fonts.setForegroundColor(GxEPD_BLACK);
-        u8g2Fonts.setFont(FONT_SUB);
-        u8g2Fonts.print(suffix.c_str()); // ！
-    } else if (diff > 0) {
-        String prefix = "距";
-        String middle = " ";
-        int iDiff = diff / (60 * 60 * 24);
-        char days[11] = "";
-        itoa(iDiff, days, 10);
-        String suffix = "天";
-
-        u8g2Fonts.setFont(FONT_SUB);
-        int16_t preWidth = u8g2Fonts.getUTF8Width(prefix.c_str());
-        int16_t midWidth = u8g2Fonts.getUTF8Width(middle.c_str());
-        int16_t suffixWidth = u8g2Fonts.getUTF8Width(suffix.c_str());
-        u8g2Fonts.setFont(FONT_TEXT);
-        int16_t labelWidth = u8g2Fonts.getUTF8Width(label.c_str());
-        u8g2Fonts.setFont(u8g2_font_fub14_tn);
-        int16_t daysWidth = u8g2Fonts.getUTF8Width(days);
-        int16_t margin = (endX - beginX - preWidth - labelWidth - midWidth - daysWidth - suffixWidth) / 2;
-
-        u8g2Fonts.setCursor((margin > 0 ? margin : 0) + beginX, y); // 居中显示
-        u8g2Fonts.setForegroundColor(GxEPD_BLACK);
-        u8g2Fonts.setFont(FONT_SUB);
-        u8g2Fonts.print(prefix.c_str()); // 距
-        u8g2Fonts.setFont(FONT_TEXT);
-        u8g2Fonts.print(label.c_str()); // ****
-        u8g2Fonts.setFont(FONT_SUB);
-        u8g2Fonts.print(middle.c_str());
-        u8g2Fonts.setForegroundColor(GxEPD_RED);
-        u8g2Fonts.setFont(u8g2_font_fub14_tn);
-        u8g2Fonts.print(days); // 0000
-        u8g2Fonts.setForegroundColor(GxEPD_BLACK);
-        u8g2Fonts.setFont(FONT_SUB);
-        u8g2Fonts.print(suffix.c_str()); // 天
+    const String prefix = diff == 0 ? String("今日 ") : String("距");
+    const String number = diff == 0 ? String("") : String(int(diff / 86400));
+    const String suffix = diff == 0 ? String("") : String("天");
+    const int available = endX - beginX - 4;
+    const uint8_t* chineseFont = FONT_TEXT;
+    const uint8_t* digitFont = u8g2_font_fub14_tn;
+    int fixedWidth = 0, numberWidth = 0, labelWidth = 0;
+    for (int attempt = 0; attempt < 2; ++attempt) {
+        u8g2Fonts.setFont(chineseFont);
+        fixedWidth = u8g2Fonts.getUTF8Width(prefix.c_str()) + u8g2Fonts.getUTF8Width(suffix.c_str());
+        labelWidth = u8g2Fonts.getUTF8Width(label.c_str());
+        u8g2Fonts.setFont(digitFont);
+        numberWidth = u8g2Fonts.getUTF8Width(number.c_str());
+        if (fixedWidth + labelWidth + numberWidth + 4 <= available) break;
+        chineseFont = FONT_SUB;digitFont = u8g2_font_helvB10_tn;
     }
+    u8g2Fonts.setFont(chineseFont);
+    const int labelRoom = available - fixedWidth - numberWidth - 4;
+    if (u8g2Fonts.getUTF8Width(label.c_str()) > labelRoom) {
+        String fitted;
+        for (size_t i = 0; i < label.length();) {
+            const uint8_t c = uint8_t(label[i]);
+            const size_t bytes = c < 128 ? 1 : c < 224 ? 2 : c < 240 ? 3 : 4;
+            const String next = fitted + label.substring(i,i+bytes);
+            if (u8g2Fonts.getUTF8Width((next+"...").c_str()) > labelRoom) break;
+            fitted = next;i += bytes;
+        }
+        label = fitted + "...";
+    }
+    labelWidth = u8g2Fonts.getUTF8Width(label.c_str());
+    int x = beginX + (endX-beginX-fixedWidth-labelWidth-numberWidth-4)/2;
+    u8g2Fonts.setForegroundColor(GxEPD_BLACK);
+    u8g2Fonts.drawUTF8(x,y,prefix.c_str());x += u8g2Fonts.getUTF8Width(prefix.c_str());
+    u8g2Fonts.setForegroundColor(diff == 0 ? GxEPD_RED : GxEPD_BLACK);
+    u8g2Fonts.drawUTF8(x,y,label.c_str());x += labelWidth + 2;
+    u8g2Fonts.setFont(digitFont);u8g2Fonts.setForegroundColor(GxEPD_RED);
+    u8g2Fonts.drawUTF8(x,y,number.c_str());x += numberWidth + 2;
+    u8g2Fonts.setFont(chineseFont);u8g2Fonts.setForegroundColor(GxEPD_BLACK);
+    u8g2Fonts.drawUTF8(x,y,suffix.c_str());
 }
 
 

@@ -1,5 +1,6 @@
 #include "school_schedule_data.h"
 #include "subject_font.h"
+#include "readable_font.h"
 #include "date_overrides.h"
 #include "lesson_clock.h"
 #include "schedule_optimization.h"
@@ -36,6 +37,30 @@ static void drawViewText(int x, int y, const String& value) {
     u8g2Fonts.drawUTF8(x, y, value.c_str());
 }
 
+static void drawWeatherCondition(const String& value, int center, bool old) {
+    u8g2Fonts.setFont(FONT_TEXT);
+    if (u8g2Fonts.getUTF8Width(value.c_str()) <= 48) {
+        centered(value, center, old ? 220 : 215);
+        return;
+    }
+    String first = fitText(value, 32);
+    String rest = value.substring(first.length());
+    if (u8g2Fonts.getUTF8Width(rest.c_str()) <= 48) {
+        centered(first, center, old ? 210 : 205);
+        centered(rest, center, old ? 227 : 223);
+        return;
+    }
+    u8g2Fonts.setFont(FONT_SUB);
+    if (u8g2Fonts.getUTF8Width(value.c_str()) <= 48) {
+        centered(value, center, old ? 220 : 215);
+        return;
+    }
+    first = fitText(value, 48);
+    rest = value.substring(first.length());
+    centered(first, center, old ? 212 : 207);
+    centered(fitTextEllipsis(rest, 48), center, old ? 226 : 222);
+}
+
 static String lunarDayText(int day) {
     if (day == 10) return "初十";
     if (day == 20) return "二十";
@@ -69,22 +94,30 @@ static void drawFestivalCountdown(int split) {
         return;
     }
     const String number=String(countdown.days);
-    const int labelWidth=u8g2Fonts.getUTF8Width(label.c_str());
+    const int nativeWidth=readableWidth(label.c_str());
+    int labelWidth=u8g2Fonts.getUTF8Width(label.c_str());
     const int unitWidth=u8g2Fonts.getUTF8Width("天");
     const uint8_t* fonts[]={u8g2_font_fub25_tn,u8g2_font_fub17_tn,u8g2_font_helvB12_tn};
     const uint8_t* numberFont=fonts[2];
     int numberWidth=0;
+    bool largeLabel=false;
+    u8g2Fonts.setFont(fonts[0]);
+    if(nativeWidth>0&&nativeWidth+10+u8g2Fonts.getUTF8Width(number.c_str())+unitWidth<=146) {
+        labelWidth=nativeWidth;largeLabel=true;
+    }
     for (const auto* font:fonts) {
         u8g2Fonts.setFont(font);numberWidth=u8g2Fonts.getUTF8Width(number.c_str());
         numberFont=font;
         if (labelWidth+10+numberWidth+unitWidth<=146) break;
     }
     const auto layout=festivalInlineLayout(split,150,labelWidth,numberWidth,unitWidth);
-    u8g2Fonts.setFont(FONT_TEXT);drawViewText(layout.labelX,283,label);
+    u8g2Fonts.setFont(FONT_TEXT);
+    if(largeLabel)drawReadable(display,label.c_str(),layout.labelX+labelWidth/2,278,GxEPD_BLACK,labelWidth);
+    else drawViewText(layout.labelX,287,label);
     u8g2Fonts.setFont(numberFont);u8g2Fonts.setForegroundColor(GxEPD_RED);
-    u8g2Fonts.drawUTF8(layout.numberX,285,number.c_str());
+    u8g2Fonts.drawUTF8(layout.numberX,287,number.c_str());
     u8g2Fonts.setFont(FONT_TEXT);u8g2Fonts.setForegroundColor(GxEPD_BLACK);
-    u8g2Fonts.drawUTF8(layout.unitX,283,"天");
+    u8g2Fonts.drawUTF8(layout.unitX,287,"天");
 }
 
 
@@ -269,7 +302,8 @@ static void drawTodayLessons(int split) {
     if (!rest && !lowBattery && effectiveHintVisible(context.day, clockMinute)) {
         const String hint = weather_dismissal_hint(section == 2, _screen_snapshot_time);
         u8g2Fonts.setFont(FONT_SUB);
-        drawViewText(split - 8 - u8g2Fonts.getUTF8Width(hint.c_str()), 64, hint);
+        const String fitted=fitTextEllipsis(hint,split-110);
+        drawViewText(split-8-u8g2Fonts.getUTF8Width(fitted.c_str()),64,fitted);
     }
     if (lowBattery) {
         u8g2Fonts.setFont(FONT_SUB);
@@ -376,8 +410,10 @@ static void drawTimetableCountdown() {
     u8g2Fonts.setFont(FONT_TEXT);
     u8g2Fonts.setForegroundColor(GxEPD_BLACK);
     const String countdownTitle = (_cd_day_label.isEmpty() ? String("目标") : _cd_day_label) + "倒计时";
-    if (u8g2Fonts.getUTF8Width(countdownTitle.c_str()) > 142) u8g2Fonts.setFont(FONT_SUB);
-    centered(countdownTitle, rightCenter, 64);
+    if (!drawReadable(display,countdownTitle.c_str(),rightCenter,57,GxEPD_BLACK,142)) {
+        if (u8g2Fonts.getUTF8Width(countdownTitle.c_str()) > 142) u8g2Fonts.setFont(FONT_SUB);
+        centered(countdownTitle, rightCenter, 64);
+    }
     int daysLeft = -1;
     String targetDate;
     const bool hasDate = examCountdown(daysLeft, targetDate);
@@ -416,24 +452,26 @@ static void drawTimetableCountdown() {
     if (oldWeather) {
         u8g2Fonts.setFont(FONT_SUB);
         u8g2Fonts.setForegroundColor(GxEPD_RED);
-        centered("天气为上次数据", rightCenter, 183);
+        centered("天气为上次数据", rightCenter, 180);
         u8g2Fonts.setForegroundColor(GxEPD_BLACK);
     }
     for (int i = 0; i < 3; ++i) {
         const int center = split + 25 + i * 49;
-        if (i > 0) display.drawFastVLine(split + i * 49, oldWeather ? 203 : 176,
-                                         oldWeather ? 40 : 67, GxEPD_BLACK);
+        if (i > 0) display.drawFastVLine(split + i * 49, oldWeather ? 184 : 176,
+                                         oldWeather ? 59 : 67, GxEPD_BLACK);
         u8g2Fonts.setFont(FONT_TEXT);
-        centered(labels[i], center, oldWeather ? 204 : 195);
+        if(oldWeather)u8g2Fonts.setFont(FONT_SUB);
+        centered(labels[i], center, oldWeather ? 195 : 188);
         u8g2Fonts.setFont(FONT_TEXT);
         const String condition = i == 0 && hasLiveWeather ? currentWeather->text :
-                                 (hasWeather && weather_daily_available(i) ? forecast->weather[i].textDay : "暂无");
-        centered(fitText(condition, 45), center, oldWeather ? 222 : 218);
+                                 (hasWeather && weather_daily_available(i) ? forecast->weather[i].textDay : "待更新");
+        drawWeatherCondition(condition, center, oldWeather);
         const String temps = i == 0 && hasLiveWeather ? String(currentWeather->temp) + "°" :
                              (hasWeather && weather_daily_available(i) ? String(forecast->weather[i].tempMax) + "/" +
                                            String(forecast->weather[i].tempMin) : "--/--");
         u8g2Fonts.setFont(u8g2_font_helvB12_tf);
-        centered(temps, center, 240);
+        if(u8g2Fonts.getUTF8Width(temps.c_str())>48)u8g2Fonts.setFont(u8g2_font_helvB10_tf);
+        centered(temps, center, 244);
     }
     display.drawFastHLine(split + 1, 248, 149, GxEPD_BLACK);
 
@@ -563,8 +601,11 @@ static void drawDaytimeWeekly() {
                     u8g2Fonts.setFont(u8g2_font_5x8_tf);
                     centered(actual, x + dayWidth/2, top + 26);
                 }
-            } else drawLargeSubject(courses[col][row], x + dayWidth / 2,
-                                    top + 3, GxEPD_BLACK, dayWidth - 4);
+            } else if(!drawReadable(display,courses[col][row].c_str(),x+dayWidth/2,
+                                   top+rowHeight/2,GxEPD_BLACK,dayWidth-8)) {
+                u8g2Fonts.setFont(FONT_TEXT);u8g2Fonts.setForegroundColor(GxEPD_BLACK);
+                centered(fitTextEllipsis(courses[col][row],dayWidth-8),x+dayWidth/2,top+20);
+            }
         }
     }
     if (isSchoolDay) {

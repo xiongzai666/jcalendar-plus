@@ -104,8 +104,14 @@ inline bool weatherReadingFresh(int64_t readAt, bool failed, int64_t now, int64_
 }
 inline const char* weatherUmbrellaHint(const char* current, bool nowFresh,
                                       const char* forecast, bool dailyFresh) {
-    if (nowFresh && wetWeatherText(current)) return "带伞·有雨";
-    if (dailyFresh && wetWeatherText(forecast)) return "带伞·预报雨";
+    if (nowFresh && wetWeatherText(current)) {
+        if(strstr(current,"雪"))return strstr(current,"雨")?"当前雨雪，带伞":"当前有雪，带伞";
+        return "当前有雨，带伞";
+    }
+    if (dailyFresh && wetWeatherText(forecast)) {
+        if(strstr(forecast,"雪"))return strstr(forecast,"雨")?"预报雨雪，带伞":"预报有雪，带伞";
+        return "预报有雨，带伞";
+    }
     if (nowFresh && dailyFresh) return "当前无雨";
     if (dailyFresh) return "预报无雨";
     if (nowFresh) return "预报未更新";

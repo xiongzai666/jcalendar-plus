@@ -137,7 +137,10 @@ String weather_dismissal_hint(bool night, time_t snapshot) {
     const String forecast = night ? day.textNight : day.textDay;
     const bool dailyFresh = !forecast.isEmpty() &&
         weatherReadingFresh(cached.dailyReadAt, cached.dailyFailed, snapshot, 1800);
-    return weatherUmbrellaHint(_weather_now.text.c_str(), nowFresh, forecast.c_str(), dailyFresh);
+    if ((nowFresh && wetWeatherText(_weather_now.text.c_str())) ||
+        (dailyFresh && wetWeatherText(forecast.c_str())))
+        return weatherUmbrellaHint(_weather_now.text.c_str(), nowFresh, forecast.c_str(), dailyFresh);
+    return nowFresh || dailyFresh ? "" : "天气未更新";
 }
 int8_t weather_type() { return _weather_type; }
 int8_t weather_status() { return _weather_status; }

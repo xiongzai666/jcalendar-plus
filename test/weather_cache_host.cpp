@@ -17,12 +17,12 @@ int main() {
     assert(!weatherReadingFresh(10000, true, 11000, 1800));
     assert(!weatherReadingFresh(10000, false, 12000, 1800));
     assert(!weatherReadingFresh(0, false, 11000, 1800));
-    assert(!strcmp(weatherUmbrellaHint("晴", true, "小雨", true), "带伞·预报雨"));
+    assert(!strcmp(weatherUmbrellaHint("晴", true, "小雨", true), "预报有雨，带伞"));
     assert(!strcmp(weatherUmbrellaHint("小雨", false, "晴", true), "预报无雨"));
     assert(!strcmp(weatherUmbrellaHint("晴", true, "小雨", false), "预报未更新"));
     assert(!strcmp(weatherUmbrellaHint("雨", false, "", false), "天气未更新"));
     // No observation timestamp is required: freshness uses retrieval only.
-    assert(!strcmp(weatherUmbrellaHint("雨", weatherReadingFresh(10000, false, 10001, 1800), "", false), "带伞·有雨"));
+    assert(!strcmp(weatherUmbrellaHint("雨", weatherReadingFresh(10000, false, 10001, 1800), "", false), "当前有雨，带伞"));
     LegacyWeatherCache old = {};
     old.magic = 0x57584332;
     strcpy(old.location, "101220609");

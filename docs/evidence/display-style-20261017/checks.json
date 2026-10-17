@@ -1,0 +1,20 @@
+{
+  "coreSuites": [
+    "festival_countdown",
+    "display_policy",
+    "weather_cache",
+    "effective_schedule",
+    "schedule_optimization",
+    "calendar_override"
+  ],
+  "scripts": [
+    "test_review_fixes (6 cases)",
+    "test_festival_upgrade",
+    "test_festival_graphics",
+    "test_weather_hint",
+    "test_display_style"
+  ],
+  "passed": true,
+  "supersededFailure": "first public hint regression exposed the pre-existing snow-as-rain wording; fixed helper and updated cache expectations; weather_cache, hint and full rendering then passed",
+  "hardwareValidated": false
+}

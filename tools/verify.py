@@ -34,6 +34,8 @@ run([node, 'tools/check-build.mjs'], ROOT / 'remote')
 
 run([sys.executable, 'tools/test_festival_upgrade.py'])
 run([sys.executable, 'tools/test_festival_graphics.py'])
+run([sys.executable, 'tools/test_display_style.py'])
+run([sys.executable, 'tools/test_weather_hint.py'])
 
 cpp = os.environ.get('J_CALENDAR_CXX') or shutil.which('g++')
 if not cpp:
