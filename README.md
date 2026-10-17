@@ -2,11 +2,11 @@
 
 **原生 16 像素天气与粗体周课表，源码版本为 `2.3.2-rc.6`。** 首页保留三列天气，长名称分两行并留出间距；周课表使用粗体课程、粗时间、2 px 今日红框和午间线，校准同一课程的字底。月历农历信息使用辅助字号。
 
-本次公开发行准备中，构建与实机范围见 [构建与验收记录](docs/RELEASE_ACCEPTANCE.md)。同显示方案的私有 Z15 2.5.21 已由用户确认视频验收完成；此公开镜像尚未安装实机。
+本次已公开预发布，四驱动与云端入口 CI 共 5 项通过，七附件服务器 SHA256 已核对；构建与实机范围见 [构建与验收记录](docs/RELEASE_ACCEPTANCE.md)。同显示方案的私有 Z15 2.5.21 已由用户确认视频验收完成；此公开镜像尚未安装实机。
 
 基于 [JADE-Jerry/jcalendar](https://github.com/JADE-Jerry/jcalendar) 的 4.2 寸黑白红墨水屏日历，显示课程、月历、倒计时、天气和待办，配套可自行部署的手机配置网页。
 
-**当前公开预发布版：[v2.3.2-rc.5](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.5)。** 适用于经典 ESP32、4 MB Flash、400 × 300 三色屏。原作者和组件来源见 [NOTICE](NOTICE.md)，项目许可证见 [LICENSE](LICENSE)。
+**当前公开预发布版：[v2.3.2-rc.6](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.6)。** 适用于经典 ESP32、4 MB Flash、400 × 300 三色屏。原作者和组件来源见 [NOTICE](NOTICE.md)，项目许可证见 [LICENSE](LICENSE)。
 
 ## 主要功能
 
@@ -25,12 +25,12 @@
 
 ## 下载与升级
 
-[v2.3.2-rc.5 发行页](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.5) 提供：
+[v2.3.2-rc.6 发行页](https://github.com/xiongzai666/jcalendar-plus/releases/tag/v2.3.2-rc.6) 提供：
 
 - `z15`、`z21`、`z98`、`1680` 四种驱动的固件 ZIP，每包含刷机说明、许可附件及内部校验清单。
 - 对应源码 ZIP、`SHA256SUMS.txt` 和 `RELEASE_MANIFEST.json`。源码包内容见 [发行源码说明](docs/RELEASE_SOURCE.md)。
 
-本版新增右下角节日、二十四节气与自定义日期倒计时，修复旧固件升级后跳过新设置的版本缓存问题，并包含 rc.4 之后的作息编辑和网页交互更新。完整变化见 [更新记录](CHANGELOG.md)。
+本版更新原生 16 像素长天气、粗体周课表、2 px 今日红框和午间线，以及月历辅助字号；保留 rc.5 的可选倒计时和升级缓存修复。完整变化见 [更新记录](CHANGELOG.md)。
 
 **首次刷机和保留配置升级使用不同步骤。** 先按 [刷机指南](docs/FLASHING.md) 核对驱动与分区；本机网页 Update 只上传对应驱动的 `firmware.bin`。
 
@@ -52,12 +52,12 @@
 
 | 环境 | 屏幕驱动 | 验证范围 |
 | --- | --- | --- |
-| `z15` | `GxEPD2_420c` | 已有首配、正常 OTA、离线恢复和 OTA 中止恢复实机记录；新增倒计时与升级缓存已通过主机验证，此公开 rc.5 镜像尚未安装实机 |
+| `z15` | `GxEPD2_420c` | 已有首配、正常 OTA、离线恢复和 OTA 中止恢复实机记录；本轮显示更新、倒计时与升级缓存已通过主机验证，此公开 rc.6 镜像尚未安装实机 |
 | `z21` | `GxEPD2_420c_Z21` | 构建通过，尚无对应屏幕实测 |
 | `z98` | `GxEPD2_420c_GDEY042Z98` | 构建通过，尚无对应屏幕实测 |
 | `1680` | `GxEPD2_420c_1680` | 构建通过，尚无对应屏幕实测 |
 
-rc.5 来源为 `b76853b`，[四驱动构建与云端入口 CI 共 5 项通过](https://github.com/xiongzai666/jcalendar-plus/actions/runs/38976900302)；七份发行附件已核对服务器 SHA256。全天稳定性、功耗和续航未测，当前保持预发布。详细结果见 [构建与验收记录](docs/RELEASE_ACCEPTANCE.md)。
+rc.6 来源为 `437e471`，[四驱动构建与云端入口 CI 共 5 项通过](https://github.com/xiongzai666/jcalendar-plus/actions/runs/39052980765)；七份发行附件已核对服务器 SHA256。全天稳定性、功耗和续航未测，当前保持预发布。详细结果见 [构建与验收记录](docs/RELEASE_ACCEPTANCE.md)。
 
 驱动映射以 [驱动选择头文件](include/GxEPD2_display_selection_new_style.h) 为准。ESP32-C3／S3 不在本版支持范围内；二色屏不能直接使用三色包。
 
