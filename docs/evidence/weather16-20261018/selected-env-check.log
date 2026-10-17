@@ -1,0 +1,16 @@
+In file included from E:\Lemon\Documents\ChatGPT\墨水屏\work\demo-sync-20261016\integration\test\display_style_host.cpp:110:
+C:\Users\Lemon\AppData\Local\Temp\display-style-am8d04gs/calendar.inc:276:60: warning: format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long long') [-Wformat]
+  275 |         snprintf(calendarDate, sizeof(calendarDate), "%04d-%02d-%02d",
+      |                                                                 ~~~~
+      |                                                                 %02zu
+  276 |                  tmInfo.tm_year + 1900, tmInfo.tm_mon + 1, iDay + 1);
+      |                                                            ^~~~~~~~
+1 warning generated.
+Weekly word ink bottoms: 145 / 145
+Weekly bold course ink: 345
+Long weather clear row gaps: 3/3/4
+Lunar auxiliary ink height: 11
+Lunar auxiliary ink height: 11
+Typography: selected bold weekly style, equal course bottoms, long-weather spacing and quiet lunar hierarchy passed.
+Long weather complete and separated for current and old-data states passed.
+Production drawing bodies, native fonts, long countdown, custom timetable and page identities passed.

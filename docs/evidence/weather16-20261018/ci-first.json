@@ -1,0 +1,34 @@
+{
+  "id": 39052549969,
+  "status": "completed",
+  "conclusion": "failure",
+  "headSha": "9c32d15a6770c08035dda04b14e474e84717917e",
+  "url": "https://github.com/xiongzai666/jcalendar-plus/actions/runs/39052549969",
+  "jobs": [
+    {
+      "name": "compiled-cloud",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "verify (1680)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "name": "verify (z15)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "verify (z98)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "name": "verify (z21)",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ]
+}

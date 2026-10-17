@@ -6,8 +6,9 @@ p = argparse.ArgumentParser()
 p.add_argument('--output', type=Path)
 a = p.parse_args()
 root = Path(__file__).resolve().parents[1]
-lib = root / '.pio/libdeps/z15/U8g2_for_Adafruit_GFX/src'
-deps = root / '.pio/libdeps/z15'
+environment = os.environ.get('J_CALENDAR_ENVIRONMENT', 'z15')
+deps = root / '.pio/libdeps' / environment
+lib = deps / 'U8g2_for_Adafruit_GFX/src'
 
 def function(source, signature):
     start = source.index(signature)
