@@ -44,9 +44,9 @@ static void drawWeatherCondition(const String& value, int center, bool old) {
     }
     String first = fitText(value, 32);
     String rest = value.substring(first.length());
-    if (u8g2Fonts.getUTF8Width(rest.c_str()) <= 48) {
-        centered(first, center, old ? 210 : 205);
-        centered(rest, center, old ? 227 : 223);
+    if (!old && u8g2Fonts.getUTF8Width(rest.c_str()) <= 48) {
+        centered(first, center, 207);
+        centered(rest, center, 226);
         return;
     }
     u8g2Fonts.setFont(FONT_SUB);
@@ -244,7 +244,7 @@ static int largeSubjectWidth(const String& value) {
 }
 
 static void drawLargeSubject(const String& value, int centerX, int top,
-                             uint16_t color, int maxWidth = 104) {
+                             uint16_t color, int maxWidth = 104, bool alignInkBottom = false) {
     const int width = largeSubjectWidth(value);
     if (width < 0 || width > maxWidth) {
         u8g2Fonts.setFont(FONT_TEXT);
@@ -264,11 +264,25 @@ static void drawLargeSubject(const String& value, int centerX, int top,
                                          (static_cast<uint8_t>(value[i + 2]) & 0x3F);
         const SubjectGlyph* glyph = subjectGlyph(codepoint);
         const int glyphWidth = pgm_read_byte(&glyph->width);
+        int shiftY = 0;
+        if (alignInkBottom) {
+            // Weekly cells share an ink bottom; the daily page retains its original placement.
+            int bottom = 23;
+            for (; bottom >= 0; --bottom) {
+                bool hasInk = false;
+                for (int dx = 0; dx < glyphWidth; ++dx) {
+                    const int bit = bottom * glyphWidth + dx;
+                    if (pgm_read_byte(&glyph->pixels[bit / 8]) & (0x80 >> (bit % 8))) { hasInk = true; break; }
+                }
+                if (hasInk) break;
+            }
+            shiftY = bottom >= 0 ? 21 - bottom : 0;
+        }
         for (int y = 0; y < 24; ++y) {
             for (int dx = 0; dx < glyphWidth; ++dx) {
                 const int bit = y * glyphWidth + dx;
                 const uint8_t packed = pgm_read_byte(&glyph->pixels[bit / 8]);
-                if (packed & (0x80 >> (bit % 8))) display.drawPixel(x + dx, top + y, color);
+                if (packed & (0x80 >> (bit % 8))) display.drawPixel(x + dx, top + y + shiftY, color);
             }
         }
         x += glyphWidth;
@@ -568,15 +582,17 @@ static void drawDaytimeWeekly() {
         const int y = coursesTop + row * rowHeight;
         display.drawFastHLine(left, y, gridRight - left + 1,
                               row == 4 ? GxEPD_RED : GxEPD_BLACK);
+        if (row == 4)
+            display.drawFastHLine(left, y + 1, gridRight - left + 1, GxEPD_RED);
     }
     for (int row = 0; row < 8; ++row) {
         const int top = coursesTop + row * rowHeight;
-        u8g2Fonts.setFont(u8g2_font_helvR10_tf);
+        u8g2Fonts.setFont(u8g2_font_helvB12_tf);
         u8g2Fonts.setForegroundColor(GxEPD_BLACK);
         char start[6];
         snprintf(start, sizeof(start), "%02d:%02d", clock.start[row] / 60,
                  clock.start[row] % 60);
-        centered(start, left + timeWidth / 2, top + 19);
+        centered(start, left + timeWidth / 2, top + 20);
         for (int col = 0; col < 6; ++col) {
             const int x = left + timeWidth + col * dayWidth;
             if (custom[col]) {
@@ -590,15 +606,14 @@ static void drawDaytimeWeekly() {
                     u8g2Fonts.setFont(u8g2_font_5x8_tf);
                     centered(actual, x + dayWidth/2, top + 26);
                 }
-            } else {
-                u8g2Fonts.setFont(FONT_TEXT);u8g2Fonts.setForegroundColor(GxEPD_BLACK);
-                centered(fitTextEllipsis(courses[col][row],dayWidth-8),x+dayWidth/2,top+20);
-            }
+            } else drawLargeSubject(courses[col][row], x + dayWidth / 2,
+                                    top + 3, GxEPD_BLACK, dayWidth - 4, true);
         }
     }
     if (isSchoolDay) {
-        display.drawRect(left + timeWidth + todayColumn * dayWidth, headerTop,
-                         dayWidth + 1, headerHeight + 8 * rowHeight + 1, GxEPD_RED);
+        drawTodayColumnFrame(display, left + timeWidth + todayColumn * dayWidth,
+                             headerTop, dayWidth, headerHeight + 8 * rowHeight + 1,
+                             GxEPD_RED);
     }
 }
 

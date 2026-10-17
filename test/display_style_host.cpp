@@ -130,12 +130,18 @@ static void verifyTypography(){
     const int top=63+2*29;
     int bottoms[2]={-1,-1};
     for(int part=0;part<2;++part)for(int y=top+1;y<top+29;++y)
-        for(int x=part?81:53;x<(part?108:81);++x)
+        for(int x=part?80:53;x<(part?108:80);++x)
             if(display.pixels[y*400+x]==GxEPD_BLACK)bottoms[part]=std::max(bottoms[part],y);
     printf("Weekly word ink bottoms: %d / %d\n",bottoms[0],bottoms[1]);
     if(bottoms[0]!=bottoms[1]){puts("FAIL: adjacent course glyphs do not share an ink bottom");++errors;}
-    if(display.pixels[179*400+60]!=GxEPD_RED||display.pixels[180*400+60]!=GxEPD_WHITE){puts("FAIL: midday divider is thicker than one pixel");++errors;}
-    if(display.pixels[80*400+394]!=GxEPD_RED||display.pixels[80*400+393]!=GxEPD_WHITE){puts("FAIL: today border is thicker than one pixel");++errors;}
+    int courseInk=0;
+    for(int y=top+1;y<top+29;++y)for(int x=53;x<108;++x)if(display.pixels[y*400+x]==GxEPD_BLACK)++courseInk;
+    printf("Weekly bold course ink: %d\n",courseInk);
+    if(courseInk<300){puts("FAIL: selected bold course style missing");++errors;}
+    bool boldTime=false;for(auto& t:u8g2Fonts.texts)if(t.value=="09:50")boldTime=t.font==u8g2_font_helvB12_tf;
+    if(!boldTime){puts("FAIL: selected bold time style missing");++errors;}
+    if(display.pixels[179*400+60]!=GxEPD_RED||display.pixels[180*400+60]!=GxEPD_RED||display.pixels[181*400+60]!=GxEPD_WHITE){puts("FAIL: selected 2px midday divider missing");++errors;}
+    if(display.pixels[80*400+394]!=GxEPD_RED||display.pixels[80*400+393]!=GxEPD_RED||display.pixels[80*400+392]!=GxEPD_WHITE){puts("FAIL: selected 2px today border missing");++errors;}
     _cd_day_label="高考";reset();drawTimetableCountdown();
     bool title=false,label=false;
     for(auto& t:u8g2Fonts.texts){
@@ -143,13 +149,23 @@ static void verifyTypography(){
         if(t.value=="霜降")label=t.font==FONT_TEXT;
     }
     if(!title||!label){puts("FAIL: main and corner names do not use the surrounding native Chinese font");++errors;}
+    Text day={},first={},second={},temperature={};
+    for(auto& t:u8g2Fonts.texts){
+        if(t.value=="今天")day=t;
+        if(t.value=="晴间")first=t;
+        if(t.value=="多云")second=t;
+        if(t.value=="24°")temperature=t;
+    }
+    const int gaps[]={first.minY-day.maxY-1,second.minY-first.maxY-1,temperature.minY-second.maxY-1};
+    printf("Long weather clear row gaps: %d/%d/%d\n",gaps[0],gaps[1],gaps[2]);
+    if(first.value.empty()||second.value.empty()||first.font!=FONT_TEXT||second.font!=FONT_TEXT||gaps[0]<3||gaps[1]<3||gaps[2]<3){puts("FAIL: long weather needs balanced empty rows without changing short-weather style");++errors;}
     todayLunarYear="丙午年 马";todayLunarDay="九月初八";reset();draw_cal_year(false);
     for(auto& t:u8g2Fonts.texts)if(t.value==todayLunarYear.c_str()||t.value==todayLunarDay.c_str()){
         printf("Lunar auxiliary ink height: %d\n",t.maxY-t.minY+1);
         if(t.maxY-t.minY+1>12){puts("FAIL: auxiliary lunar text dominates the header");++errors;}
     }
     fflush(stdout);assert(errors==0);
-    puts("Typography: shared course ink bottom, uniform 1px dividers and quiet lunar hierarchy passed.");
+    puts("Typography: selected bold weekly style, equal course bottoms, long-weather spacing and quiet lunar hierarchy passed.");
 }
 int main(int argc,char** argv){
     assert(argc==2);std::string folder=argv[1];u8g2Fonts.begin(display);
@@ -183,5 +199,17 @@ int main(int argc,char** argv){
     oldWeather=true;reset();drawCodexRadarPage();output(folder+"/quota-old");
 #endif
     oldWeather=false;verifyTypography();
+    for(bool old:{false,true})for(const char* name:{"晴间多云","强雷阵雨","雷阵雨伴有冰雹","小到中雨"}){
+        oldWeather=old;live.text=name;reset();drawTimetableCountdown();
+        std::string rendered;
+        int previousBottom=old?195:189;
+        for(auto& t:u8g2Fonts.texts)if(t.x>250&&t.x<299&&t.y>195&&t.y<232){
+            assert(t.minX>250&&t.maxX<299&&t.minY>previousBottom);
+            rendered+=t.value;previousBottom=t.maxY;
+        }
+        assert(rendered==name);assert(previousBottom<232);
+        output(folder+"/weather-"+std::to_string(old)+"-"+std::to_string(strlen(name)));
+    }
+    oldWeather=false;puts("Long weather complete and separated for current and old-data states passed.");
     puts("Production drawing bodies, native fonts, long countdown, custom timetable and page identities passed.");
 }

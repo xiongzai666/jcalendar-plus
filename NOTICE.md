@@ -16,7 +16,7 @@
 
 QWeather 图标版权所属 QWeather，图标采用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)，代码采用 MIT。本项目的 `u8g2_font_qweather_icon_16.c` 是 [QWeather Icons](https://github.com/qwd/Icons) 的字形子集及位图格式转换；此转换说明不代表 QWeather 对本项目的认可或背书。
 
-课程首页的课程名称位图字形由 Noto Sans SC Bold 转换为 `SUBJECT_GLYPHS`，保留 SIL OFL 1.1。周课表、倒计时名称与其他正文使用现有文泉驿点阵字库。FreeUniversal 和 Open Iconic 字体也受 OFL 约束。当前电量图标由 GFX 图元直接绘制，已移除 Siji 引用；其原许可附件只作为历史证据保留。WenQuanYi、TenThinnerGuys、Helvetica 的授权分别处理，不能用 U8g2 代码的 BSD 授权概括所有字形。
+课程首页和周课表的常用课程名称位图字形由 Noto Sans SC Bold 转换为 `SUBJECT_GLYPHS`，保留 SIL OFL 1.1。周课表未知课程回退、倒计时名称与其他正文使用现有文泉驿点阵字库。FreeUniversal 和 Open Iconic 字体也受 OFL 约束。当前电量图标由 GFX 图元直接绘制，已移除 Siji 引用；其原许可附件只作为历史证据保留。WenQuanYi、TenThinnerGuys、Helvetica 的授权分别处理，不能用 U8g2 代码的 BSD 授权概括所有字形。
 
 ## 许可证和未完成的核查
 
