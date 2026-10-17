@@ -134,9 +134,9 @@ void init_cal_layout_size() {
     calLayout.weekY = calLayout.topH - 5;
 
     calLayout.lunarYearX = 204;
-    calLayout.lunarYearY = 17;
+    calLayout.lunarYearY = 16;
     calLayout.lunarDayX = 204;
-    calLayout.lunarDayY = 36;
+    calLayout.lunarDayY = 34;
 
     calLayout.cdDayX = 140;
     calLayout.cdDayY = calLayout.topH - 5;
@@ -251,7 +251,7 @@ void draw_cal_year(bool partial) {
     // 今日农历年份，e.g. 乙巳年 蛇
     // 如果农历月份小于公历月份，那么说明是上一年
     u8g2Fonts.setCursor(calLayout.lunarYearX, calLayout.lunarYearY);
-    u8g2Fonts.setFont(FONT_TEXT);
+    u8g2Fonts.setFont(FONT_SUB);
     u8g2Fonts.setFontMode(1);
     u8g2Fonts.setFontDirection(0);
     u8g2Fonts.setForegroundColor(GxEPD_BLACK);
@@ -259,12 +259,12 @@ void draw_cal_year(bool partial) {
 
     // 今日农历日期
     u8g2Fonts.setCursor(calLayout.lunarDayX, calLayout.lunarDayY);
-    u8g2Fonts.setFont(FONT_TEXT);
+    u8g2Fonts.setFont(FONT_SUB);
     u8g2Fonts.setForegroundColor(GxEPD_BLACK);
     if (!todayLunarDay.isEmpty()) {
         u8g2Fonts.print(todayLunarDay);
     } else {
-        u8g2Fonts.setFont(FONT_TEXT);
+        u8g2Fonts.setFont(FONT_SUB);
         u8g2Fonts.print(("星期" + week_str[tmInfo.tm_wday]).c_str());
     }
 

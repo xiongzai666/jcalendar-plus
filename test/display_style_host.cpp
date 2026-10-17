@@ -14,7 +14,6 @@
 #define pgm_read_byte(p) (*(const uint8_t*)(p))
 #define pgm_read_dword(p) (*(const uint32_t*)(p))
 #include "subject_font.h"
-#include "readable_font.h"
 #include "display_policy_core.h"
 #include "calendar_override_core.h"
 #ifdef HAS_RADAR
@@ -65,9 +64,20 @@ std::string _todo_json="[]";String _remote_sync_code;int _todo_count=0;uint64_t 
 const char* subjects[]={"化学","数学","英语","物理","语文","地理","物理","放假","数学","英语","物理","自习"};
 struct EffectiveDayContext {EffectiveDay day;String routine;String courses[12];struct{bool dayOff=false;}override;};
 LessonClock getLessonClock(){return defaultLessonClock();}
+static const char* weeklySubjects[6][8]={
+ {"语文","数学","语文","英语","物理","化学","体育","班会"},
+ {"语文","数学","语文","英语","物理","化学","体育","班会"},
+ {"语文","数学","语文","英语","物理","化学","体育","班会"},
+ {"语文","数学","语文","英语","物理","化学","体育","班会"},
+ {"语文","数学","语文","英语","物理","化学","体育","班会"},
+ {"语文","数学","语文","英语","物理","化学","体育","班会"}
+};
 EffectiveDayContext effectiveDayForDate(const tm& date){
-    EffectiveDayContext c;c.day={getLessonClock(),4095,false};
-    for(int i=0;i<12;++i)c.courses[i]=subjects[i];
+    EffectiveDayContext c;c.day={getLessonClock(),0,false};
+    for(int i=0;i<12;++i){
+        c.courses[i]=i<8&&date.tm_wday>=1&&date.tm_wday<=6?weeklySubjects[date.tm_wday-1][i]:"放假";
+        if(effectiveSubject(c.courses[i].c_str()))c.day.mask|=1u<<i;
+    }
     if(customClock&&date.tm_wday==3){c.day.independent=true;c.courses[0]="机器人";c.day.clock.start[0]=520;}
     return c;
 }
@@ -114,13 +124,41 @@ static void output(const std::string& path){
         assert(t.minX>=0&&t.maxX<400&&t.minY>=0&&t.maxY<300);
     }
 }
+static void verifyTypography(){
+    int errors=0;
+    reset();drawDaytimeWeekly();
+    const int top=63+2*29;
+    int bottoms[2]={-1,-1};
+    for(int part=0;part<2;++part)for(int y=top+1;y<top+29;++y)
+        for(int x=part?81:53;x<(part?108:81);++x)
+            if(display.pixels[y*400+x]==GxEPD_BLACK)bottoms[part]=std::max(bottoms[part],y);
+    printf("Weekly word ink bottoms: %d / %d\n",bottoms[0],bottoms[1]);
+    if(bottoms[0]!=bottoms[1]){puts("FAIL: adjacent course glyphs do not share an ink bottom");++errors;}
+    if(display.pixels[179*400+60]!=GxEPD_RED||display.pixels[180*400+60]!=GxEPD_WHITE){puts("FAIL: midday divider is thicker than one pixel");++errors;}
+    if(display.pixels[80*400+394]!=GxEPD_RED||display.pixels[80*400+393]!=GxEPD_WHITE){puts("FAIL: today border is thicker than one pixel");++errors;}
+    _cd_day_label="高考";reset();drawTimetableCountdown();
+    bool title=false,label=false;
+    for(auto& t:u8g2Fonts.texts){
+        if(t.value=="高考倒计时")title=t.font==FONT_TEXT;
+        if(t.value=="霜降")label=t.font==FONT_TEXT;
+    }
+    if(!title||!label){puts("FAIL: main and corner names do not use the surrounding native Chinese font");++errors;}
+    todayLunarYear="丙午年 马";todayLunarDay="九月初八";reset();draw_cal_year(false);
+    for(auto& t:u8g2Fonts.texts)if(t.value==todayLunarYear.c_str()||t.value==todayLunarDay.c_str()){
+        printf("Lunar auxiliary ink height: %d\n",t.maxY-t.minY+1);
+        if(t.maxY-t.minY+1>12){puts("FAIL: auxiliary lunar text dominates the header");++errors;}
+    }
+    fflush(stdout);assert(errors==0);
+    puts("Typography: shared course ink bottom, uniform 1px dividers and quiet lunar hierarchy passed.");
+}
 int main(int argc,char** argv){
     assert(argc==2);std::string folder=argv[1];u8g2Fonts.begin(display);
     tmInfo.tm_year=126;tmInfo.tm_mon=9;tmInfo.tm_mday=17;tmInfo.tm_hour=7;tmInfo.tm_min=0;tmInfo.tm_isdst=-1;
     clockNow=mktime(&tmInfo);_screen_snapshot_time=clockNow;
     nl_month_days(2026,10,lunarDates);nl_year_jq(2026,jqAccDate);
-    daily.weather[0].textDay="雾";daily.weather[1].textDay="强雷阵雨";daily.weather[2].textDay="小雨";
+    daily.weather[0].textDay="晴间多云";live.text="晴间多云";daily.weather[1].textDay="阵雨";daily.weather[2].textDay="中雨";
     reset();drawTimetableCountdown();output(folder+"/01-courses");
+    tmInfo.tm_hour=18;reset();drawTimetableCountdown();output(folder+"/01-courses-ended");tmInfo.tm_hour=7;
     reset();drawDaytimeWeekly();output(folder+"/02-weekly");
     customClock=true;reset();drawDaytimeWeekly();output(folder+"/weekly-custom");customClock=false;
     init_cal_layout_size();reset();draw_cal_days(false);draw_cal_year(false);draw_cal_header();draw_weather(false);draw_cd_day("高考","20270607");output(folder+"/03-calendar");
@@ -130,16 +168,7 @@ int main(int argc,char** argv){
         draw_weather(false);output(folder+"/calendar-countdown-"+std::to_string(strlen(label))+"-"+date);
     }
     todayLunarDay="闰腊月三十";reset();draw_cal_year(false);
-    for(auto& t:u8g2Fonts.texts)if(t.value==todayLunarDay.c_str())assert(t.font==FONT_TEXT&&t.x+t.width<300);
-    for(const char* text:{"语文","物理","自习","化学","体育","放假","高考倒计时","霜降"}){
-        reset();assert(drawReadable(display,text,200,100,0,150));
-        int top=300,bottom=-1,left=400,right=-1;
-        for(int y=0;y<300;++y)for(int x=0;x<400;++x)if(display.pixels[y*400+x]!=0xffff){top=std::min(top,y);bottom=std::max(bottom,y);left=std::min(left,x);right=std::max(right,x);}
-        assert(bottom-top+1<=20&&bottom-top+1>=17);assert(std::abs((top+bottom)/2.0-100)<=0.5);
-        assert(std::abs((left+right)/2.0-200)<=0.5);
-        printf("Native20 %s: ink=%dx%d centerY=%.1f\n",text,right-left+1,bottom-top+1,(top+bottom)/2.0);
-    }
-    assert(readableWidth("机器人")==-1); // Existing complete Chinese font remains the fallback.
+    for(auto& t:u8g2Fonts.texts)if(t.value==todayLunarDay.c_str())assert(t.x+t.width<300);
     oldWeather=true;reset();drawTimetableCountdown();output(folder+"/weather-old");oldWeather=false;
     _cd_day_label="八个汉字倒计时名";daily.weather[1].tempMax=-10;daily.weather[1].tempMin=-15;daily.weather[2].tempMax=-20;daily.weather[2].tempMin=-25;
     reset();drawTimetableCountdown();output(folder+"/courses-boundary");
@@ -153,5 +182,6 @@ int main(int argc,char** argv){
     serializeJson(d,radarJson);reset();drawCodexRadarPage();output(folder+"/04-quota");
     oldWeather=true;reset();drawCodexRadarPage();output(folder+"/quota-old");
 #endif
+    oldWeather=false;verifyTypography();
     puts("Production drawing bodies, native fonts, long countdown, custom timetable and page identities passed.");
 }

@@ -1,6 +1,5 @@
 #include "school_schedule_data.h"
 #include "subject_font.h"
-#include "readable_font.h"
 #include "date_overrides.h"
 #include "lesson_clock.h"
 #include "schedule_optimization.h"
@@ -94,17 +93,11 @@ static void drawFestivalCountdown(int split) {
         return;
     }
     const String number=String(countdown.days);
-    const int nativeWidth=readableWidth(label.c_str());
-    int labelWidth=u8g2Fonts.getUTF8Width(label.c_str());
+    const int labelWidth=u8g2Fonts.getUTF8Width(label.c_str());
     const int unitWidth=u8g2Fonts.getUTF8Width("天");
     const uint8_t* fonts[]={u8g2_font_fub25_tn,u8g2_font_fub17_tn,u8g2_font_helvB12_tn};
     const uint8_t* numberFont=fonts[2];
     int numberWidth=0;
-    bool largeLabel=false;
-    u8g2Fonts.setFont(fonts[0]);
-    if(nativeWidth>0&&nativeWidth+10+u8g2Fonts.getUTF8Width(number.c_str())+unitWidth<=146) {
-        labelWidth=nativeWidth;largeLabel=true;
-    }
     for (const auto* font:fonts) {
         u8g2Fonts.setFont(font);numberWidth=u8g2Fonts.getUTF8Width(number.c_str());
         numberFont=font;
@@ -112,12 +105,11 @@ static void drawFestivalCountdown(int split) {
     }
     const auto layout=festivalInlineLayout(split,150,labelWidth,numberWidth,unitWidth);
     u8g2Fonts.setFont(FONT_TEXT);
-    if(largeLabel)drawReadable(display,label.c_str(),layout.labelX+labelWidth/2,278,GxEPD_BLACK,labelWidth);
-    else drawViewText(layout.labelX,287,label);
+    drawViewText(layout.labelX,283,label);
     u8g2Fonts.setFont(numberFont);u8g2Fonts.setForegroundColor(GxEPD_RED);
-    u8g2Fonts.drawUTF8(layout.numberX,287,number.c_str());
+    u8g2Fonts.drawUTF8(layout.numberX,285,number.c_str());
     u8g2Fonts.setFont(FONT_TEXT);u8g2Fonts.setForegroundColor(GxEPD_BLACK);
-    u8g2Fonts.drawUTF8(layout.unitX,287,"天");
+    u8g2Fonts.drawUTF8(layout.unitX,283,"天");
 }
 
 
@@ -410,10 +402,8 @@ static void drawTimetableCountdown() {
     u8g2Fonts.setFont(FONT_TEXT);
     u8g2Fonts.setForegroundColor(GxEPD_BLACK);
     const String countdownTitle = (_cd_day_label.isEmpty() ? String("目标") : _cd_day_label) + "倒计时";
-    if (!drawReadable(display,countdownTitle.c_str(),rightCenter,57,GxEPD_BLACK,142)) {
-        if (u8g2Fonts.getUTF8Width(countdownTitle.c_str()) > 142) u8g2Fonts.setFont(FONT_SUB);
-        centered(countdownTitle, rightCenter, 64);
-    }
+    if (u8g2Fonts.getUTF8Width(countdownTitle.c_str()) > 142) u8g2Fonts.setFont(FONT_SUB);
+    centered(countdownTitle, rightCenter, 64);
     int daysLeft = -1;
     String targetDate;
     const bool hasDate = examCountdown(daysLeft, targetDate);
@@ -558,7 +548,8 @@ static void drawDaytimeWeekly() {
                          dayWidth, headerHeight, GxEPD_RED);
     u8g2Fonts.setForegroundColor(GxEPD_WHITE);
     u8g2Fonts.setBackgroundColor(GxEPD_BLACK);
-    centered("时间", left + timeWidth / 2, headerTop + 17);
+    u8g2Fonts.setFont(FONT_TEXT);
+    centered("时间", left + timeWidth / 2, headerTop + 18);
     for (int col = 0; col < 6; ++col) {
         const int x = left + timeWidth + col * dayWidth;
         const uint16_t background = isSchoolDay && col == todayColumn ? GxEPD_RED : GxEPD_BLACK;
@@ -577,17 +568,15 @@ static void drawDaytimeWeekly() {
         const int y = coursesTop + row * rowHeight;
         display.drawFastHLine(left, y, gridRight - left + 1,
                               row == 4 ? GxEPD_RED : GxEPD_BLACK);
-        if (row == 4)
-            display.drawFastHLine(left, y + 1, gridRight - left + 1, GxEPD_RED);
     }
     for (int row = 0; row < 8; ++row) {
         const int top = coursesTop + row * rowHeight;
-        u8g2Fonts.setFont(u8g2_font_helvB12_tf);
+        u8g2Fonts.setFont(u8g2_font_helvR10_tf);
         u8g2Fonts.setForegroundColor(GxEPD_BLACK);
         char start[6];
         snprintf(start, sizeof(start), "%02d:%02d", clock.start[row] / 60,
                  clock.start[row] % 60);
-        centered(start, left + timeWidth / 2, top + 20);
+        centered(start, left + timeWidth / 2, top + 19);
         for (int col = 0; col < 6; ++col) {
             const int x = left + timeWidth + col * dayWidth;
             if (custom[col]) {
@@ -601,17 +590,15 @@ static void drawDaytimeWeekly() {
                     u8g2Fonts.setFont(u8g2_font_5x8_tf);
                     centered(actual, x + dayWidth/2, top + 26);
                 }
-            } else if(!drawReadable(display,courses[col][row].c_str(),x+dayWidth/2,
-                                   top+rowHeight/2,GxEPD_BLACK,dayWidth-8)) {
+            } else {
                 u8g2Fonts.setFont(FONT_TEXT);u8g2Fonts.setForegroundColor(GxEPD_BLACK);
                 centered(fitTextEllipsis(courses[col][row],dayWidth-8),x+dayWidth/2,top+20);
             }
         }
     }
     if (isSchoolDay) {
-        drawTodayColumnFrame(display, left + timeWidth + todayColumn * dayWidth,
-                             headerTop, dayWidth, headerHeight + 8 * rowHeight + 1,
-                             GxEPD_RED);
+        display.drawRect(left + timeWidth + todayColumn * dayWidth, headerTop,
+                         dayWidth + 1, headerHeight + 8 * rowHeight + 1, GxEPD_RED);
     }
 }
 

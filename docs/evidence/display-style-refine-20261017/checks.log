@@ -1,0 +1,34 @@
+
+RUN ['C:\\Users\\Lemon\\AppData\\Local\\hermes\\hermes-agent\\venv\\Scripts\\python.exe', 'tools/test_review_fixes.py']
+......
+----------------------------------------------------------------------
+Ran 6 tests in 2.464s
+
+OK
+clock: review behavior passed
+label: review behavior passed
+network: review behavior passed
+source: review behavior passed
+tags: review behavior passed
+title: 高考倒计时: x=286 width=79
+八个汉字倒计时名倒计时: x=260 width=131
+目标倒计时: x=286 width=79
+review behavior passed
+
+RUN ['C:\\Users\\Lemon\\AppData\\Local\\hermes\\hermes-agent\\venv\\Scripts\\python.exe', 'tools/test_festival_graphics.py']
+Actual corner fonts and pixels: four Chinese characters, 1–5 digits, today and expired remain within 150x51
+
+RUN ['C:\\Users\\Lemon\\AppData\\Local\\hermes\\hermes-agent\\venv\\Scripts\\python.exe', 'tools/test_display_style.py', '--output', 'E:\\Lemon\\Documents\\ChatGPT\\墨水屏\\work\\display-style-refine-20261017\\public']
+In file included from E:\Lemon\Documents\ChatGPT\墨水屏\work\demo-sync-20261016\integration\test\display_style_host.cpp:110:
+C:\Users\Lemon\AppData\Local\Temp\display-style-q2220fi2/calendar.inc:276:60: warning: format specifies type 'int' but the argument has type 'size_t' (aka 'unsigned long long') [-Wformat]
+  275 |         snprintf(calendarDate, sizeof(calendarDate), "%04d-%02d-%02d",
+      |                                                                 ~~~~
+      |                                                                 %02zu
+  276 |                  tmInfo.tm_year + 1900, tmInfo.tm_mon + 1, iDay + 1);
+      |                                                            ^~~~~~~~
+1 warning generated.
+Weekly word ink bottoms: 142 / 142
+Lunar auxiliary ink height: 11
+Lunar auxiliary ink height: 11
+Typography: shared course ink bottom, uniform 1px dividers and quiet lunar hierarchy passed.
+Production drawing bodies, native fonts, long countdown, custom timetable and page identities passed.

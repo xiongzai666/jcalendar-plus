@@ -36,7 +36,6 @@ class Adafruit_GFX {public:
 #define PROGMEM
 #define pgm_read_byte(p) (*(const uint8_t*)(p))
 #define pgm_read_dword(p) (*(const uint32_t*)(p))
-#include "readable_font.h"
 #include "festival_countdown_core.h"
 #include "display_policy_core.h"
 #include "U8g2_for_Adafruit_GFX.h"
