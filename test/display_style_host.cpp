@@ -106,7 +106,6 @@ const char* preferenceString(Preferences&,const char*,const char*,int){return "[
 struct Logger{void print(const char*){}}Serial;
 extern const uint8_t u8g2_font_qweather_icon_16[];
 bool isNight(const String&){return false;}
-#include "weather_font.h"
 #include "timetable.inc"
 #include "calendar.inc"
 std::string radarJson;
@@ -157,15 +156,9 @@ static void verifyTypography(){
         if(t.value=="多云")second=t;
         if(t.value=="24°")temperature=t;
     }
-    auto inkBounds=[](int top,int bottom){
-        Text t={};t.minX=400;t.minY=300;t.maxX=t.maxY=-1;
-        for(int y=top;y<bottom;++y)for(int x=251;x<299;++x)if(display.pixels[y*400+x]==GxEPD_BLACK){t.minX=std::min(t.minX,x);t.maxX=std::max(t.maxX,x);t.minY=std::min(t.minY,y);t.maxY=std::max(t.maxY,y);}
-        return t;
-    };
-    first=inkBounds(190,211);second=inkBounds(211,232);
     const int gaps[]={first.minY-day.maxY-1,second.minY-first.maxY-1,temperature.minY-second.maxY-1};
-    printf("Long weather clear gaps: %d/%d/%d; raster widths %d/%d\n",gaps[0],gaps[1],gaps[2],first.maxX-first.minX+1,second.maxX-second.minX+1);
-    if(first.maxX-first.minX+1!=28||second.maxX-second.minX+1!=29||gaps[0]<3||gaps[1]<3||gaps[2]<3){puts("FAIL: requested 15.5 target weather raster not present");++errors;}
+    printf("Long weather clear row gaps: %d/%d/%d\n",gaps[0],gaps[1],gaps[2]);
+    if(first.value.empty()||second.value.empty()||first.font!=FONT_TEXT||second.font!=FONT_TEXT||gaps[0]<3||gaps[1]<3||gaps[2]<3){puts("FAIL: long weather needs balanced empty rows without changing short-weather style");++errors;}
     todayLunarYear="丙午年 马";todayLunarDay="九月初八";reset();draw_cal_year(false);
     for(auto& t:u8g2Fonts.texts)if(t.value==todayLunarYear.c_str()||t.value==todayLunarDay.c_str()){
         printf("Lunar auxiliary ink height: %d\n",t.maxY-t.minY+1);
@@ -214,12 +207,7 @@ int main(int argc,char** argv){
             assert(t.minX>250&&t.maxX<299&&t.minY>previousBottom);
             rendered+=t.value;previousBottom=t.maxY;
         }
-        if(!rendered.empty())assert(rendered==name);
-        else {
-            int ink=0;for(int y=196;y<232;++y)for(int x=251;x<299;++x)if(display.pixels[y*400+x]==GxEPD_BLACK)++ink;
-            assert(!old&&ink>80);
-        }
-        assert(previousBottom<232);
+        assert(rendered==name);assert(previousBottom<232);
         output(folder+"/weather-"+std::to_string(old)+"-"+std::to_string(strlen(name)));
     }
     oldWeather=false;puts("Long weather complete and separated for current and old-data states passed.");

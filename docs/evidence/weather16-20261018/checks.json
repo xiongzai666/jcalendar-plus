@@ -1,0 +1,29 @@
+{
+  "localChecksPassed": true,
+  "commands": [
+    [
+      "tools/test_display_style.py",
+      "--output",
+      "E:\\Lemon\\Documents\\ChatGPT\\\u58a8\u6c34\u5c4f\\work\\public-release-rc6-20261018\\preview"
+    ],
+    [
+      "tools/test_weather_hint.py"
+    ],
+    [
+      "tools/test_festival_graphics.py"
+    ],
+    [
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "test",
+      "-p",
+      "test_release_bundle.py"
+    ]
+  ],
+  "weatherMatchesPrivate2521": true,
+  "publicWeeklyCalendarTodoUnchanged": true,
+  "publicHardwareInstalled": false,
+  "comparisonScope": "Weather region uses same inputs; public default course sample and earlier header geometry retained"
+}
